@@ -1,0 +1,26 @@
+﻿using System.Linq.Expressions;
+
+namespace HealthCareApp.RepositoryServices
+{
+    public interface IGenericRepoServices<T> where T : class
+    {
+        T GetById(int id);
+        IEnumerable<T> GetAll();
+        T Find(Expression<Func<T, bool>> criteria, string[] includes = null);
+        IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, string[] includes = null);
+        IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int take, int skip);
+        IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int? take, int? skip,
+            Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
+
+        T Add(T entity);
+        T Update(T entity);
+        void Delete(T entity);
+        int Count();
+        int Count(Expression<Func<T, bool>> criteria);
+    }
+    public static class OrderBy
+    {
+        public const string Ascending = "ASC";
+        public const string Descending = "DESC";
+    }
+}
