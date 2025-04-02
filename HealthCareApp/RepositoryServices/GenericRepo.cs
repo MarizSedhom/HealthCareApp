@@ -1,6 +1,5 @@
 ﻿using HealthCareApp.Data;
 using Microsoft.EntityFrameworkCore;
-
 using System.Linq.Expressions;
 using System.Reflection;
 
