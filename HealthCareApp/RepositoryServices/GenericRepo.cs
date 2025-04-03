@@ -23,7 +23,7 @@ namespace HealthCareApp.RepositoryServices
         {
             return _context.Set<T>().Find(id);
         }
-        public T Find(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes)
+        public T Find(Expression<Func<T, bool>> criteria, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();
 
@@ -34,21 +34,16 @@ namespace HealthCareApp.RepositoryServices
             return query.SingleOrDefault(criteria);
         }
 
-        public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes)
+        public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();
 
             if (includes != null)
-            {
                 foreach (var include in includes)
-                {
                     query = query.Include(include);
-                }
-            }
 
             return query.Where(criteria).ToList();
         }
-
 
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int skip, int take)
         {
@@ -79,37 +74,29 @@ namespace HealthCareApp.RepositoryServices
         public T Add(T entity)
         {
             _context.Set<T>().Add(entity);
-            _context.SaveChanges();
-
             return entity;
         }
         public T Update(T entity)
         {
             _context.Update(entity);
-            _context.SaveChanges();
-
             return entity;
         }
 
-        public void SoftDelete(T entity)
+        public void Delete(T entity)
         {
-            //_context.Set<T>().Remove(entity);
-            PropertyInfo property = entity.GetType().GetProperty("IsDeleted");
-            if (property != null && property.PropertyType == typeof(bool))
+            var dbEntity = _context.Set<T>().Find(entity.GetType().GetProperty("Id")?.GetValue(entity)); // Get existing entity
+
+            if (dbEntity != null)
             {
-                property.SetValue(entity, true);
-                _context.Entry(entity).State = EntityState.Modified;
+                PropertyInfo property = dbEntity.GetType().GetProperty("IsDeleted");
+                if (property != null && property.PropertyType == typeof(bool))
+                {
+                    property.SetValue(dbEntity, true); // Set IsDeleted = true
+
+                    _context.Update(dbEntity); // Ensure EF tracks it as modified
+                }
             }
-
-            _context.SaveChanges();
         }
-
-        public void HardDelete(T entity)
-        {
-            _context.Set<T>().Remove(entity);
-            _context.SaveChanges();
-        }
-
 
         public int Count()
         {
@@ -119,6 +106,11 @@ namespace HealthCareApp.RepositoryServices
         public int Count(Expression<Func<T, bool>> criteria)
         {
             return _context.Set<T>().Count(criteria);
+        }
+
+        public void Save()
+        {
+            _context.SaveChanges();
         }
     }
 }

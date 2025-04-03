@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthCareApp.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -18,6 +18,7 @@ namespace HealthCareApp.Data
         public virtual DbSet<SubSpecialization> SubSpecializations { get; set; }
         public virtual DbSet<Clinic> Clinics { get; set; }
         public virtual DbSet<Availability> Availability { get; set; }
+        public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<AvailabilitySlots> AvailabilitySlots { get; set; }
         public virtual DbSet<MedicalRecord> MedicalRecords { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
@@ -94,24 +95,24 @@ namespace HealthCareApp.Data
                 .OnDelete(DeleteBehavior.NoAction);
 
             // Configure Appointment relationship with AvailabilitySlots
-            //modelBuilder.Entity<Appointment>()
-            //    .HasOne(a => a.AvailableSlot)
-            //    .WithOne(s => s.Appointment)
-            //    .HasForeignKey<Appointment>(a => a.SlotId)
-            //    .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.AvailableSlot)
+                .WithOne(s => s.Appointment)
+                .HasForeignKey<Appointment>(a => a.SlotId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             // Configure circular reference between Appointment and Payment
-            //modelBuilder.Entity<Appointment>()
-            //    .HasOne(a => a.Payment)
-            //    .WithOne(p => p.Appointment)
-            //    .HasForeignKey<Appointment>(a => a.PaymentId)
-            //    .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.Payment)
+                .WithOne(p => p.Appointment)
+                .HasForeignKey<Appointment>(a => a.PaymentId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            //modelBuilder.Entity<Payment>()
-            //    .HasOne(p => p.Appointment)
-            //    .WithOne()
-            //    .HasForeignKey<Payment>(p => p.AppointmentId)
-            //    .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Appointment)
+                .WithOne()
+                .HasForeignKey<Payment>(p => p.AppointmentId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             // Configure MedicalRecord relationship
             modelBuilder.Entity<MedicalRecord>()
@@ -126,6 +127,9 @@ namespace HealthCareApp.Data
                 .WithMany(s => s.SubSpecialization)
                 .HasForeignKey(s => s.SpecializationId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            OnModelCreatingPartial(modelBuilder);
         }
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }
