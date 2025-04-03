@@ -23,7 +23,7 @@ namespace HealthCareApp.RepositoryServices
         {
             return _context.Set<T>().Find(id);
         }
-        public T Find(Expression<Func<T, bool>> criteria, string[] includes = null)
+        public T Find(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();
 
@@ -34,16 +34,21 @@ namespace HealthCareApp.RepositoryServices
             return query.SingleOrDefault(criteria);
         }
 
-        public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, string[] includes = null)
+        public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();
 
             if (includes != null)
+            {
                 foreach (var include in includes)
+                {
                     query = query.Include(include);
+                }
+            }
 
             return query.Where(criteria).ToList();
         }
+
 
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int skip, int take)
         {
@@ -74,15 +79,19 @@ namespace HealthCareApp.RepositoryServices
         public T Add(T entity)
         {
             _context.Set<T>().Add(entity);
+            _context.SaveChanges();
+
             return entity;
         }
         public T Update(T entity)
         {
             _context.Update(entity);
+            _context.SaveChanges();
+
             return entity;
         }
 
-        public void Delete(T entity)
+        public void SoftDelete(T entity)
         {
             //_context.Set<T>().Remove(entity);
             PropertyInfo property = entity.GetType().GetProperty("IsDeleted");
@@ -91,9 +100,17 @@ namespace HealthCareApp.RepositoryServices
                 property.SetValue(entity, true);
                 _context.Entry(entity).State = EntityState.Modified;
             }
+
+            _context.SaveChanges();
         }
 
-      
+        public void HardDelete(T entity)
+        {
+            _context.Set<T>().Remove(entity);
+            _context.SaveChanges();
+        }
+
+
         public int Count()
         {
             return _context.Set<T>().Count();
