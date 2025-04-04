@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using HealthCareApp.ViewModels;
 
 namespace HealthCareApp.Data
 {
@@ -128,5 +129,6 @@ namespace HealthCareApp.Data
                 .HasForeignKey(s => s.SpecializationId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
+        public DbSet<HealthCareApp.ViewModels.SelectedSlotVM> SelectedSlotVM { get; set; } = default!;
     }
 }

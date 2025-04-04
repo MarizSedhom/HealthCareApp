@@ -1,6 +1,5 @@
 ﻿using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
-using HealthCareApp.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -11,7 +10,7 @@ namespace HealthCareApp.Controllers
     {
         IGenericRepoServices<Appointment> appointmentService;
         IGenericRepoServices<AvailabilitySlots> slotService;
-        IGenericRepoServices<Patient> patientService;
+
 
         public AppointmentController(IGenericRepoServices<Appointment> _appointmentService, IGenericRepoServices<AvailabilitySlots> _slotService, IGenericRepoServices<Patient> _patientService)
         {
@@ -37,12 +36,14 @@ namespace HealthCareApp.Controllers
         }
 
        
-        public ActionResult Create(int slotId = 7, string patientId = "dgtdeytd53dhe") // passed from heba's part
+        public ActionResult Create(int slotId = 2, string patientId = "dgtdeytd53dhe") // passed from heba's part
         {
             AvailabilitySlots slot = slotService.Find(slot => slot.Id == slotId, slot => slot.Availability, slot => slot.Availability.Doctor);
-            SelectedSlotVM slotVM = new SelectedSlotVM() { PatientId = patientId , Slot = slot};
 
-            return View(slotVM);
+            ViewBag.slot = slot;
+            ViewBag.patientId = patientId;
+
+            return View();
         }
 
        
@@ -84,11 +85,6 @@ namespace HealthCareApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(appointment.paymentMethod == PaymentMethod.Visa)
-                {
-                    appointment.paymentStatus = PaymentStatus.Paid;
-                }
-
                 appointmentService.Update(appointment);
 
                 return RedirectToAction(nameof(Index));
@@ -117,7 +113,7 @@ namespace HealthCareApp.Controllers
                 Appointment appoint = appointmentService.GetById(id);
 
                 // Mark the reserved slot as free
-                AvailabilitySlots slot = appoint.AvailableSlot;
+                AvailabilitySlots slot = slotService.GetById(appoint.SlotId);
                 slot.IsBooked = false;
                 slotService.Update(slot);
 
@@ -127,7 +123,7 @@ namespace HealthCareApp.Controllers
             }
             catch
             {
-                return View();
+                return View(appointment);
             }
         }
     }
