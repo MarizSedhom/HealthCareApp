@@ -1,0 +1,86 @@
+﻿@model IEnumerable<SubSpecializationVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Details</h1>
+<input type="text" name="name" id="searchInp" />
+<input type="button" value="Search" class="btn btn-primary" id="searchBtn" onclick="SearchForSpec()" />
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="DetailsByID" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div id="searchResults"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+           function SearchForSpec() {
+        var sspecName = document.getElementById("searchInp").value.trim();
+        var sspecDisplay = document.getElementById("searchResults");
+        sspecDisplay.innerHTML = "";
+
+        if (sspecName === "") {
+            alert("Please enter a specialization name.");
+            return;
+        }
+
+        $.ajax({
+            url: '/SubSpecialization/DetailsByName',
+            type: 'GET',
+            data: { name: sspecName },
+            dataType: 'json',
+            success: function (result) {
+
+                if (result && result.length > 0) {
+                    var html = "<ul>";
+                    $.each(result, function (index, item) {
+
+                        if (item && item.name) {
+                            html += "<li>" + item.name + "</li>";
+                        } else {
+                            console.error("Item does not have 'Name' property:", item);
+                        }
+                    });
+                    html += "</ul>";
+                    sspecDisplay.innerHTML = html;
+                } else {
+                    sspecDisplay.innerHTML = "<p>No specializations found.</p>";
+                }
+
+                document.getElementById("searchInp").value = "";
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred: ' + xhr.responseText);
+            }
+        });
+    }
+
+</script>
