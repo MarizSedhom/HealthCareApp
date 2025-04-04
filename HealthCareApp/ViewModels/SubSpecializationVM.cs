@@ -13,7 +13,10 @@ namespace HealthCareApp.ViewModels
         public string Name { get; set; }
 
         public int SpecializationId { get; set; }
-        public IEnumerable<Specialization>? Specializations { get; set; }
         public bool IsDeleted { get; set; } = false;
+
+        [Display(Name = "Specialization Name")]
+        public string SpecializationName { get; set; } // for ui only
+        public IEnumerable<Specialization>? Specializations { get; set; } // for ui only
     }
 }
