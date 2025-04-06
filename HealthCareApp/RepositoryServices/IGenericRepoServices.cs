@@ -7,7 +7,6 @@ namespace HealthCareApp.RepositoryServices
         T GetById(int id);
         IEnumerable<T> GetAll();
         T Find(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
-
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
         //with select
         IEnumerable<TResult> FindAllWithSelect<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes);
@@ -18,7 +17,8 @@ namespace HealthCareApp.RepositoryServices
 
         T Add(T entity);
         T Update(T entity);
-        void Delete(T entity);
+        void SoftDelete(T entity);
+        void HardDelete(T entity);
         int Count();
         int Count(Expression<Func<T, bool>> criteria);
          void SaveChanges();

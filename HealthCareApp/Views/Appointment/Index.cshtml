@@ -4,56 +4,58 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>All Appointments</h1>
+<h1 class="text-center">All Appointments</h1>
 
 <p>
-    <a asp-action="Create">Reserve</a>
+    <a asp-action="Create" class="btn btn-info">Reserve</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.status)
-            </th>
-            @* <th> *@
-            @*     @Html.DisplayNameFor(model => model.Patient) *@
-            @* </th> *@
-            <th>
-                @Html.DisplayNameFor(model => model.AvailableSlot)
-            </th>
-            @* <th> *@
-            @*     @Html.DisplayNameFor(model => model.PaymentId) *@
-            @* </th> *@
-            @* <th> *@
-            @*     @Html.DisplayNameFor(model => model.IsDeleted) *@
-            @* </th> *@
+            <th class="text-warning">Status</th>
+
+            <th>@Html.DisplayNameFor(model => model.AvailableSlot.Availability.Date)</th>
+            <th>@Html.DisplayNameFor(model => model.AvailableSlot.Availability.dayOfWeek)</th>
+            <th>@Html.DisplayNameFor(model => model.AvailableSlot.StartTime)</th>
+
+            <th>Doctor</th>
+            <th>Patient Name</th>
+
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.status)
-            </td>
-            @* <td> *@
-            @*     @Html.DisplayFor(modelItem => item.Patient.Id) *@
-            @* </td> *@
-            <td>
-                @Html.DisplayFor(modelItem => item.AvailableSlot.Id)
-            </td>
-            @* <td> *@
-            @*     @Html.DisplayFor(modelItem => item.PaymentId) *@
-            @* </td> *@
-            @* <td> *@
-            @*     @Html.DisplayFor(modelItem => item.IsDeleted) *@
-            @* </td> *@
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="fw-bold">@Html.DisplayFor(modelItem => item.status)</td>
+
+
+                <td>@Html.DisplayFor(modelItem => item.AvailableSlot.Availability.Date)</td>
+                <td>@Html.DisplayFor(modelItem => item.AvailableSlot.Availability.dayOfWeek)</td>
+                <td>@Html.DisplayFor(modelItem => item.AvailableSlot.StartTime)</td>
+
+                <td>@($"{item.AvailableSlot.Availability.Doctor.FirstName} {item.AvailableSlot.Availability.Doctor.LastName}")</td>
+                <td>@item.PatientName</td>
+
+                @if(item.status == Status.Completed)
+                {
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Display</a> |
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary disabled">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-secondary  disabled">Cancel</a>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Display</a> |
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Cancel</a>
+                    </td>
+                }
+            </tr>
+        }
     </tbody>
 </table>

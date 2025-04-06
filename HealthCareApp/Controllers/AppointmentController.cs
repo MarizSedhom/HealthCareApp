@@ -1,87 +1,128 @@
 ﻿using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
+using HealthCareApp.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace HealthCareApp.Controllers
 {
     public class AppointmentController : Controller
     {
         IGenericRepoServices<Appointment> appointmentService;
-        public AppointmentController(IGenericRepoServices<Appointment> _appointmentService)
+        IGenericRepoServices<AvailabilitySlots> slotService;
+        IGenericRepoServices<Patient> patientService;
+
+        public AppointmentController(IGenericRepoServices<Appointment> _appointmentService, IGenericRepoServices<AvailabilitySlots> _slotService, IGenericRepoServices<Patient> _patientService)
         {
             appointmentService = _appointmentService;
+            slotService = _slotService;
+            patientService = _patientService;
         }
 
-        // GET: AppointmentController
-        public ActionResult Index()
+     
+        public ActionResult Index(string patientId = "dgtdeytd53dhe") // passed from layout user  
         {
-            IEnumerable<Appointment> appointments = appointmentService.FindAll(app => app.PatientId == "dgtdeytd53dhe" && !app.IsDeleted, app => app.Patient, app => app.AvailableSlot);
+            IEnumerable<Appointment> appointments = appointmentService.FindAll(app => app.PatientId == patientId, app => app.Patient, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor);
 
             return View(appointments);
         }
 
-        // GET: AppointmentController/Details/5
+        
         public ActionResult Details(int id)
         {
-            return View();
+            Appointment appointment = appointmentService.Find(app => app.Id == id, app => app.Patient, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor);
+
+            return View(appointment);
         }
 
-        // GET: AppointmentController/Create
-        public ActionResult Create()
+       
+        public ActionResult Create(int slotId = 7, string patientId = "dgtdeytd53dhe") // passed from heba's part
         {
-            return View();
+            AvailabilitySlots slot = slotService.Find(slot => slot.Id == slotId, slot => slot.Availability, slot => slot.Availability.Doctor);
+            SelectedSlotVM slotVM = new SelectedSlotVM() { PatientId = patientId , Slot = slot};
+
+            return View(slotVM);
         }
 
-        // POST: AppointmentController/Create
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+        public ActionResult Create(Appointment appointment)    
+        { 
+            if(ModelState.IsValid)
             {
+                // Mark the selected slot as booked
+                AvailabilitySlots reservedSlot = slotService.Find(slot => slot.Id == appointment.SlotId);
+                reservedSlot.IsBooked = true;
+                slotService.Update(reservedSlot);
+
+                if (appointment.paymentMethod == PaymentMethod.Visa)
+                    appointment.paymentStatus = PaymentStatus.Paid;
+
+                appointmentService.Add(appointment);
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            else
+                return View(appointment);
+            
         }
 
-        // GET: AppointmentController/Edit/5
+        
         public ActionResult Edit(int id)
         {
-            return View();
+            Appointment appointment = appointmentService.Find(app => app.Id == id, app => app.Patient, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor);
+
+            return View(appointment);
         }
 
-        // POST: AppointmentController/Edit/5
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Appointment appointment)
         {
-            try
+            if (ModelState.IsValid)
             {
+                if(appointment.paymentMethod == PaymentMethod.Visa)
+                {
+                    appointment.paymentStatus = PaymentStatus.Paid;
+                }
+
+                appointmentService.Update(appointment);
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
-                return View();
+                return View(appointment);
             }
         }
 
-        // GET: AppointmentController/Delete/5
+
         public ActionResult Delete(int id)
         {
-            return View();
+            Appointment appointToBeDeleted = appointmentService.Find(app => app.Id == id, app => app.Patient, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor);
+
+            return View(appointToBeDeleted);
         }
 
-        // POST: AppointmentController/Delete/5
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Appointment appointment)
         {
             try
             {
+                Appointment appoint = appointmentService.GetById(id);
+
+                // Mark the reserved slot as free
+                AvailabilitySlots slot = appoint.AvailableSlot;
+                slot.IsBooked = false;
+                slotService.Update(slot);
+
+                appointmentService.HardDelete(appoint);
+
                 return RedirectToAction(nameof(Index));
             }
             catch
