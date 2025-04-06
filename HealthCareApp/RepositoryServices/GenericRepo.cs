@@ -24,7 +24,7 @@ namespace HealthCareApp.RepositoryServices
         {
             return _context.Set<T>().Find(id);
         }
-        public T Find(Expression<Func<T, bool>> criteria, string[] includes = null)
+        public T Find(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();
 
@@ -34,6 +34,7 @@ namespace HealthCareApp.RepositoryServices
 
             return query.SingleOrDefault(criteria);
         }
+
 
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes)
         {
@@ -50,7 +51,21 @@ namespace HealthCareApp.RepositoryServices
             return query.Where(criteria).ToList();
         }
 
+        //////with select
+        public IEnumerable<TResult> FindAllWithSelect<TResult>(Expression<Func<T, bool>> criteria,Expression<Func<T,TResult>> selector, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
 
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return query.Where(criteria).Select(selector).ToList();
+        }
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int skip, int take)
         {
             return _context.Set<T>().Where(criteria).Skip(skip).Take(take).ToList();
@@ -109,5 +124,11 @@ namespace HealthCareApp.RepositoryServices
         {
             return _context.Set<T>().Count(criteria);
         }
+        public void SaveChanges()
+        {
+            _context.SaveChanges();
+        }
+
+
     }
 }

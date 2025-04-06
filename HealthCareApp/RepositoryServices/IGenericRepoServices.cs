@@ -6,8 +6,12 @@ namespace HealthCareApp.RepositoryServices
     {
         T GetById(int id);
         IEnumerable<T> GetAll();
-        T Find(Expression<Func<T, bool>> criteria, string[] includes = null);
+        T Find(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
+
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
+        //with select
+        IEnumerable<TResult> FindAllWithSelect<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes);
+
         IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int take, int skip);
         IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int? take, int? skip,
             Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
@@ -17,6 +21,8 @@ namespace HealthCareApp.RepositoryServices
         void Delete(T entity);
         int Count();
         int Count(Expression<Func<T, bool>> criteria);
+         void SaveChanges();
+
     }
     public static class OrderBy
     {

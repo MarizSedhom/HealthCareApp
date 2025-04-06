@@ -1,4 +1,4 @@
-﻿namespace HealthCareApp.ViewData.Doctor
+﻿namespace HealthCareApp.ViewModel.Doctor
 {
     public class Item<T>
     {
