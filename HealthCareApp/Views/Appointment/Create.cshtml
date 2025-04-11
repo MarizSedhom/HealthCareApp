@@ -22,7 +22,6 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <input type="hidden" value="@patientId" name="patientId" />
@@ -51,8 +50,6 @@
                 <input type="submit" value="Reserve" class="btn btn-info" class="me-5" />
                 <a asp-action="Index" class="btn btn-secondary">Back to List</a>
             </div><br />
-
-
         </form>
     </div>
 </div>

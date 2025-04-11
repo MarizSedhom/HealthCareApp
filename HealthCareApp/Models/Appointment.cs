@@ -36,6 +36,7 @@ namespace HealthCareApp.Models
 
 
         [EnumDataType(typeof(PaymentStatus))]
+        [Display(Name = "Payment Status")]
         public PaymentStatus paymentStatus { get; set; } = PaymentStatus.Pending;
 
         public decimal Amount { get; set; }

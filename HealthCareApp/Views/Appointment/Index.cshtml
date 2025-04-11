@@ -26,25 +26,32 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.OrderByDescending(app => app.AvailableSlot.Availability.Date))
         {
             <tr>
-                @if (DateOnly.FromDateTime(DateTime.Now) > item.AvailableSlot.Availability.Date || (DateOnly.FromDateTime(DateTime.Now) == item.AvailableSlot.Availability.Date && TimeOnly.FromDateTime(DateTime.Now) > item.AvailableSlot.EndTime))
-                {
-                    item.Status = Status.Completed;
-                    item.paymentStatus = PaymentStatus.Paid;
-                }
-
                 <td class="fw-bold">@Html.DisplayFor(modelItem => item.Status)</td>
-
                 <td>@Html.DisplayFor(modelItem => item.AvailableSlot.Availability.Date)</td>
-                <td>@Html.DisplayFor(modelItem => item.AvailableSlot.Availability.dayOfWeek)</td>
+
+                @if (item.AvailableSlot.Availability.Date == DateOnly.FromDateTime(DateTime.Now))
+                {
+                    <td> Today </td>
+                }
+                else if (item.AvailableSlot.Availability.Date == DateOnly.FromDateTime(DateTime.Now).AddDays(1))
+                {
+                    <td> Tomorrow </td>
+                }
+                else
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot.Availability.dayOfWeek)
+                    </td>
+                }
                 <td>@Html.DisplayFor(modelItem => item.AvailableSlot.StartTime)</td>
 
                 <td>@($"{item.AvailableSlot.Availability.Doctor.FirstName} {item.AvailableSlot.Availability.Doctor.LastName}")</td>
                 <td>@item.PatientName</td>
 
-                @if(item.Status == Status.Completed)
+                @if (item.Status == Status.Completed)
                 {
                     <td>
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Display</a> |

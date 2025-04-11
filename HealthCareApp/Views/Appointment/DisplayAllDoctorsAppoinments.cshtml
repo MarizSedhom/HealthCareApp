@@ -1,0 +1,78 @@
+﻿@model IEnumerable<HealthCareApp.Models.Appointment>
+
+@{
+    ViewData["Title"] = "DisplayAllDoctorsAppoinments";
+}
+
+<h2 class="text-center text-primary btn btn-">All Doctors Appoinments</h2>
+
+<p>
+    <a asp-action="Create btn btn-info">Reserve New Appointment</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PatientName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PatientPhone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Patient)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSlot)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.paymentStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.paymentMethod)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientPhone)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Patient.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.paymentStatus)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.paymentMethod)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>
