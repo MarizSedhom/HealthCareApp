@@ -1,102 +1,59 @@
-﻿@model IEnumerable<HealthCareApp.Models.Specialization>
+﻿@model IEnumerable<Specialization>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Details</h1>
-<input type="text" name="name" id="searchInp" />
-<input type="button" value="Search" class="btn btn-primary" id="searchBtn" onclick="SearchForSpec()" />
-
+<h1>Specializations</h1>
+<hr class="w-75" />
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
 </p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="DetailsByID" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
+<hr class="w-75" />
+<input type="text" name="name" id="searchInp" placeholder="DetailsByName" class="w-50 p-1" />
+<input type="button" value="Search" class="btn btn-primary ms-3 mb-1" onclick="fun()" />
 <div id="searchResults"></div>
+
+<div id="initialContent">@Html.Partial("_DetailsByName", Model)</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-            function SearchForSpec() {
-        var specName = $('#searchInp').val().trim();
-        var specDisplay = $('#searchResults');
+    var currentSearchTerm = "";
 
-        specDisplay.html("");
-        // if you want to write the up 4 lines js instead of jquery no prob (and the down also)
+    function fun() {
+        currentSearchTerm = $('#searchInp').val().trim();
 
-        if (specName === "") {
+        if (currentSearchTerm === "") {
             alert("Please enter a specialization name.");
+            return;
+        }
+
+        loadSearchPage(1);
+    }
+
+    function loadSearchPage(page) {
+        if (currentSearchTerm === "") { // no search just index view
+            window.location.href = '/Specialization/Index?page=' + page + '&pageSize=5';
             return;
         }
 
         $.ajax({
             url: '/Specialization/DetailsByName',
             type: 'GET',
-            data: { name: specName },
-            success: function (result) {
-                specDisplay.html(result); 
-                $('#searchInp').val("");
+            data: {
+                name: currentSearchTerm,
+                page: page,
+                pageSize: 5
             },
-            error: function (xhr, status, error) {
+            success: function (result) {
+                $('#initialContent').hide();
+                $('#searchResults').html(result);
+            },
+            error: function (xhr) {
                 alert('An error occurred: ' + xhr.responseText);
             }
         });
     }
-
-
-
-    //     $.ajax({
-    //         url: '/Specialization/DetailsByName',
-    //         type: 'GET',
-    //         success: function (result) {
-
-    //             if (result && result.length > 0) {
-    //                 var html = "<ul>";
-    //                 $.each(result, function (index, item) {
-
-    //                     if (item && item.name) {
-    //                         html += "<li>" + item.name + "</li>";
-    //                     } else {
-    //                         console.error("Item does not have 'Name' property:", item);
-    //                     }
-    //                 });
-    //                 html += "</ul>";
-    //                 specDisplay.innerHTML = html;
-    //             } else {
-    //                 specDisplay.innerHTML = "<p>No specializations found.</p>";
-    //             }
-
-    //             document.getElementById("searchInp").value = "";
-    //         },
-    //         error: function (xhr, status, error) {
-    //             alert('An error occurred: ' + xhr.responseText);
-    //         }
-    //     });
-    // }
-
 </script>
+
+

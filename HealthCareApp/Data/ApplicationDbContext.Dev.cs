@@ -1,5 +1,4 @@
-﻿using HealthCareApp.RepositoryServices;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace HealthCareApp.Data
@@ -24,7 +23,7 @@ namespace HealthCareApp.Data
             }
         }
 
-        private static LambdaExpression BuildSoftDeleteFilter(Type entityType)
+        private static LambdaExpression BuildSoftDeleteFilter(System.Type entityType)
         {
             var parameter = Expression.Parameter(entityType, "e");
             var property = Expression.Property(parameter, "IsDeleted");

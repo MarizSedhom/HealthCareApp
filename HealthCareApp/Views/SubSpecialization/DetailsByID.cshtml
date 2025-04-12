@@ -1,4 +1,4 @@
-﻿@model SubSpecializationVM
+﻿@model SubSpecialization
 
 @{
     ViewData["Title"] = "DetailsByID";
@@ -7,24 +7,24 @@
 <h1>DetailsByID</h1>
 
 <div>
-    <h4>Specialization</h4>
+    <h4>SubSpecialization</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SpecializationName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SpecializationName)
-        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Name)
-        </dd> 
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Specialization.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Specialization.Name)
+        </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    @Html.ActionLink("Edit", "Edit", new { Model.Id }) |
     <a asp-action="Index">Back to List</a>
 </div>

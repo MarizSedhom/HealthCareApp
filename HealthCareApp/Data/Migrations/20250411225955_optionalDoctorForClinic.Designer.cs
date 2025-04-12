@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCareApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250401232051_removedAppointmentIdFromAvailabilitySlot")]
-    partial class removedAppointmentIdFromAvailabilitySlot
+    [Migration("20250411225955_optionalDoctorForClinic")]
+    partial class optionalDoctorForClinic
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -167,7 +167,8 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("PaymentId1");
 
-                    b.HasIndex("SlotId");
+                    b.HasIndex("SlotId")
+                        .IsUnique();
 
                     b.ToTable("Appointments");
                 });
@@ -225,6 +226,9 @@ namespace HealthCareApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
                     b.Property<int>("AvailabilityId")
                         .HasColumnType("int");
 
@@ -257,22 +261,25 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<string>("ClinicAddress")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ClinicCity")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ClinicPhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("ClinicRegion")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("DoctorId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
@@ -280,7 +287,8 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -442,7 +450,8 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -462,7 +471,8 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("SpecializationId")
                         .HasColumnType("int");
@@ -686,9 +696,9 @@ namespace HealthCareApp.Data.Migrations
                         .HasForeignKey("PaymentId1");
 
                     b.HasOne("HealthCareApp.Models.AvailabilitySlots", "AvailableSlot")
-                        .WithMany()
-                        .HasForeignKey("SlotId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne("Appointment")
+                        .HasForeignKey("HealthCareApp.Models.Appointment", "SlotId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AvailableSlot");
@@ -733,8 +743,7 @@ namespace HealthCareApp.Data.Migrations
                     b.HasOne("HealthCareApp.Models.Doctor", "Doctor")
                         .WithMany("Clinics")
                         .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Doctor");
                 });
@@ -872,6 +881,11 @@ namespace HealthCareApp.Data.Migrations
             modelBuilder.Entity("HealthCareApp.Models.Availability", b =>
                 {
                     b.Navigation("AvailableSlots");
+                });
+
+            modelBuilder.Entity("HealthCareApp.Models.AvailabilitySlots", b =>
+                {
+                    b.Navigation("Appointment");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Clinic", b =>

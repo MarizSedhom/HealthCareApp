@@ -1,5 +1,4 @@
-﻿using HealthCareApp.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthCareApp.Data
@@ -23,7 +22,6 @@ namespace HealthCareApp.Data
         public virtual DbSet<MedicalRecord> MedicalRecords { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<Appointment> Appointments { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -41,11 +39,6 @@ namespace HealthCareApp.Data
                 .WithMany(s => s.Doctors)
                 .HasForeignKey(d => d.SpecializationId)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            // Configure Doctor - SubSpecialization many-to-many relationship
-            modelBuilder.Entity<Doctor>()
-                .HasMany(d => d.SubSpecializations)
-                .WithMany(s => s.Doctors);
 
             // Configure Review relationships
             modelBuilder.Entity<Review>()

@@ -3,20 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareApp.Controllers
 {
-    public class SpecializationController : Controller
+    public class ClinicController : Controller
     {
-        private readonly IGenericRepoServices<Specialization> SpecializationRepo;
+        private readonly IGenericRepoServices<Clinic> ClinicRepo;
 
-        public SpecializationController(IGenericRepoServices<Specialization> SpecializationRepo)
+        public ClinicController(IGenericRepoServices<Clinic> ClinicRepo)
         {
-            this.SpecializationRepo = SpecializationRepo;
+            this.ClinicRepo = ClinicRepo;
         }
 
         public IActionResult Index(int page = 1, int pageSize = 5)
         {
             int skip = (page - 1) * pageSize;
-            var result = SpecializationRepo.FindAll(s => true, skip, pageSize);
-            var totalCount = SpecializationRepo.Count();
+            var result = ClinicRepo.FindAll(s => true, skip, pageSize);
+            var totalCount = ClinicRepo.Count();
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
@@ -26,27 +26,27 @@ namespace HealthCareApp.Controllers
 
         public IActionResult DetailsByID(int id)
         {
-            return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
+            return View(ClinicRepo.Find(cl => cl.Id == id));
         }
 
         public IActionResult DetailsByName(string name, int page = 1, int pageSize = 5)
         {
             int skip = (page - 1) * pageSize;
 
-            var specializations = SpecializationRepo.FindAll(
+            var subSpecializations = ClinicRepo.FindAll(
                 spec => spec.Name.ToLower().Contains(name.ToLower()),
-                skip, pageSize, null, s => s.Name, OrderBy.Ascending);
+                skip, pageSize, null, s => s.Name, OrderBy.Ascending
+            );
 
-            var totalCount = SpecializationRepo.Count(
+            var totalCount = ClinicRepo.Count(
                 spec => spec.Name.ToLower().Contains(name.ToLower())
             );
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
-            return PartialView("_DetailsByName", specializations);
+            return PartialView("_DetailsByName", subSpecializations);
         }
-
 
         [HttpGet]
         public IActionResult Create()
@@ -55,49 +55,53 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Specialization specialization)
+        public IActionResult Create(Clinic clinic)
         {
             if (ModelState.IsValid)
             {
-                SpecializationRepo.Add(specialization);
-                SpecializationRepo.Save();
+                ClinicRepo.Add(clinic);
+                ClinicRepo.Save();
                 return RedirectToAction(nameof(Index));
             }
             else
-                return View(specialization);
+            {
+                return View(clinic);
+            }
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
+            return View(ClinicRepo.Find(cl => cl.Id == id));
         }
 
         [HttpPost]
-        public IActionResult Edit(Specialization specialization)
+        public IActionResult Edit(Clinic clinic)
         {
             if (ModelState.IsValid)
             {
-                SpecializationRepo.Update(specialization);
-                SpecializationRepo.Save();
+                ClinicRepo.Update(clinic);
+                ClinicRepo.Save();
                 return RedirectToAction(nameof(Index));
             }
             else
-                return View(specialization);
+            {
+                return View(clinic);
+            }
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
+            return View(ClinicRepo.Find(cl => cl.Id == id));
         }
 
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            var deletedSpec = SpecializationRepo.GetByIdNoTracking(s => s.Id == id);
-            SpecializationRepo.Delete(deletedSpec);
-            SpecializationRepo.Save();
+            var deletedClin = ClinicRepo.GetByIdNoTracking(cl => cl.Id == id);
+            ClinicRepo.Delete(deletedClin);
+            ClinicRepo.Save();
             return RedirectToAction(nameof(Index));
         }
     }

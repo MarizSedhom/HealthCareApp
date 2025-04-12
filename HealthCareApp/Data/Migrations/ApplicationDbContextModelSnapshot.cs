@@ -139,28 +139,20 @@ namespace HealthCareApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("PatientId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("PatientName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PaymentId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("PatientPhone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("PaymentId1")
+                        .HasColumnType("int");
 
                     b.Property<int>("SlotId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("paymentMethod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("paymentStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("status")
@@ -169,6 +161,8 @@ namespace HealthCareApp.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PatientId");
+
+                    b.HasIndex("PaymentId1");
 
                     b.HasIndex("SlotId")
                         .IsUnique();
@@ -229,6 +223,9 @@ namespace HealthCareApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
                     b.Property<int>("AvailabilityId")
                         .HasColumnType("int");
 
@@ -261,22 +258,25 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<string>("ClinicAddress")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ClinicCity")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ClinicPhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("ClinicRegion")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("DoctorId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
@@ -284,7 +284,8 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -361,6 +362,37 @@ namespace HealthCareApp.Data.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("HealthCareApp.Models.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("paymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<int>("paymentStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("HealthCareApp.Models.Review", b =>
                 {
                     b.Property<int>("Id")
@@ -415,7 +447,8 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -435,7 +468,8 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("SpecializationId")
                         .HasColumnType("int");
@@ -654,15 +688,21 @@ namespace HealthCareApp.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("HealthCareApp.Models.Payment", "Payment")
+                        .WithMany()
+                        .HasForeignKey("PaymentId1");
+
                     b.HasOne("HealthCareApp.Models.AvailabilitySlots", "AvailableSlot")
                         .WithOne("Appointment")
                         .HasForeignKey("HealthCareApp.Models.Appointment", "SlotId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AvailableSlot");
 
                     b.Navigation("Patient");
+
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Availability", b =>
@@ -700,8 +740,7 @@ namespace HealthCareApp.Data.Migrations
                     b.HasOne("HealthCareApp.Models.Doctor", "Doctor")
                         .WithMany("Clinics")
                         .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Doctor");
                 });
@@ -726,6 +765,17 @@ namespace HealthCareApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HealthCareApp.Models.Payment", b =>
+                {
+                    b.HasOne("HealthCareApp.Models.Appointment", "Appointment")
+                        .WithOne()
+                        .HasForeignKey("HealthCareApp.Models.Payment", "AppointmentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Review", b =>

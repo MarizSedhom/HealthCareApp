@@ -2,22 +2,32 @@
 
 namespace HealthCareApp.RepositoryServices
 {
-    public interface IGenericRepoServices<T> where T : class
+    public interface IGenericRepoServices<A> where A : class
     {
-        T GetById(int id);
-        IEnumerable<T> GetAll();
-        T Find(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
-        public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
-        IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int take, int skip);
-        IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int? take, int? skip,
-            Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
+        IEnumerable<A> GetAll();
+        IEnumerable<A> GetAllNoTracking();
+        A GetById(int id);
+        A GetByIdNoTracking(Func<A, bool> predicate);
+        A Find(Expression<Func<A, bool>> criteria, string[] includes = null);
+        //IEnumerable<A> FindAll(Expression<Func<A, bool>> criteria, string[] includes = null);
+        //IEnumerable<A> FindAll(Expression<Func<A, bool>> criteria, int skip, int take, string[] includes = null);
+        //IEnumerable<A> FindAll(Expression<Func<A, bool>> criteria, int? take, int? skip,
+        //Expression<Func<A, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
+        public IEnumerable<A> FindAll(
+        Expression<Func<A, bool>> criteria,
+        int? skip = null,
+        int? take = null,
+        string[] includes = null,
+        Expression<Func<A, object>> orderBy = null,
+        string orderByDirection = OrderBy.Ascending);
 
-        T Add(T entity);
-        T Update(T entity);
-        void SoftDelete(T entity);
-        void HardDelete(T entity);
+        A Add(A entity);
+        A Update(A entity);
+        void Delete(A entity);
+        void DeleteWithComposite(A entity, params object[] keyValues);
         int Count();
-        int Count(Expression<Func<T, bool>> criteria);
+        int Count(Expression<Func<A, bool>> criteria);
+        void Save();
     }
     public static class OrderBy
     {

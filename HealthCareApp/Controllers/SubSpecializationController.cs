@@ -1,92 +1,121 @@
-﻿using HealthCareApp.Models;
-using HealthCareApp.RepositoryServices;
-using HealthCareApp.Service_Layer;
+﻿using HealthCareApp.RepositoryServices;
 using Microsoft.AspNetCore.Mvc;
-
 namespace HealthCareApp.Controllers
 {
     public class SubSpecializationController : Controller
     {
-        private readonly IGenericService<SubSpecialization,SubSpecializationVM> genericService;
-        private readonly IGenericRepoServices<Specialization> genericRepoServices;
-
-        public SubSpecializationController(IGenericService<SubSpecialization, SubSpecializationVM> genericService, IGenericRepoServices<Specialization> genericRepoServices)
+        private readonly IGenericRepoServices<Specialization> SpecializationRepo;
+        private readonly IGenericRepoServices<SubSpecialization> SubSpecializationRepo;
+        public SubSpecializationController(IGenericRepoServices<Specialization> SpecializationRepo, IGenericRepoServices<SubSpecialization> SubSpecializationRepo, IGenericRepoServices<SubSpecialization> SupSpecializationRepo)
         {
-            this.genericService = genericService;
-            this.genericRepoServices = genericRepoServices;
+            this.SpecializationRepo = SpecializationRepo;
+            this.SubSpecializationRepo = SubSpecializationRepo;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1, int pageSize = 5)
         {
-            return View(genericService.GetAll());
+            int skip = (page - 1) * pageSize;
+            var result = SubSpecializationRepo.FindAll(s => true, skip, pageSize, ["Specialization"]);
+            var totalCount = SubSpecializationRepo.Count();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            return View(result);
         }
 
         public IActionResult DetailsByID(int id)
         {
-            return View(genericService.Find(sspec => sspec.Id == id, ["Specialization"]));
+            var result = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
+            return View(result);
         }
 
-        public IActionResult DetailsByName(string name)
+        public IActionResult DetailsByName(string name, int page = 1, int pageSize = 5)
         {
-            var subSpecializations = genericService.FindAll(sspec => sspec.Name.ToLower().Contains(name.ToLower()));
-            return Json(subSpecializations);
+            int skip = (page - 1) * pageSize;
+
+            var subSpecializations = SubSpecializationRepo.FindAll(
+                spec => spec.Name.ToLower().Contains(name.ToLower()),
+                skip, pageSize, ["Specialization"], s => s.Name, OrderBy.Ascending
+            );
+
+            var totalCount = SubSpecializationRepo.Count(
+                spec => spec.Name.ToLower().Contains(name.ToLower())
+            );
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            return PartialView("_DetailsByName", subSpecializations);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            SubSpecializationVM vm = new SubSpecializationVM();
-            vm.Specializations = genericRepoServices.GetAll();
-            return View(vm);
+            SubSpecialization subSpecialization = new SubSpecialization();
+            ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
+            return View(subSpecialization);
         }
 
         [HttpPost]
-        public IActionResult Create(SubSpecializationVM subSpecializationVM)
+        public IActionResult Create(SubSpecialization subSpecialization)
         {
             if (ModelState.IsValid)
             {
-                genericService.Add(subSpecializationVM);
-                genericService.Save();
+                SubSpecializationRepo.Add(subSpecialization);
+                SubSpecializationRepo.Save();
                 return RedirectToAction(nameof(Index));
             }
             else
             {
-                subSpecializationVM.Specializations = genericRepoServices.GetAll();
-                return View(subSpecializationVM);
+                ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
+                return View(subSpecialization);
             }
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            return View(genericService.GetById(id));
+            var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
+            ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
+            return View(editedObj);
         }
 
         [HttpPost]
-        public IActionResult Edit(SubSpecializationVM subSpecializationVM)
+        public IActionResult Edit(SubSpecialization subSpecialization)
         {
+            var existingSubSpecialization = SubSpecializationRepo.Find(
+                sspec => sspec.Id == subSpecialization.Id, ["Specialization"]);
+
+            existingSubSpecialization.Name = subSpecialization.Name;
+            existingSubSpecialization.SpecializationId = subSpecialization.SpecializationId;
+
             if (ModelState.IsValid)
             {
-                genericService.Update(subSpecializationVM);
-                genericService.Save();
+                SubSpecializationRepo.Update(existingSubSpecialization);
+                SubSpecializationRepo.Save();
                 return RedirectToAction(nameof(Index));
             }
             else
-                return View(subSpecializationVM);
+            {
+                ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
+                return View(subSpecialization);
+            }
         }
 
-        [HttpGet]
+            [HttpGet]
         public IActionResult Delete(int id)
         {
-            return View(genericService.GetById(id));
+            var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
+            return View(editedObj);
         }
 
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            var deletedSpec = genericService.GetById(id);
-            genericService.Delete(deletedSpec);
-            genericService.Save();
+            var deletedSSpec = SubSpecializationRepo.GetById(id);
+            SubSpecializationRepo.Delete(deletedSSpec);
+            SubSpecializationRepo.Save();
             return RedirectToAction(nameof(Index));
         }
     }

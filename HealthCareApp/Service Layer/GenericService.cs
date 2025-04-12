@@ -1,91 +1,114 @@
-﻿using System.Linq.Expressions;
-using HealthCareApp.RepositoryServices;
-using Mapster;
+﻿//using System.Linq.Expressions;
+//using HealthCareApp.RepositoryServices;
+//using Mapster;
 
-namespace HealthCareApp.Service_Layer
-{
-    public class GenericService<A, V> : IGenericService<A, V>
-    where A : class
-    where V : class
-    {
-        protected readonly IGenericRepoServices<A> genericRepoServices;
 
-        public GenericService(IGenericRepoServices<A> genericRepoServices)
-        {
-            this.genericRepoServices = genericRepoServices;
-        }
+//namespace HealthCareApp.Service_Layer
+//{
+//    public class GenericService<A, V> : IGenericService<A, V>
+//    where A : class
+//    where V : class
+//    {
+//        protected readonly IGenericRepoServices<A> genericRepoServices;
 
-        public int Count()
-        {
-            return genericRepoServices.Count();
-        }
+//        public GenericService(IGenericRepoServices<A> genericRepoServices)
+//        {
+//            this.genericRepoServices = genericRepoServices;
+//        }
 
-        public int Count(Expression<Func<V, bool>> criteria)
-        {
-            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
-            return genericRepoServices.Count(entityCriteria);
-        }
+//        public int Count()
+//        {
+//            return genericRepoServices.Count();
+//        }
 
-        public void Delete(V entity)
-        {
-            var entityToDelete = entity.Adapt<A>();
-            genericRepoServices.Delete(entityToDelete);
-        }
+//        public int Count(Expression<Func<V, bool>> criteria)
+//        {
+//            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
+//            return genericRepoServices.Count(entityCriteria);
+//        }
 
-        public V Find(Expression<Func<V, bool>> criteria, string[] includes = null)
-        {
-            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
-            var result = genericRepoServices.Find(entityCriteria, includes);
-            return result?.Adapt<V>();
-        }
+//        public void Delete(V entity)
+//        {
+//            var entityToDelete = entity.Adapt<A>();
+//            genericRepoServices.Delete(entityToDelete);
+//        }
+        
+//        public void DeleteWithComposite(V entity, params object[] keyValues)
+//        {
+//            var entityToDelete = entity.Adapt<A>();
+//            genericRepoServices.DeleteWithComposite(entityToDelete, keyValues);
+//        }
 
-        public IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, string[] includes = null)
-        {
-            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
-            return genericRepoServices.FindAll(entityCriteria, includes).Adapt<IEnumerable<V>>();
-        }
+//        public V Find(Expression<Func<V, bool>> criteria, string[] includes = null)
+//        {
+//            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
+//            var result = genericRepoServices.Find(entityCriteria, includes);
+//            return result?.Adapt<V>();
+//        }
 
-        public IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, int take, int skip)
-        {
-            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
-            return genericRepoServices.FindAll(entityCriteria, take, skip).Adapt<IEnumerable<V>>();
-        }
+//        public IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, string[] includes = null)
+//        {
+//            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
+//            return genericRepoServices.FindAll(entityCriteria, includes).ToList().Adapt<IEnumerable<V>>();
+//        }
 
-        public IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, int? take, int? skip, Expression<Func<V, object>> orderBy = null, string orderByDirection = "ASC")
-        {
-            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
-            var entityOrderBy = orderBy?.Adapt<Expression<Func<A, object>>>();
-            return genericRepoServices.FindAll(entityCriteria, take, skip, entityOrderBy, orderByDirection).Adapt<IEnumerable<V>>();
-        }
+//        public IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, int take, int skip)
+//        {
+//            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
+//            return genericRepoServices.FindAll(entityCriteria, take, skip).Adapt<IEnumerable<V>>();
+//        }
 
-        public IEnumerable<V> GetAll()
-        {
-            return genericRepoServices.GetAll().Adapt<IEnumerable<V>>();
-        }
+//        public IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, int? take, int? skip, Expression<Func<V, object>> orderBy = null, string orderByDirection = "ASC")
+//        {
+//            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
+//            var entityOrderBy = orderBy?.Adapt<Expression<Func<A, object>>>();
+//            return genericRepoServices.FindAll(entityCriteria, take, skip, entityOrderBy, orderByDirection).Adapt<IEnumerable<V>>();
+//        }
 
-        public V GetById(int id)
-        {
-            return genericRepoServices.GetById(id).Adapt<V>();
-        }
+//        public IEnumerable<V> GetAll()
+//        {
+//            return genericRepoServices.GetAll().Adapt<IEnumerable<V>>();
+//        }
 
-        public void Save()
-        {
-            genericRepoServices.Save();
-        }
+//        public IEnumerable<V> GetAllWithNoTracking()
+//        {
+//            return genericRepoServices.GetAllNoTracking().Adapt<IEnumerable<V>>();
+//        }
 
-        public A Update(V entity)
-        {
-            var entityToUpdate = entity.Adapt<A>();
-            var updatedEntity = genericRepoServices.Update(entityToUpdate);
-            return updatedEntity;
-        }
+//        public V GetById(int id)
+//        {
+//            return genericRepoServices.GetById(id).Adapt<V>();
+//        }
 
-        public A Add(V entity)
-        {
-            var entityToAdd = entity.Adapt<A>();
-            var addedEntity = genericRepoServices.Add(entityToAdd);
-            return addedEntity;
-        }
-    }
-}
+//        public V GetByIdNoTracking(Expression<Func<V, bool>> criteria)
+//        {
+//            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
+//            return genericRepoServices.Find(entityCriteria).Adapt<V>();
+//        }
+
+//        public void Save()
+//        {
+//            genericRepoServices.Save();
+//        }
+
+//        public void Clear()
+//        {
+//            genericRepoServices.Clear();
+//        }
+
+//        public A Update(V entity)
+//        {
+//            var entityToUpdate = entity.Adapt<A>();
+//            var updatedEntity = genericRepoServices.Update(entityToUpdate);
+//            return updatedEntity;
+//        }
+
+//        public A Add(V entity)
+//        {
+//            var entityToAdd = entity.Adapt<A>();
+//            var addedEntity = genericRepoServices.Add(entityToAdd);
+//            return addedEntity;
+//        }
+//    }
+//}
 

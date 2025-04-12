@@ -1,17 +1,18 @@
-﻿@model IEnumerable<SubSpecialization>
+﻿@model IEnumerable<HealthCareApp.Models.Clinic>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>SubSpecializations</h1>
+<h1>Clinic</h1>
 <hr class="w-75" />
 <p>
     <a asp-action="Create" class="btn btn-success">Create New</a>
 </p>
 <hr class="w-75" />
-<input type="text" name="name" id="searchInp" placeholder="DetailsByName" class="w-50 p-1" />
+<input type="text" name="name" id="searchInp" placeholder="DetailsByName" class="w-50 p-1 " />
 <input type="button" value="Search" class="btn btn-primary ms-3 mb-1" id="searchBtn" onclick="fun()" />
+
 <div id="searchResults"></div>
 
 <div id="initialContent">@Html.Partial("_DetailsByName", Model)</div>
@@ -24,7 +25,7 @@
         currentSearchTerm = $('#searchInp').val().trim();
 
         if (currentSearchTerm === "") {
-            alert("Please enter a subSpecialization name.");
+            alert("Please enter a Clinic name.");
             return;
         }
 
@@ -33,12 +34,12 @@
 
     function loadSearchPage(page) {
         if (currentSearchTerm === "") {
-            window.location.href = '/SubSpecialization/Index?page=' + page + '&pageSize=5';
+            window.location.href = '/Clinic/Index?page=' + page + '&pageSize=5';
             return;
         }
 
         $.ajax({
-            url: '/SubSpecialization/DetailsByName',
+            url: '/Clinic/DetailsByName',
             type: 'GET',
             data: {
                 name: currentSearchTerm,
@@ -55,3 +56,4 @@
         });
     }
 </script>
+

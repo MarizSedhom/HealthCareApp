@@ -1,3 +1,3 @@
-﻿global using HealthCareApp.Filters;
-global using HealthCareApp.ViewModels;
+﻿global using HealthCareApp.Custom_Validation;
+global using HealthCareApp.Models;
 

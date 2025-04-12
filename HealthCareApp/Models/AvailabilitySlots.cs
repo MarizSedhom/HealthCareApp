@@ -9,8 +9,8 @@ namespace HealthCareApp.Models
         public TimeOnly EndTime { get; set; }
         public bool IsBooked { get; set; }=false;
 
-        //[ForeignKey("Appointment")]
-        //public int AppointmentId { get; set; }
+        [ForeignKey("Appointment")]
+        public int AppointmentId { get; set; }
         public virtual Appointment? Appointment { get; set; }
 
         [ForeignKey("Availability")]
