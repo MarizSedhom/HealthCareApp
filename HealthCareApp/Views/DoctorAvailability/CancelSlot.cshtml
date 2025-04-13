@@ -1,0 +1,65 @@
+﻿@model HealthCareApp.ViewModel.Doctor.ViewSlotVM
+
+@{
+    ViewData["Title"] = "CancelSlot";
+}
+
+<h1>Cancel Slot</h1>
+
+
+
+
+<div class="card">
+    <h5 class="card-header bg-primary text-white">Slot Information</h5>
+    <div class="card-body">
+        <p class="card-text">
+            <div>
+                <dl class="row">
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.TimeRange)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.TimeRange)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Status)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Status)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.PatientName)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.PatientName)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.PatientNumber)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.PatientNumber)
+                    </dd>
+                </dl>
+
+
+            </div>
+        </p>
+    </div>
+</div>
+
+@if (Model.IsBooked)
+{
+    <h3>This slot has an existing appointment. You can either cancel the appointment or reschedule it. Please choose an appropriate action</h3>
+    <a asp-action="CancelSlotPost" asp-route-slotId="@Model.SlotId" class="btn btn-danger">Cancel Slot</a>
+    <a asp-action="RescheduleAppointment" asp-route-slotId="@Model.SlotId"  class="btn btn-danger"> Reschedul Appointment</a>
+}
+else
+{
+    <h3>You are about to remove this slot. Are you sure you wish to cancel it?</h3>
+    <a asp-action="CancelSlotPost" asp-route-slotId="@Model.SlotId" class="btn btn-danger">Cancel Slot</a>
+
+}
+<div>
+    <a asp-action="ViewSlots" asp-route-availabilityId="@Model.AvailabilityId">Back to List</a>
+
+</div>

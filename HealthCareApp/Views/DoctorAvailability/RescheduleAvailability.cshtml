@@ -1,0 +1,43 @@
+﻿
+@{
+    ViewData["Title"] = "RescheduleAppointmentsForDay";
+    GetAvailabilityForDrVM drAvailability = (GetAvailabilityForDrVM)ViewBag.AvailabilityInfo;
+}
+@model Item<DateOnly,string>
+
+
+@if (drAvailability.AppointmentCnt > 0)
+{
+    <h1>There are @(drAvailability.AppointmentCnt) Appointment</h1>
+
+}
+<h1>Are you sure you want to reschedule this day</h1>
+
+@Html.Partial("_AvailabilityInfoPartial", drAvailability)
+
+<div class="d-flex justify-content-center align-items-center mt-5" style="height:20vh;">
+    <form asp-action="RescheduleAvailability" class="p-4 border rounded shadow bg-white" style="min-width: 900px;">
+        <h3 class="text-center mb-3 text-primary">Reschedule Day</h3>
+
+        <div class="mb-3">
+            <label asp-for="Id" class="form-label">Select New Day</label>
+            <select asp-for="Id" asp-items='new SelectList(ViewBag.ScheduleDays, "Id", "Name")' class="form-select">
+                <option value="">-- Select Day --</option>
+            </select>
+            <span asp-validation-for="Id" class="text-danger"></span>
+        </div>
+        <input hidden name="previousAvailabilityId" value="@ViewBag.availabilityId" />
+        <div class="d-grid">
+            <input type="submit" class="btn btn-success" value="Reschedule" />
+        </div>
+    </form>
+</div>
+
+<a asp-action="GetAvailabilitiesForDr" asp-route-id="@(drAvailability.DoctorId)">Back to List</a>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
