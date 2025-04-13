@@ -22,7 +22,6 @@ namespace HealthCareApp.Models
         public int SpecializationId { get; set; }
         public virtual Specialization? Specialization { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
 
     }
     public enum VerificationStatus
