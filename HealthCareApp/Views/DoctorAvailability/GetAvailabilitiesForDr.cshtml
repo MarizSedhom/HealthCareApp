@@ -1,0 +1,82 @@
+﻿@model IEnumerable<HealthCareApp.ViewModel.Doctor.GetAvailabilityForDrVM>
+
+@{
+    ViewData["Title"] = "GetAvailabilitiesForDr";
+}
+
+<h1>Doctor Availabilities</h1>
+
+<p>
+    <a asp-action="AddAvailability" asp-route-id="@ViewBag.DoctorId">Add New Availabilities</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.dayOfWeek)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TimeRange)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Duration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.type)
+            </th>
+
+
+            <th>
+                @Html.DisplayNameFor(model => model.ClinicName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSlotsCnt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AppointmentCnt)
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.dayOfWeek)
+            </td>
+
+            <td>
+                    @Html.DisplayFor(modelItem => item.TimeRange)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClinicName)
+            </td>
+            <th>
+                @Html.DisplayFor(model => item.AvailableSlotsCnt)
+            </th>
+             <th>
+                    @Html.DisplayFor(model => item.AppointmentCnt)
+            </th>
+            <td>
+                    @Html.ActionLink("View Slots", "ViewSlots", new { drId = @ViewBag.DoctorId, availabilityId = item.Id }) |
+                    @Html.ActionLink("Reschedule Day", "RescheduleAvailability", new { availabilityId = item.Id })|
+                    @Html.ActionLink("Cancel Day", "DeleteAvailability", new { availabilityId = item.Id })
+
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

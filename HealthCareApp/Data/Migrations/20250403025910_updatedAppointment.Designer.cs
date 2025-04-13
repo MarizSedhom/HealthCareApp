@@ -4,6 +4,7 @@ using HealthCareApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCareApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250403025910_updatedAppointment")]
+    partial class updatedAppointment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("SubSpecializationsId");
 
-                    b.ToTable("DoctorSubSpecialization", (string)null);
+                    b.ToTable("DoctorSubSpecialization");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.ApplicationUser", b =>
@@ -173,7 +176,7 @@ namespace HealthCareApp.Data.Migrations
                     b.HasIndex("SlotId")
                         .IsUnique();
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Availability", b =>
@@ -218,7 +221,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Availability", (string)null);
+                    b.ToTable("Availability");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.AvailabilitySlots", b =>
@@ -248,7 +251,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("AvailabilityId");
 
-                    b.ToTable("AvailabilitySlots", (string)null);
+                    b.ToTable("AvailabilitySlots");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Clinic", b =>
@@ -290,7 +293,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Clinics", (string)null);
+                    b.ToTable("Clinics");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.MedicalRecord", b =>
@@ -323,7 +326,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("MedicalRecords", (string)null);
+                    b.ToTable("MedicalRecords");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Notification", b =>
@@ -358,7 +361,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Review", b =>
@@ -399,7 +402,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Specialization", b =>
@@ -419,7 +422,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specializations", (string)null);
+                    b.ToTable("Specializations");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.SubSpecialization", b =>
@@ -444,7 +447,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("SpecializationId");
 
-                    b.ToTable("SubSpecializations", (string)null);
+                    b.ToTable("SubSpecializations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
