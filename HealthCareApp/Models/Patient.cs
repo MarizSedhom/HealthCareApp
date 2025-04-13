@@ -9,6 +9,5 @@
         public virtual ICollection<Review>? Reviews { get; set; } = new List<Review>();
         public virtual ICollection<MedicalRecord>? MedicalRecords { get; set; } = new List<MedicalRecord>();
 
-        public bool IsDeleted { get; set; } = false;
     }
 }

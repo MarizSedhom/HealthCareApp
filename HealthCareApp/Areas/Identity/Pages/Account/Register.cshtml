@@ -1,0 +1,172 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Create a new account.</h2>
+            <hr />
+            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email">Email</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password">Password</label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <!--------------------------------------------------------------------->
+            <div class="form-group mb-3">
+                <label asp-for="Input.FirstName"></label>
+                <input asp-for="Input.FirstName" class="form-control" />
+                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Input.LastName"></label>
+                <input asp-for="Input.LastName" class="form-control" />
+                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Input.DateOfBirth"></label>
+                <input asp-for="Input.DateOfBirth" class="form-control" />
+                <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Input.Gender"></label>
+                <select asp-for="Input.Gender" class="form-control">
+                    <option value="0">Male</option>
+                    <option value="1">Female</option>
+                </select>
+                <span asp-validation-for="Input.Gender" class="text-danger"></span>
+            </div>
+
+            <!-- User Type Selection -->
+            <div class="form-group mb-3">
+                <label asp-for="Input.UserType"></label>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="Input.UserType" id="patientRadio" value="Patient" checked>
+                        <label class="form-check-label" for="patientRadio">Patient</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="Input.UserType" id="doctorRadio" value="Doctor">
+                        <label class="form-check-label" for="doctorRadio">Doctor</label>
+                    </div>
+                </div>
+                <span asp-validation-for="Input.UserType" class="text-danger"></span>
+            </div>
+
+            <!-- Patient-specific Fields -->
+            <div id="patientFields">
+                <div class="form-group mb-3">
+                    <label asp-for="Input.EmergencyContact"></label>
+                    <input asp-for="Input.EmergencyContact" class="form-control" />
+                    <span asp-validation-for="Input.EmergencyContact" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Input.MedicalHistory"></label>
+                    <textarea asp-for="Input.MedicalHistory" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Input.MedicalHistory" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Doctor-specific Fields -->
+            <div id="doctorFields" style="display: none;">
+                <div class="form-group mb-3">
+                    <label asp-for="Input.Title"></label>
+                    <input asp-for="Input.Title" class="form-control" />
+                    <span asp-validation-for="Input.Title" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Input.Description"></label>
+                    <textarea asp-for="Input.Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Input.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Input.Fees"></label>
+                    <input asp-for="Input.Fees" class="form-control" />
+                    <span asp-validation-for="Input.Fees" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Input.ExperienceYears"></label>
+                    <input asp-for="Input.ExperienceYears" class="form-control" />
+                    <span asp-validation-for="Input.ExperienceYears" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Input.WaitingTimeInMinutes"></label>
+                    <input asp-for="Input.WaitingTimeInMinutes" class="form-control" />
+                    <span asp-validation-for="Input.WaitingTimeInMinutes" class="text-danger"></span>
+                </div>
+                @* <div class="form-group mb-3">
+                    <label asp-for="Input.SpecializationId"></label>
+                    <select asp-for="Input.SpecializationId" asp-items="Model.SpecializationList" class="form-control">
+                        <option value="">-- Select Specialization --</option>
+                    </select>
+                    <span asp-validation-for="Input.SpecializationId" class="text-danger"></span>
+                </div> *@
+            </div>
+            <!--------------------------------------------->
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </form>
+    </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Use another service to register.</h3>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
+                            about setting up this ASP.NET application to support logging in via external services</a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            $('input[name="Input.UserType"]').change(function() {
+                if ($(this).val() === 'Patient') {
+                    $('#patientFields').show();
+                    $('#doctorFields').hide();
+                } else {
+                    $('#patientFields').hide();
+                    $('#doctorFields').show();
+                }
+            });
+        });
+    </script>
+}
