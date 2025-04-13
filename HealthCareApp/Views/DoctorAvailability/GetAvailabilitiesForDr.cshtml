@@ -42,7 +42,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Date)
@@ -70,8 +70,11 @@
                     @Html.DisplayFor(model => item.AppointmentCnt)
             </th>
             <td>
-                    @Html.ActionLink("View Slots ", "ViewSlots", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Cancel Day", "CancelDay", new { /* id=item.PrimaryKey */ })
+                    @Html.ActionLink("View Slots", "ViewSlots", new { drId = @ViewBag.DoctorId, availabilityId = item.Id }) |
+                    @Html.ActionLink("Reschedule Day", "RescheduleAvailability", new { availabilityId = item.Id })|
+                    @Html.ActionLink("Cancel Day", "DeleteAvailability", new { availabilityId = item.Id })
+
+
             </td>
         </tr>
 }

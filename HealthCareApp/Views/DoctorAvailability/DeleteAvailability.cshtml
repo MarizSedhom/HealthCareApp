@@ -1,0 +1,27 @@
+﻿@model HealthCareApp.ViewModel.Doctor.GetAvailabilityForDrVM
+
+@{
+    ViewData["Title"] = "DeleteAvailability";
+}
+
+@if (Model.AppointmentCnt > 0)
+{
+    <h3>There are @(Model.AppointmentCnt) Appointment</h3>
+
+}
+<h3>Are you sure you want to Cancel this Day?</h3>
+<div>
+ 
+    @Html.Partial("_AvailabilityInfoPartial",Model)
+
+    <a asp-action="CancelDay" asp-route-availabilityId="@Model.Id" class="btn btn-danger">Cancel Day</a>
+@*     @if (Model.AppointmentCnt > 0)
+    {
+        <a asp-action="RescheduleAppointmentsForDay" asp-route-availabilityId="@Model.Id" class=" btn btn-danger">Reschedule Appointment</a>
+
+    } *@
+    <div>
+        <a asp-action="GetAvailabilitiesForDr" asp-route-id="@(Model.DoctorId)" >Back to List</a>
+    </div>
+
+</div>

@@ -1,0 +1,49 @@
+﻿@model IEnumerable<AvailabilityWithSlotVM>
+@{
+    string GetDay(DateOnly date){
+        var today= DateOnly.FromDateTime(DateTime.Now);
+        if (date == today)
+            return "today";
+        else if(date==today.AddDays(1))
+            return "tomorrow";
+        return $"{date.DayOfWeek} {date.ToString("MMMM dd, yyyy")}";
+
+    }
+}
+@foreach(var item in Model){
+    <div class="container mt-4">
+        <div class="row text-center g-4">
+
+            <div class="col-md-3">
+                <div class="card shadow">
+
+                    <div class="card-header bg-primary text-white fw-bold">
+                        @GetDay(item.AvailabilityDate)<br>
+                        <small class="fw-normal">@item.ClinicName</small><br>
+                        <small class="badge bg-success">@item.AvailabilityType</small>
+                    </div>
+
+
+                    <div class="card-body p-2">
+                        @foreach (var slot in item.Slots)
+                        {
+
+                            @if(slot.IsBooked){
+                                <a asp-controller="" asp-control asp-action="Create" asp-route-slotId="@slot.SlotId" asp-route-patientId="patientId" class="d-block text-muted text-decoration-line-through py-1 disabled">@slot.StartTime</a>
+                            }
+                            else{
+                                <a asp-action="Create" asp-route-slotId="@slot.SlotId" asp-route-patientId="patientId" class="d-block text-primary py-1 text-decoration-none">@slot.StartTime</a>
+
+                            }
+
+                        }
+                    </div>
+                <div class="card-footer p-2">
+                    <button class="btn btn-danger w-100">BOOK</button>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+}

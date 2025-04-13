@@ -1,5 +1,6 @@
 ﻿using HealthCareApp.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -46,12 +47,28 @@ namespace HealthCareApp.RepositoryServices
                     query = query.Include(include);
                 }
             }
-
+            
             return query.Where(criteria).ToList();
         }
 
         //////with select
-        public IEnumerable<TResult> FindAllWithSelect<TResult>(Expression<Func<T, bool>> criteria,Expression<Func<T,TResult>> selector, params Expression<Func<T, object>>[] includes)
+        public TResult FindWithSelect<TResult>(Expression<Func<T, TResult>> selector, Expression<Func<TResult, bool>> criteria, params Expression<Func<T, object>>[] includes)
+        { 
+        IQueryable<T> query = _context.Set<T>();
+
+            if (includes != null )
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            return query
+                .Select(selector)        
+                .FirstOrDefault(criteria);  
+        }
+
+        public IEnumerable<TResult> FindAllWithSelect<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();
 
@@ -62,9 +79,12 @@ namespace HealthCareApp.RepositoryServices
                     query = query.Include(include);
                 }
             }
-
-            return query.Where(criteria).Select(selector).ToList();
+            if (criteria == null)
+                return query.Select(selector).ToList();
+            else
+                return query.Where(criteria).Select(selector).ToList();
         }
+
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int skip, int take)
         {
             return _context.Set<T>().Where(criteria).Skip(skip).Take(take).ToList();
@@ -98,6 +118,13 @@ namespace HealthCareApp.RepositoryServices
 
             return entity;
         }
+        public void AddRange(IEnumerable< T> entity)
+        {
+            _context.Set<T>().AddRange(entity);
+            _context.SaveChanges();
+
+        }
+
         public T Update(T entity)
         {
             _context.Update(entity);
@@ -124,7 +151,11 @@ namespace HealthCareApp.RepositoryServices
             _context.Set<T>().Remove(entity);
             _context.SaveChanges();
         }
-
+        public void HardDeleteRange(IEnumerable<T> entities)
+        {
+            _context.Set<T>().RemoveRange(entities);
+            _context.SaveChanges();
+        }
 
         public int Count()
         {

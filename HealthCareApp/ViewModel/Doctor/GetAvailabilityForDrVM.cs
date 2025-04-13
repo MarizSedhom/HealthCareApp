@@ -32,5 +32,7 @@ namespace HealthCareApp.ViewModel.Doctor
         public string DoctorId { get; set; }
         [DisplayName("Clinic Name")]
         public String ClinicName { get; set; }
+
+        //void SettingsBindableAttribute() { }
     }
 }

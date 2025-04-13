@@ -14,8 +14,7 @@ namespace HealthCareApp.ViewModel.Doctor
         public TimeOnly StartTime { get; set; }
 
         //[Remote("ValidateEndTime" , "DoctorAvailability",AdditionalFields =nameof(StartTime) ,ErrorMessage = "End Time must be after Start Time.")]
-       // [ValidateEndTime(nameof(StartTime))]
-
+        [ValidateEndTime(nameof(StartTime),nameof(IsAvailable))]
         [DataType(DataType.Time)]
         public TimeOnly EndTime { get; set; }
 
