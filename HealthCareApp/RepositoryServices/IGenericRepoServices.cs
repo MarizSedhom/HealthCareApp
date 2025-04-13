@@ -5,6 +5,8 @@ namespace HealthCareApp.RepositoryServices
     public interface IGenericRepoServices<T> where T : class
     {
         T GetById(int id);
+        T GetById(string id);
+
         IEnumerable<T> GetAll();
         T Find(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
