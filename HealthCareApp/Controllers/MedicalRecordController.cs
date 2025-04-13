@@ -2,23 +2,21 @@
 using HealthCareApp.RepositoryServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-<<<<<<< HEAD
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-=======
->>>>>>> c905359de56b040d84c19663a08b46d69d805611
+
 
 namespace HealthCareApp.Controllers
 {
     public class MedicalRecordController : Controller
     {
-<<<<<<< HEAD
+
         public IGenericRepoServices<MedicalRecord> _medicalRecordService {  get; set; }
         public IGenericRepoServices<Patient> _patientService { get; set; }
-        public IGenericRepoServices<Doctor> _doctorService { get; set; }
+        public IGenericRepoServices<HealthCareApp.Models.Doctor> _doctorService { get; set; }
 
 
-        public MedicalRecordController(IGenericRepoServices<MedicalRecord> medicalRecordService, IGenericRepoServices<Doctor> doctorService, IGenericRepoServices<Patient> patientService)
+        public MedicalRecordController(IGenericRepoServices<MedicalRecord> medicalRecordService, IGenericRepoServices<HealthCareApp.Models.Doctor> doctorService, IGenericRepoServices<Patient> patientService)
         {
             _medicalRecordService = medicalRecordService;
             _doctorService = doctorService;
@@ -62,18 +60,18 @@ namespace HealthCareApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(MedicalRecord medicalRecord, string doctorId = "E123")
         {
-                var patients = _patientService.GetAll()
-                    .Select(d => new SelectListItem
-                    {
-                        Value = d.Id,
-                        Text = d.FirstName + " " + d.LastName
-                    }).ToList();
+            var patients = _patientService.GetAll()
+                .Select(d => new SelectListItem
+                {
+                    Value = d.Id,
+                    Text = d.FirstName + " " + d.LastName
+                }).ToList();
 
-                var doctor = _doctorService.GetById(doctorId);
+            var doctor = _doctorService.GetById(doctorId);
 
-                ViewBag.Doctor = doctor.FirstName + " " + doctor.LastName;
+            ViewBag.Doctor = doctor.FirstName + " " + doctor.LastName;
 
-                ViewBag.Patients = patients;
+            ViewBag.Patients = patients;
             try
             {
                 medicalRecord.CreatedAt = DateTime.Now;
@@ -81,48 +79,15 @@ namespace HealthCareApp.Controllers
 
 
                 _medicalRecordService.Add(medicalRecord);
-=======
-        public IGenericRepoServices<MedicalRecord> _genericRepo { get; }
-
-        public MedicalRecordController(IGenericRepoServices<MedicalRecord> genericRepo)
-        {
-            _genericRepo = genericRepo;
-        }
-
-        // GET: MedicalRecordController
-        public ActionResult Index()
-        {
-            return View(_genericRepo.GetAll());
-        }
-
-        // GET: MedicalRecordController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: MedicalRecordController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: MedicalRecordController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
->>>>>>> c905359de56b040d84c19663a08b46d69d805611
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
             catch
             {
-<<<<<<< HEAD
                 return View(medicalRecord);
             }
         }
+
+
 
         //GET: MedicalReportController/Edit/5
         public ActionResult Edit(int id)
@@ -166,33 +131,15 @@ namespace HealthCareApp.Controllers
             {
                 medicalRecord.CreatedAt = DateTime.Now;
                 _medicalRecordService.Update(medicalRecord);
-=======
-                return View();
-            }
-        }
 
-        // GET: MedicalRecordController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: MedicalRecordController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
->>>>>>> c905359de56b040d84c19663a08b46d69d805611
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
             catch
             {
-<<<<<<< HEAD
                 return View(medicalRecord);
             }
         }
+
 
       
 
@@ -206,32 +153,13 @@ namespace HealthCareApp.Controllers
                 _medicalRecordService.SoftDelete(medicalRecord);
                 return RedirectToAction(nameof(Index));
             
-            
-=======
-                return View();
-            }
+           
+ 
+    
         }
 
-        // GET: MedicalRecordController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+      
 
-        // POST: MedicalRecordController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
->>>>>>> c905359de56b040d84c19663a08b46d69d805611
-        }
+   
     }
 }
