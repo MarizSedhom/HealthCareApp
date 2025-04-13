@@ -1,0 +1,98 @@
+﻿@model IEnumerable<HealthCareApp.ViewModel.Doctor.DrWithAvailabilityVM>
+
+<p>
+    <a asp-action="Create">Create New</a>
+
+</p>
+<form asp-action="GetAllAvailabilitiesForAllDr" class="d-flex">
+    <select  class="form-select w-25 mx-2" asp-items="new SelectList(ViewBag.drNames,ViewBag.selectName)" name="drNames">
+        <option value="">All</option>
+    </select>
+    <input type="submit" value="filter" class="btn btn-success"/>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SpecializationName)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.GetAvailabilityForDrVM.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GetAvailabilityForDrVM.dayOfWeek)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GetAvailabilityForDrVM.TimeRange)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GetAvailabilityForDrVM.Duration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GetAvailabilityForDrVM.type)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.GetAvailabilityForDrVM.ClinicName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GetAvailabilityForDrVM.AvailableSlotsCnt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GetAvailabilityForDrVM.AppointmentCnt)
+            </th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+                <td>
+                    @Html.DisplayFor(model => item.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.SpecializationName)
+                </td>
+  
+                <td>
+                    @Html.DisplayFor(model => item.GetAvailabilityForDrVM.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.GetAvailabilityForDrVM.dayOfWeek)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.GetAvailabilityForDrVM.TimeRange)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.GetAvailabilityForDrVM.Duration)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.GetAvailabilityForDrVM.type)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(model => item.GetAvailabilityForDrVM.ClinicName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.GetAvailabilityForDrVM.AvailableSlotsCnt)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.GetAvailabilityForDrVM.AppointmentCnt)
+                </td>
+            <td>
+
+                @* After Authentication *@
+                    @Html.ActionLink("Add Availability", "AddAvailability", new { id=item.DrId }) |
+                    @Html.ActionLink("View Slots", "ViewSlots", new { drId = @ViewBag.DoctorId, availabilityId = item.GetAvailabilityForDrVM.Id }) |
+                    @Html.ActionLink("Reschedule Day", "RescheduleAvailability", new { availabilityId = item.GetAvailabilityForDrVM.Id })|
+                    @Html.ActionLink("Cancel Day", "DeleteAvailability", new { availabilityId = item.GetAvailabilityForDrVM.Id })
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -24,6 +24,7 @@ namespace HealthCareApp
             //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddScoped(typeof(IGenericRepoServices<>), typeof(GenericRepo<>));
+            builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();

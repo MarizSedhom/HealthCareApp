@@ -1,0 +1,67 @@
+﻿@model HealthCareApp.ViewModel.Doctor.DrAvailabilityVM
+
+@{
+    ViewData["Title"] = "EditAvailability";
+}
+
+<h1>EditAvailability</h1>
+
+<h4>DrAvailabilityVM</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditAvailability">
+            <div asp-validation-summary="All" class="text-danger"></div>
+                <input asp-for="id" class="form-control"  hidden/>
+            <div class="form-group">
+                <label asp-for="Date" class="control-label" ></label>
+                <select asp-for="Date" class="form-select" asp-items="@(new SelectList( ViewBag.FreeAvailabilityDates,Model.Date))" >
+                </select>
+                <span asp-validation-for="ClinicId" class="text-danger" ></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="dayOfWeek" class="control-label"></label>
+                <input asp-for="dayOfWeek" class="form-control" />
+                <span asp-validation-for="dayOfWeek" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartTime" class="control-label" disable></label>
+                <input asp-for="StartTime" class="form-control" disable />
+                <span asp-validation-for="StartTime" class="text-danger" disable></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndTime" class="control-label" disable></label>
+                <input asp-for="EndTime" class="form-control" disable />
+                <span asp-validation-for="EndTime" class="text-danger" disable></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration" class="control-label" disable></label>
+                <input asp-for="Duration" class="form-control" disable />
+                <span asp-validation-for="Duration" class="text-danger" disable></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="mode" class="control-label" disable></label>
+                <select asp-for="mode" class="form-select" asp-items="@(new SelectList (Enum.GetValues(typeof (HealthCareApp.Models.Type)),Model.mode))" disable>
+                </select>
+                <span asp-validation-for="ClinicId" class="text-danger" disable></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClinicId" class="control-label" disable></label>
+                <select asp-for="ClinicId" class="form-select" asp-items="@(new SelectList(ViewBag.DrClinics,"Id","Name",Model.ClinicId))" disable>
+                </select>
+                <span asp-validation-for="ClinicId" class="text-danger" disable></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="GetAvailabilitiesForDr" asp-route-id="@Model.DrId">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

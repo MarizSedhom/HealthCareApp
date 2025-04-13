@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewData["Title"] = "RescheduleAppointment";
+}
+
+<h1>Reschedule Appointment</h1>
+@model Slot_AvailbilityVM
+<form asp-action="RescheduleAppointment" class="form-control">
+    <div>
+        <label for="AvailableId" class="form-label">Select Availabe Day</label>
+        <select asp-for="AvailableId" class="form-select" asp-items=@(new SelectList( ViewBag.DrAvailabeDays , "Id","Name")) ><option value="">select Day</option></select>
+        <span asp-validation-for="AvailableId" class="text-danger"> </span>
+    </div>
+    <div>
+        <label for="NewSlotId" class="form-label">Select Slot</label>
+        <select asp-for="NewSlotId" class="form-select" ></select>
+        <span asp-validation-for="NewSlotId" class="text-danger"></span>
+    </div>
+    <div class="mt-3">
+        <input type="submit" class="btn btn-success" value="Reschedule" />
+    </div>
+    <input hidden asp-for="OldSlotId"  />
+</form>
+
+<a asp-action="ViewSlots" asp-route-availabilityId="@Model.AvailableId">Back To List of Slots</a>
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        var AvailabilityDay= document.getElementById("AvailableId");
+        AvailabilityDay.addEventListener("change",function(){
+            console.log("change")
+            $.ajax({
+                url: 'GetSlots',  // The URL where the request is sent
+                type: 'POST',
+                data: { AvailableId: AvailabilityDay.value  , OldSlotId: $("#OldSlotId").val() },
+                dataType: 'json',                 
+                success: function(response) {
+
+                    var slots = $("#NewSlotId");
+                    slots.empty();  
+                    slots.append('<option value="">Select Slot</option>');
+                    $.each(response, function(index, slot) { 
+                    var option = $('<option></option>')
+                             .attr('value', slot.id)  
+                             .text(slot.name); 
+
+                    slots.append(option);
+                });
+                },
+                error: function(xhr, status, error) {
+                   console.log(error)
+
+                }
+            });
+        })
+    </script>
+}
