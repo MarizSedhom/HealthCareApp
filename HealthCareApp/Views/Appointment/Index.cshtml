@@ -7,7 +7,7 @@
 <h1 class="text-center">All Appointments</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-info">Reserve</a>
+    <a asp-action="Create" class="btn btn-info text-light">Reserve</a>
 </p>
 
 <table class="table">
@@ -26,25 +26,37 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.OrderByDescending(app => app.AvailableSlot.Availability.Date))
         {
             <tr>
-                <td class="fw-bold">@Html.DisplayFor(modelItem => item.status)</td>
-
-
+                <td class="fw-bold">@Html.DisplayFor(modelItem => item.Status)</td>
                 <td>@Html.DisplayFor(modelItem => item.AvailableSlot.Availability.Date)</td>
-                <td>@Html.DisplayFor(modelItem => item.AvailableSlot.Availability.dayOfWeek)</td>
+
+                @if (item.AvailableSlot.Availability.Date == DateOnly.FromDateTime(DateTime.Now))
+                {
+                    <td> Today </td>
+                }
+                else if (item.AvailableSlot.Availability.Date == DateOnly.FromDateTime(DateTime.Now).AddDays(1))
+                {
+                    <td> Tomorrow </td>
+                }
+                else
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot.Availability.dayOfWeek)
+                    </td>
+                }
                 <td>@Html.DisplayFor(modelItem => item.AvailableSlot.StartTime)</td>
 
                 <td>@($"{item.AvailableSlot.Availability.Doctor.FirstName} {item.AvailableSlot.Availability.Doctor.LastName}")</td>
                 <td>@item.PatientName</td>
 
-                @if(item.status == Status.Completed)
+                @if (item.Status == Status.Completed)
                 {
                     <td>
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Display</a> |
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary disabled">Edit</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-secondary  disabled">Cancel</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary disabled text-secondary-emphasis">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-secondary disabled text-secondary-emphasis">Cancel</a>
                     </td>
                 }
                 else

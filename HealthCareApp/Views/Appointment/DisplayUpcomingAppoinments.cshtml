@@ -1,0 +1,90 @@
+﻿@model IEnumerable<HealthCareApp.Models.Appointment>
+
+@{
+    ViewData["Title"] = "DisplayUpcomingAppoinments";
+
+    var firstAppointment = Model.FirstOrDefault();
+}
+
+<h3 class="text-center mb-5 text-primary-emphasis">Upcoming Appoinments</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSlot.Availability.dayOfWeek)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSlot.Availability.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSlot)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PatientName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PatientPhone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.paymentStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.paymentMethod)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderByDescending(app => app.AvailableSlot.Availability.Date))
+        {
+            <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+
+                    @if(item.AvailableSlot.Availability.Date == DateOnly.FromDateTime(DateTime.Now))
+                    {
+                        <td> Today </td>
+                    }
+                    else if (item.AvailableSlot.Availability.Date == DateOnly.FromDateTime(DateTime.Now).AddDays(1))
+                    {
+                        <td> Tomorrow </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AvailableSlot.Availability.dayOfWeek)
+                        </td>
+                    }
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot.Availability.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot.StartTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientPhone)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.paymentStatus)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.paymentMethod)
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>

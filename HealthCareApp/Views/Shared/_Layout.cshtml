@@ -25,10 +25,23 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Appointment" asp-action="Index">Appointments</a>
                         </li>
                         <li class="nav-item">
+
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Appointment" asp-action="DisplayUpcomingAppoinments">Upcoming Appointments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Appointment" asp-action="DisplayAllDoctorsAppoinments">All Doctors' Appointments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Review" asp-action="Index">Reviews</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Review" asp-action="DisplayPendingReviews">Pending Reviews</a>
+
                             <a class="nav-link text-dark" asp-area="" asp-controller="MedicalRecord" asp-action="Index">Medical Records</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />

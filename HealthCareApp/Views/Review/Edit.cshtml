@@ -1,0 +1,42 @@
+﻿@model HealthCareApp.Models.Review
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2 class="text-center text-secondary-emphasis">Edit Your Review</h2>
+
+<div class="card shadow-sm w-50 mx-auto mt-4">
+    <div class="card-body">
+        <form asp-action="Edit">
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="PatientId" type="hidden" />
+            <input asp-for="DoctorId" type="hidden" />
+            <input asp-for="IsApproved" type="hidden" />
+
+            <div class="form-group">
+                <label asp-for="Rating" class="control-label">Rating:</label>
+                <input asp-for="Rating" class="form-control" min="0" max="5" />
+                <span asp-validation-for="Rating" class="text-danger"></span>
+            </div><br />
+
+            <div class="form-group">
+                <label asp-for="ReviewText" class="control-label">Review: </label><br />
+                <textarea asp-for="ReviewText" class="form-control"></textarea>
+                <span asp-validation-for="ReviewText" class="text-danger"></span>
+            </div><br />
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-success me-4" />|
+                <a asp-action="Index" asp-route-patientId="@Model.PatientId" asp-route-doctorId="@Model.DoctorId" class="btn btn-secondary ms-3">Back to Reviews</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
