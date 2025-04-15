@@ -132,7 +132,7 @@ namespace HealthCareApp.Controllers
                 medicalRecord.CreatedAt = DateTime.Now;
                 _medicalRecordService.Update(medicalRecord);
 
-                return RedirectToAction("Index");
+                return RedirectToAction("GetDoctorReviewsForPatient");
             }
             catch
             {
