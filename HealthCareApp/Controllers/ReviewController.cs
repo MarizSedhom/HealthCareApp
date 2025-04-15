@@ -1,5 +1,6 @@
 ﻿using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
+using HealthCareApp.ViewModel.Review;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,29 +14,46 @@ namespace HealthCareApp.Controllers
         IGenericRepoServices<Review> reviewService;
         IGenericRepoServices<ApplicationUser> userService;
         IGenericRepoServices<Patient> patientService;
+        IGenericRepoServices<Models.Doctor> doctorService;
 
-        public ReviewController(IGenericRepoServices<Review> _reviewService, IGenericRepoServices<ApplicationUser> _userService, IGenericRepoServices<Patient> _patientService)
+        public ReviewController(IGenericRepoServices<Review> _reviewService, IGenericRepoServices<ApplicationUser> _userService, IGenericRepoServices<Patient> _patientService, IGenericRepoServices<Models.Doctor> _docttorService)
         {
             reviewService = _reviewService;
             userService = _userService;
             patientService = _patientService;
+            doctorService = _docttorService;
         }
 
-        
-        public ActionResult Index(string doctorId = "3", string userId = null)
+
+        public ActionResult GetDoctorReviewsForPatient(string doctorId = "3")
         {
-            IEnumerable<Review> doctorReviews = reviewService.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
+            var dr = doctorService.GetById(doctorId);
+            IEnumerable<Review> reviews = reviewService.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
 
-            //var currentUser = await userManager.GetUserAsync(User);
-            Patient patient = patientService.Find(u => u.Id == userId);
+            var doctorReviews = new DoctorReviewsVM
+            {
+                TotalRating = reviews.Any() ? reviews.Where(r => r.IsApproved).Average(r => r.Rating) : 0.0,
+                ReviewsCount = reviews.Where(r => r.IsApproved).Count(),
+                DoctorName = $"{dr.Title} {dr.FirstName} {dr.LastName}"
+            };
 
-            ViewBag.userId = userId;
-            ViewBag.isPatient = patient != null;
-
+            doctorReviews.Reviews = reviews.Select(r => new ReviewVM
+            {
+                Id = r.Id,
+                Rating = r.Rating,
+                ReviewText = r.ReviewText,
+                ReviewDate = r.ReviewDate,
+                IsApproved = r.IsApproved,
+                IsEdited = r.IsEdited,
+                PatientId = r.PatientId,
+                PatientName = $"{r.Patient.FirstName} {r.Patient.LastName}",
+                Age = DateOnly.FromDateTime(DateTime.Now).Year - r.Patient.DateOfBirth.Year,
+                IsDeleted = r.IsDeleted
+            });
             return View(doctorReviews);
         }
 
-        
+
         public ActionResult Create(string doctorId = "hggvftgf55555555", string patientId = "2")
         {
             ViewBag.patientId = patientId;
@@ -52,7 +70,7 @@ namespace HealthCareApp.Controllers
             if (ModelState.IsValid)
             {
                 reviewService.Add(review);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(GetDoctorReviewsForPatient));
             }
             else
             {
@@ -68,17 +86,17 @@ namespace HealthCareApp.Controllers
             return View(review);
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Review review)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 review.IsEdited = true;
                 reviewService.Update(review);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(GetDoctorReviewsForPatient));
             }
             else
             {
@@ -90,7 +108,7 @@ namespace HealthCareApp.Controllers
         {
             reviewService.SoftDelete(reviewService.GetById(id));
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(GetDoctorReviewsForPatient));
         }
 
 
@@ -98,7 +116,7 @@ namespace HealthCareApp.Controllers
         // admin : approave, delete
         public ActionResult DisplayPendingReviews()
         {
-            IEnumerable<Review> pendingReviews= reviewService.FindAll(r => !r.IsApproved && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
+            IEnumerable<Review> pendingReviews = reviewService.FindAll(r => !r.IsApproved && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
             return View(pendingReviews);
         }
 

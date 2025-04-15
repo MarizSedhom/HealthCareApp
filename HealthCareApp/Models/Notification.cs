@@ -22,6 +22,7 @@ namespace HealthCareApp.Models
     {
         AppointmentReminder,
         Payment,
-        Review
+        Review,
+        AppointmentReschedule
     }
 }

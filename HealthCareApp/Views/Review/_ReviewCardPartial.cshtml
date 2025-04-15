@@ -1,7 +1,10 @@
-﻿@model HealthCareApp.Models.Review
+﻿@model HealthCareApp.ViewModel.Review.ReviewVM;
+@using System.Security.Claims
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-@{var age = DateOnly.FromDateTime(DateTime.Now).Year - Model.Patient.DateOfBirth.Year;}
+@{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
 
 <div class="card-body">
     <div class="d-flex justify-content-between">
@@ -27,10 +30,10 @@
             </div>
 
             <p class="mb-2 fst-italic">"@Model.ReviewText"</p>
-            <p class="mb-1">@Model.Patient.FirstName @Model.Patient.LastName, @age years</p>
+            <p class="mb-1">@Model.PatientName, @Model.Age years</p>
             <p class="mb-0 text-muted">@Model.ReviewDate.ToString("g")</p>
 
-            @if (Model.IsApproved && ViewBag.userId == Model.PatientId)
+            @if (Model.IsApproved && userId == Model.PatientId)
             {
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="text-secondary-emphasis text-decoration-none" style="position:absolute; right:20px; bottom:5px">Edit</a>
                 <a asp-action="Delete" asp-route-id="@Model.Id" class="text-danger text-decoration-none" style="position:absolute; right:60px; bottom:5px">Delete</a>
