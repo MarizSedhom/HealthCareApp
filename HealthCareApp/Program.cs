@@ -1,3 +1,4 @@
+using HealthCareApp.Account;
 using HealthCareApp.Data;
 using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
@@ -10,7 +11,7 @@ namespace HealthCareApp
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -25,16 +26,36 @@ namespace HealthCareApp
             //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddScoped(typeof(IGenericRepoServices<>), typeof(GenericRepo<>));
+            builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            // builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            //.AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>() // Add this line for roles
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-                
 
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddRazorPages();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    await RoleSeeder.SeedRolesAsync(services);
+
+                    await AdminUserSeeder.SeedAdminUserAsync(services);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while seeding roles.");
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -56,6 +77,8 @@ namespace HealthCareApp
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseStaticFiles();
+            
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",

@@ -1,0 +1,57 @@
+﻿@model IEnumerable<HealthCareApp.ViewModel.Doctor.ViewSlotVM>
+
+@{
+    ViewData["Title"] = "ViewSlots";
+    int CurrentIndex=0;
+    int idx = 0; 
+}
+
+<h1>View Slots</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TimeRange)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PatientName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PatientNumber)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+    @foreach(var item in Model) {
+  
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TimeRange)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PatientName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PatientNumber)
+            </td>
+            <td>
+                    <a asp-action="CancelSlot" asp-route-slotId="@item.SlotId" class="btn btn-danger"> Cancel Slot</a>
+
+            </td>
+        </tr>
+        idx++;
+        }
+    </tbody>
+</table>
+<div>
+    <a asp-action="GetAvailabilitiesForDr" asp-route-id="@(ViewBag.drId)">Back to List</a>
+
+</div>
