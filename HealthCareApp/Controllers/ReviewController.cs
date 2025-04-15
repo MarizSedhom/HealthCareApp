@@ -22,9 +22,11 @@ namespace HealthCareApp.Controllers
         }
 
         
-        public ActionResult Index(string doctorId = "hggvftgf55555555", string userId = null) // id of patient who views specific doctor reviews
+        public ActionResult Index(string doctorId = "3", string userId = null)
         {
             IEnumerable<Review> doctorReviews = reviewService.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
+
+            //var currentUser = await userManager.GetUserAsync(User);
             Patient patient = patientService.Find(u => u.Id == userId);
 
             ViewBag.userId = userId;

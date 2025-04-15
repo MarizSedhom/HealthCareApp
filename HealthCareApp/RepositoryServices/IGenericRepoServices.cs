@@ -7,8 +7,15 @@ namespace HealthCareApp.RepositoryServices
         T GetById(int id);
         IEnumerable<T> GetAll();
         T Find(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
+
+        public TResult FindWithSelect<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes);
+
+        IEnumerable<TResult> FindAllWithSelect<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes);
+
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
+
         IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int take, int skip);
+
         IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int? take, int? skip,
             Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
 
