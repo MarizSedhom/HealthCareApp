@@ -24,6 +24,11 @@ namespace HealthCareApp.RepositoryServices
         {
             return _context.Set<T>().Find(id);
         }
+        public T GetById(string id)
+        {
+            return _context.Set<T>().Find(id);
+        }
+       
         public T Find(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();

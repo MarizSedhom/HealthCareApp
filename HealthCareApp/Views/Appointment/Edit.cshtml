@@ -7,23 +7,24 @@
 <h4>Edit Appointment</h4>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <form asp-action="Edit">
+
+            <div asp-validation-summary="All" class="text-danger"></div>
 
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="PatientId" />
             <input type="hidden" asp-for="SlotId" />
 
-            <!-- Status -->
             <div class="form-group">
-                <label>Status:</label>
-                <input type="text" class="form-control" value="@Model.status" readonly name="status"></input>
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" readonly></input>
             </div><br />
 
             <!-- Slot Details -->
             <div class="form-group">
                 <label>Appointment Date</label>
-                <input type="text" class="form-control" value="@Model.AvailableSlot?.Availability?.Date" readonly/>
+                <input type="text" class="form-control" value="@Model.AvailableSlot?.Availability?.Date" readonly />
             </div><br />
 
             <div class="form-group">
@@ -40,47 +41,36 @@
             <div class="form-group">
                 <label>Doctor</label>
                 <input type="text" class="form-control"
-                value="@($"{Model.AvailableSlot?.Availability?.Doctor?.FirstName} {Model.AvailableSlot?.Availability?.Doctor?.LastName}")" readonly />
+                       value="@($"{Model.AvailableSlot?.Availability?.Doctor?.FirstName} {Model.AvailableSlot?.Availability?.Doctor?.LastName}")" readonly />
             </div><br />
 
             <div class="form-group">
-                <label class="form-label">Patient Name</label>
-                <input type="text" value="@Model.PatientName" name="PatientName" class="form-control"/>
+                <label asp-for="PatientName" class="control-label"></label>
+                <input asp-for="PatientName" class="form-control" />
+                <span asp-validation-for="PatientName" class="text-danger"></span>
             </div><br />
-
 
             <div class="form-group">
-                <label class="form-label">Patient Phone </label>
-                <input type="text" value="@Model.PatientPhone" name="PatientPhone" class="form-control" />
+                <label asp-for="PatientPhone" class="control-label"></label>
+                <input asp-for="PatientPhone" class="form-control" />
+                <span asp-validation-for="PatientPhone" class="text-danger"></span>
             </div><br />
 
-            @if(Model.paymentMethod == PaymentMethod.Cash)
-            {
-                <div class="form-group">
-                    <label label asp-for="paymentMethod" class="form-label">Payment Method</label>
-                    <select asp-for="paymentMethod" asp-items="@Html.GetEnumSelectList(typeof(PaymentMethod))" class="form-control"></select>
-                </div>  <br />
-            }
-            else
-            {
-                <div class="form-group">
-                    <label asp-for="@Model.paymentMethod" class="form-label">Payment Method</label>
-                    <input type="text" value="@Model.paymentMethod" class="form-control" readonly/>
-                </div>  <br />
-            }
+            <div class="form-group">
+                <label asp-for="paymentMethod" class="control-label"></label>
+                <input asp-for="paymentMethod" class="form-control" readonly/>
+                <span asp-validation-for="paymentMethod" class="text-danger"></span>
+            </div><br />
 
             <div class="form-group mt-3">
                 <input type="submit" value="Change" class="btn btn-info me-2" />
-                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Cancel</a>
+                <a asp-action="Index" asp-route-id="@Model.PatientId" class="btn btn-secondary">Back to List</a>
             </div><br />
 
-            <div asp-validation-summary="All" class="text-danger"></div>
         </form>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
