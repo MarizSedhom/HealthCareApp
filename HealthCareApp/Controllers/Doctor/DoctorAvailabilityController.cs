@@ -127,7 +127,7 @@ namespace HealthCareApp.Controllers.Doctor
 
         private GetAvailabilityForDrVM GetAvailabilityForDrVM(int availabilityId)
         {
-            var drAvailabilities = AvailabilityRepository.FindWithSelect(v => new GetAvailabilityForDrVM
+            var drAvailabilities = AvailabilityRepository.FindWithSelect(v => v.Id == availabilityId, v => new GetAvailabilityForDrVM
             {
                 AvailableSlotsCnt = v.AvailableSlots.Count(v => !v.IsBooked),
                 AppointmentCnt = v.AvailableSlots.Count(v => v.IsBooked),
@@ -141,7 +141,7 @@ namespace HealthCareApp.Controllers.Doctor
                 TimeRange = $"{v.StartTime} - {v.EndTime}",
                 Id = v.Id,
                 type = v.type,
-            }, v => v.Id == availabilityId);
+            });
             return drAvailabilities;
         }
          public IActionResult DeleteAvailability(int availabilityId)
@@ -294,7 +294,7 @@ namespace HealthCareApp.Controllers.Doctor
         }
         public IActionResult CancelSlot(int slotId )
         {
-            ViewSlotVM Slot = SlotRepository.FindWithSelect(s => new ViewSlotVM()
+            ViewSlotVM Slot = SlotRepository.FindWithSelect(s => s.Id == slotId,s => new ViewSlotVM()
             {
                 TimeRange = $"{s.StartTime} - {s.EndTime}",
                 PatientName = (s.Appointment == null) ? "-" : s.Appointment.PatientName,
@@ -305,7 +305,7 @@ namespace HealthCareApp.Controllers.Doctor
                 SlotId = s.Id,
                 AvailabilityId = s.AvailabilityId
 
-            }, vs=>vs.SlotId==slotId);
+            });
 
             return View(Slot);
         }

@@ -1,0 +1,102 @@
+﻿@model HealthCareApp.ViewModel.Doctor.DrUpdateProfileVM
+
+@{
+    ViewData["Title"] = "UpdateDoctorProfile";
+    var GenderList = Enum.GetValues(typeof(Gender))
+    .Cast<Gender>()
+    .Select(s => new
+    {
+        Id = (int)s,
+        Name = s.ToString()
+    });
+}
+
+<h1>UpdateDoctorProfile</h1>
+
+<h4>DrUpdateProfileVM</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateDoctorProfile">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="gender" class="control-label"></label>
+                <select asp-for="gender" class="form-select form-control" asp-items="@(new SelectList(  GenderList,"Id","Name"))"></select>
+                <span asp-validation-for="gender" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Fees" class="control-label"></label>
+                <input asp-for="Fees" class="form-control" />
+                <span asp-validation-for="Fees" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExperienceYears" class="control-label"></label>
+                <input asp-for="ExperienceYears" class="form-control" disabled  />
+                <span asp-validation-for="ExperienceYears" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WaitingTimeInMinutes" class="control-label"></label>
+                <input asp-for="WaitingTimeInMinutes" class="form-control" />
+                <span asp-validation-for="WaitingTimeInMinutes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProfilePicture" class="control-label"></label>
+                <input asp-for="ProfilePicture" class="form-control" />
+                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Specialization" class="control-label"></label>
+                <input asp-for="Specialization" class="form-control" disabled />
+                <span asp-validation-for="Specialization" class="text-danger"></span>
+                <ul class="list-group">
+                    @foreach(var item in Model.SubSpecializations){
+                        <li class="list-group-item">@item</li>
+                    }
+                </ul>
+            </div>
+            <div class="form-group">
+                <label asp-for="Clinics" class="control-label"></label>
+
+                <ul class="list-group-flush">
+                    @foreach (var item in Model.Clinics)
+                    {
+                        <li class="list-group-item">@item</li>
+                    }
+                </ul>
+            </div>
+
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

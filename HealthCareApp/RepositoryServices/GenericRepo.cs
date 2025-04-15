@@ -52,21 +52,39 @@ namespace HealthCareApp.RepositoryServices
         }
 
         //////with select
-        public TResult FindWithSelect<TResult>(Expression<Func<T, TResult>> selector, Expression<Func<TResult, bool>> criteria, params Expression<Func<T, object>>[] includes)
-        { 
-        IQueryable<T> query = _context.Set<T>();
+        //public TResult FindWithSelect<TResult>(Expression<Func<T, TResult>> selector, Expression<Func<TResult, bool>> criteria, params Expression<Func<T, object>>[] includes)
+        //{ 
+        //IQueryable<T> query = _context.Set<T>();
 
-            if (includes != null )
+        //    if (includes != null )
+        //    {
+        //        foreach (var include in includes)
+        //        {
+        //            query = query.Include(include);
+        //        }
+        //    }
+        //    return query
+        //        .Select(selector)        
+        //        .FirstOrDefault(criteria);  
+        //}
+        public TResult FindWithSelect<TResult>( Expression<Func<T, bool>> criteria,Expression<Func<T, TResult>> selector,params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if (includes != null)
             {
                 foreach (var include in includes)
                 {
                     query = query.Include(include);
                 }
             }
+
             return query
-                .Select(selector)        
-                .FirstOrDefault(criteria);  
+                .Where(criteria)
+                .Select(selector)
+                .FirstOrDefault();
         }
+
 
         public IEnumerable<TResult> FindAllWithSelect<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes)
         {
