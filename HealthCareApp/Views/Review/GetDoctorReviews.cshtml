@@ -1,28 +1,25 @@
-﻿@model IEnumerable<HealthCareApp.Models.Review>
+﻿@model HealthCareApp.ViewModel.Review.DoctorReviewsVM;
+@using System.Security.Claims
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 @{
-    ViewData["Title"] = "Index";
-
-    double totalRating = Model.Any() ? Model.Where(r => r.IsApproved && !r.IsDeleted).Average(r => r.Rating) : 0.0;
-    Doctor doctor = Model.FirstOrDefault()?.Doctor;
-    string userId = ViewBag.userId;
-    bool isPatient = ViewBag.isPatient;
+    ViewData["Title"] = "GetDoctorReviews";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
-<h1 class="text-center">@doctor.Title @doctor.FirstName @doctor.LastName</h1>
+<h1 class="text-center">@Model.DoctorName</h1>
 
 <div class="card shadow-sm mb-5">
     <div class="card-body">
         <div class="d-flex justify-content-between">
             <h1 style="font-size: 25px" class="text-secondary">Patients' Reviews: </h1>
-            <h1 style="font-size: 25px" class="text-secondary">@Model.Where(r => r.IsApproved && !r.IsDeleted).Count()</h1>
+            <h1 style="font-size: 25px" class="text-secondary">@Model.ReviewsCount</h1>
         </div>
         <div class="text-center">
             <div>
                 @for (int i = 1; i <= 5; i++)
                 {
-                    if (i <= totalRating)
+                    if (i <= Model.TotalRating)
                     {
                         <i class="bi bi-star-fill text-warning" style="font-size:20px"></i>
                     }
@@ -38,29 +35,24 @@
 </div>
 
 
-@foreach (var item in Model.OrderByDescending(r => r.ReviewDate))
+@foreach (var item in Model.Reviews.OrderByDescending(r => r.ReviewDate))
 {
     if (!item.IsApproved && item.PatientId != userId)
     {
         continue;
     }
-    if(item.IsApproved)
+    if (item.IsApproved)
     {
         <div class="card mb-4 shadow-sm">
-                <partial name="_ReviewCardPartial" model="@item"></partial>
+            <partial name="_ReviewCardPartial" model="@item"></partial>
         </div>
     }
     else
     {
         <div class="card mb-4 shadow-sm bg-secondary-subtle opacity-75">
-                <partial name="_ReviewCardPartial" model="@item"></partial>
+            <partial name="_ReviewCardPartial" model="@item"></partial>
         </div>
     }
 }
 
-@if(isPatient)
-{
-    <p>
-        <a asp-action="Create" class="btn btn-info text-light">Add Review</a>
-    </p>
-}
+<a asp-action="AddReview" asp-route-doctorId="@Model.DoctorId" class="btn btn-info">Add Review</a>

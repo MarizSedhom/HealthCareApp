@@ -1,0 +1,79 @@
+﻿@model HealthCareApp.Models.Appointment
+
+@{
+    ViewData["Title"] = "Create";
+
+    AvailabilitySlots slot = ViewBag.slot;
+    string patientId = ViewBag.patientId;
+}
+
+<h2 class="text-center mb-3">Reserve an Appointment</h2>
+
+<div class="card w-50 mb-4">
+    <img src="@slot.Availability.Doctor.ProfilePicture" alt="Doctor Image" class="card-img-top" />
+
+    <div class="card-body">
+        <h2 class="card-title"> <span style="font-size:26px; color:gray">@slot.Availability.Doctor.Title</span> @slot.Availability.Doctor.FirstName @slot.Availability.Doctor.LastName</h2>
+        <p class="card-text">@slot.Availability.Doctor.Description</p>
+        <p class="mt-3">Date: @slot.Availability.Date.Day/@slot.Availability.Date.Month @slot.StartTime</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <form id="appointmentForm" method="post">
+             <div asp-validation-summary="All" class="text-danger"></div>
+
+             <input type="hidden" value="@patientId" name="patientId" />
+             <input type="hidden" value="@slot.Id" name="slotId" />
+             <input type="hidden" value="@slot.Availability.Doctor.Fees" name="Amount" />
+
+             <div class="form-group">
+                 <label asp-for="PatientName" class="control-label"></label>
+                 <input asp-for="PatientName" class="form-control" />
+                 <span asp-validation-for="PatientName" class="text-danger"></span>
+             </div><br />
+
+             <div class="form-group">
+                 <label asp-for="PatientPhone" class="control-label"></label>
+                 <input asp-for="PatientPhone" class="form-control" />
+                 <span asp-validation-for="PatientPhone" class="text-danger"></span>
+             </div><br />
+
+             <div class="form-group">
+                 <label asp-for="paymentMethod" class="control-label"></label>
+                <select asp-for="paymentMethod" asp-items="@Html.GetEnumSelectList(typeof(PaymentMethod))" class="form-control"></select>
+                 <span asp-validation-for="paymentMethod" class="text-danger"></span>
+             </div><br />
+
+             <div class="form-group">
+                <input type="submit" value="Reserve" class="btn btn-info me-5" />
+                 <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+             </div><br />
+         </form>
+     </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            $('#appointmentForm').on('submit', function (e) {
+                const selectedMethod = $('#paymentMethod').val();
+                console.log("Selected Method:", selectedMethod);
+
+                if (selectedMethod == 1) { // Visa
+                    $(this).attr('action', '/Appointment/Checkout');
+                } else if (selectedMethod == 0) { // Cash
+                    $(this).attr('action', '/Appointment/SaveAppointmentWithCash');
+                }
+            });
+        });
+    </script>
+
+}
+
+
