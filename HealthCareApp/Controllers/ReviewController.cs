@@ -1,4 +1,4 @@
-﻿using HealthCareApp.Models;
+using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using HealthCareApp.ViewModel.Review;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +25,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult GetDoctorReviews(string doctorId = "3")
+        public ActionResult GetDoctorReviews(string doctorId = "80ac78e2-def2-4e42-a1db-a3b58939f63b")
         {
             var dr = doctorService.GetById(doctorId);
             IEnumerable<Review> reviews = reviewService.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
@@ -64,7 +64,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult AddReview(string doctorId = "3")
+        public ActionResult AddReview(string doctorId = "80ac78e2-def2-4e42-a1db-a3b58939f63b")
         {
             var review = new AddReviewVM()
             {
