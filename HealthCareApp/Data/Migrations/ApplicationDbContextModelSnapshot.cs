@@ -152,18 +152,19 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<string>("PatientPhone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<int>("SlotId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<int>("paymentMethod")
                         .HasColumnType("int");
 
                     b.Property<int>("paymentStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -308,6 +309,10 @@ namespace HealthCareApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DoctorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -320,6 +325,8 @@ namespace HealthCareApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
 
                     b.HasIndex("PatientId");
 
@@ -377,6 +384,9 @@ namespace HealthCareApp.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEdited")
                         .HasColumnType("bit");
 
                     b.Property<string>("PatientId")
@@ -708,11 +718,19 @@ namespace HealthCareApp.Data.Migrations
 
             modelBuilder.Entity("HealthCareApp.Models.MedicalRecord", b =>
                 {
+                    b.HasOne("HealthCareApp.Models.Doctor", "Doctor")
+                        .WithMany("MedicalRecords")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HealthCareApp.Models.Patient", "Patient")
                         .WithMany("MedicalRecords")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Doctor");
 
                     b.Navigation("Patient");
                 });
@@ -850,6 +868,8 @@ namespace HealthCareApp.Data.Migrations
             modelBuilder.Entity("HealthCareApp.Models.Doctor", b =>
                 {
                     b.Navigation("Clinics");
+
+                    b.Navigation("MedicalRecords");
 
                     b.Navigation("Reviews");
 

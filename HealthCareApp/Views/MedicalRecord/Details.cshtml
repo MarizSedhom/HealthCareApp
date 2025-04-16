@@ -1,0 +1,98 @@
+﻿@model HealthCareApp.Models.MedicalRecord
+
+@{
+    ViewData["Title"] = "Details";
+}
+<style>
+    /* Custom Styling for Medical Record Card */
+    .card {
+        margin-top: 20px;
+    }
+
+    .card-header {
+        font-weight: bold;
+        font-size: 1.25rem;
+    }
+
+    .card-body dl dt {
+        font-weight: 600;
+    }
+
+    .card-body dl dd {
+        font-size: 1rem;
+    }
+
+    .card-footer a {
+        margin-left: 10px;
+    }
+
+    .btn-warning {
+        background-color: #ffcc00;
+        border-color: #ffcc00;
+    }
+
+        .btn-warning:hover {
+            background-color: #e6b800;
+            border-color: #e6b800;
+        }
+</style>
+
+<h1>@Model.Patient.FirstName @Model.Patient.LastName</h1>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4>Medical Record</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+         
+            <!-- Patient Date of Birth -->
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Patient.DateOfBirth)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Patient.DateOfBirth)
+            </dd>
+
+            <!-- Diagnosis -->
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Diagnosis)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Diagnosis)
+            </dd>
+
+            <!-- Prescription -->
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Prescription)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Prescription)
+            </dd>
+
+            <!-- Created At -->
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.CreatedAt)
+            </dd>
+        </dl>
+        <button class="btn btn-info w-100" id="toggleHistoryBtn">Medical History</button>
+        <div id="medicalHistorySection" style="display: none;">
+          <p class="text-center mt-4">@Model.Patient.MedicalHistory</p>
+
+        </div>
+    </div>
+    <div class="card-footer text-end">
+        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+        <a class="btn btn-secondary" asp-action="Index">Back to List</a>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $("#toggleHistoryBtn").click(function () {
+        $("#medicalHistorySection").toggle();
+    });
+</script>
+

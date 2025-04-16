@@ -5,18 +5,23 @@ namespace HealthCareApp.Models
 {
     public class Appointment
     {
-        [Required]
         public int Id { get; set; }
 
-        [EnumDataType(typeof (PaymentStatus))]
-        public Status status { get; set; } = Status.Pending;
 
-        [Required]
-        [RegularExpression(@"^\w+\s\w+$")]
+        [EnumDataType(typeof (Status))]
+        public Status Status { get; set; } = Status.Pending;
+
+
+        [Required(ErrorMessage = "You Must Enter Patient Name...!!")]
+        [RegularExpression(@"^\w+\s\w+$", ErrorMessage = "You Must Enter Full Name [First, Last]")]
+        [Display(Name ="Patient Name")]
         public string PatientName { set; get; }
 
-        [Required]
+
+        [Required(ErrorMessage = "You Must Enter Phone Number...!!")]
         [DataType(DataType.PhoneNumber)]
+        [StringLength(11, MinimumLength = 11 ,ErrorMessage = "Phone Number Must Be Exactly 11 Digits.")]
+        [Display(Name = "Patient Phone")]
         public string PatientPhone { set; get; }
 
 
@@ -31,12 +36,14 @@ namespace HealthCareApp.Models
 
 
         [EnumDataType(typeof(PaymentStatus))]
+        [Display(Name = "Payment Status")]
         public PaymentStatus paymentStatus { get; set; } = PaymentStatus.Pending;
 
         public decimal Amount { get; set; }
 
         [Required]
         [EnumDataType(typeof(PaymentMethod))]
+        [Display(Name = "Payment Method")]
         public PaymentMethod paymentMethod { get; set; }
     }
 

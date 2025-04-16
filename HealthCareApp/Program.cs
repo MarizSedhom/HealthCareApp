@@ -5,6 +5,7 @@ using HealthCareApp.RepositoryServices;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 namespace HealthCareApp
 {
@@ -72,6 +73,8 @@ namespace HealthCareApp
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
+            StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
             app.UseAuthentication();
             app.UseAuthorization();
