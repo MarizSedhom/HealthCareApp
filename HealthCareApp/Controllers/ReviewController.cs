@@ -25,16 +25,18 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult GetDoctorReviewsForPatient(string doctorId = "3")
+        public ActionResult GetDoctorReviews(string doctorId = "3")
         {
             var dr = doctorService.GetById(doctorId);
             IEnumerable<Review> reviews = reviewService.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
 
+            var approvedReviews = reviews.Where(r => r.IsApproved).ToList();
             var doctorReviews = new DoctorReviewsVM
             {
-                TotalRating = reviews.Any() ? reviews.Where(r => r.IsApproved).Average(r => r.Rating) : 0.0,
-                ReviewsCount = reviews.Where(r => r.IsApproved).Count(),
-                DoctorName = $"{dr.Title} {dr.FirstName} {dr.LastName}"
+                TotalRating = approvedReviews.Any() ? approvedReviews.Average(r => r.Rating) : 0.0,
+                ReviewsCount = approvedReviews.Count(),
+                DoctorName = $"{dr.Title} {dr.FirstName} {dr.LastName}",
+                DoctorId = doctorId
             };
 
             doctorReviews.Reviews = reviews.Select(r => new ReviewVM
@@ -50,38 +52,57 @@ namespace HealthCareApp.Controllers
                 Age = DateOnly.FromDateTime(DateTime.Now).Year - r.Patient.DateOfBirth.Year,
                 IsDeleted = r.IsDeleted
             });
-            return View(doctorReviews);
+
+            if(User.IsInRole("Patient"))
+            {
+                return View(doctorReviews);
+            }
+            else
+            {
+                return View("GetReviewsForDr", doctorReviews);
+            }
         }
 
 
-        public ActionResult Create(string doctorId = "hggvftgf55555555", string patientId = "2")
+        public ActionResult AddReview(string doctorId = "3")
         {
-            ViewBag.patientId = patientId;
-            ViewBag.doctorId = doctorId;
-
-            return View();
+            var review = new AddReviewVM()
+            {
+                DoctorId = doctorId,
+            };
+            return View(review);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Review review)
+        public ActionResult AddReview(AddReviewVM reviewVM)
         {
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             if (ModelState.IsValid)
             {
+                var review = new Review()
+                {
+                    Rating = reviewVM.Rating,
+                    ReviewText = reviewVM.ReviewText,
+                    PatientId = userId,
+                    DoctorId = reviewVM.DoctorId
+                };
+
                 reviewService.Add(review);
-                return RedirectToAction(nameof(GetDoctorReviewsForPatient));
+                return RedirectToAction(nameof(GetDoctorReviews));
             }
             else
             {
-                return View(review);
+                return View(reviewVM);
             }
         }
 
 
-        public ActionResult Edit(int id)
+        public ActionResult EditReview(int id)
         {
-            Review review = reviewService.Find(r => r.Id == id, r => r.Patient, r => r.Doctor);
+            Review review = reviewService.Find(r => r.Id == id);
 
             return View(review);
         }
@@ -89,14 +110,13 @@ namespace HealthCareApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Review review)
+        public ActionResult EditReview(int id, Review review)
         {
             if (ModelState.IsValid)
             {
                 review.IsEdited = true;
                 reviewService.Update(review);
-
-                return RedirectToAction(nameof(GetDoctorReviewsForPatient));
+                return RedirectToAction(nameof(GetDoctorReviews));
             }
             else
             {
@@ -104,11 +124,11 @@ namespace HealthCareApp.Controllers
             }
         }
 
-        public ActionResult Delete(int id)
+        public ActionResult DeleteReview(int id)
         {
             reviewService.SoftDelete(reviewService.GetById(id));
 
-            return RedirectToAction(nameof(GetDoctorReviewsForPatient));
+            return RedirectToAction(nameof(GetDoctorReviews));
         }
 
 
@@ -116,8 +136,23 @@ namespace HealthCareApp.Controllers
         // admin : approave, delete
         public ActionResult DisplayPendingReviews()
         {
-            IEnumerable<Review> pendingReviews = reviewService.FindAll(r => !r.IsApproved && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
-            return View(pendingReviews);
+            IEnumerable<Review> pendingReviews = reviewService.FindAll(r => !r.IsApproved && !r.IsDeleted, r => r.Doctor, r => r.Patient).ToList();
+            var pendingReviewsVM = pendingReviews.Select(r => new ReviewVM
+            {
+                Id = r.Id,
+                Rating = r.Rating,
+                ReviewText = r.ReviewText,
+                ReviewDate = r.ReviewDate,
+                IsApproved = r.IsApproved,
+                IsEdited = r.IsEdited,
+                PatientId = r.PatientId,
+                PatientName = $"{r.Patient.FirstName} {r.Patient.LastName}",
+                Age = DateOnly.FromDateTime(DateTime.Now).Year - r.Patient.DateOfBirth.Year,
+                IsDeleted = r.IsDeleted,
+                DoctorName = $"{r.Doctor.Title} {r.Doctor.FirstName} {r.Doctor.LastName}"
+
+            });
+            return View(pendingReviewsVM);
         }
 
         public ActionResult ApproveReview(int reviewId)
