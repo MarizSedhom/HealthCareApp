@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Review>
+﻿@model IEnumerable<HealthCareApp.ViewModel.Review.ReviewVM>
 
 @{
     ViewData["Title"] = "DisplayPendingReviews";
@@ -13,6 +13,6 @@
         <partial name="_ReviewCardPartial" model="@item"></partial>
         <a asp-action="ApproveReview" asp-route-reviewId="@item.Id" class="text-success text-decoration-none fw-bold" style="position:absolute; right:80px; bottom:5px">Approve</a>
         <a asp-action="RejectReview" asp-route-reviewId="@item.Id" class="text-danger text-decoration-none fw-bold" style="position:absolute; right:20px; bottom:5px">Reject</a>
-        <p class="ms-2 text-primary-emphasis fw-bold">To @item.Doctor.Title - @item.Doctor.FirstName @item.Doctor.LastName</p>
+        <p class="ms-2 text-primary-emphasis fw-bold">To @item.DoctorName</p>
     </div>
 }

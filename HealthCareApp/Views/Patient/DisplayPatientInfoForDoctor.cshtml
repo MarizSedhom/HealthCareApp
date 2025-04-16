@@ -1,0 +1,15 @@
+﻿@model HealthCareApp.ViewModel.Patient.PatientInfoForDoctorVM
+
+@{
+    ViewData["Title"] = "DisplayPatientInfoForDoctorVM";
+}
+
+<h3 class="text-center mb-5 text-primary-emphasis">Patient Information</h3>
+
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">@Model.PatientFullName</h5>
+    <p class="card-text"><strong>Age:</strong> @Model.Age</p>
+    <p class="card-text"><strong>Medical History:</strong> @Model.MedicalHistory</p>
+  </div>
+</div>

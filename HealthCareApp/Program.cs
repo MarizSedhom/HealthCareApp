@@ -5,6 +5,7 @@ using HealthCareApp.RepositoryServices;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 namespace HealthCareApp
 {
@@ -26,6 +27,8 @@ namespace HealthCareApp
 
             builder.Services.AddScoped(typeof(IGenericRepoServices<>), typeof(GenericRepo<>));
             builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
+            builder.Services.AddScoped<NotificationService>();
+            builder.Services.AddScoped<INotificationObserver, AppNotificationObserver>();
 
             // builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             //.AddEntityFrameworkStores<ApplicationDbContext>();
@@ -70,6 +73,8 @@ namespace HealthCareApp
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
+            StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
             app.UseAuthentication();
             app.UseAuthorization();
