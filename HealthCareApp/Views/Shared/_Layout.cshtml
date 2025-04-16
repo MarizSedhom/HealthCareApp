@@ -10,9 +10,292 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HealthCareApp.styles.css" asp-append-version="true" />
 </head>
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #4A90E2;
+        --bg-color-1: #f8f9fa;
+        --bg-color-2: #f0f8ff;
+        --bg-color-3: #f5fff0;
+        --bg-color-4: #fff0f5;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: var(--bg-color-1);
+        transition: background-color 0.5s ease;
+        min-height: 100vh;
+    }
+
+    .doctor-navbar {
+        background: var(--doctor-gradient);
+        color: var(--white);
+        padding: 0 30px;
+        height: 70px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--white);
+            animation: pulse 1.5s infinite;
+        }
+
+    @@keyframes pulse {
+        0%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    .logo h1 {
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 25px;
+    }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+            .nav-links a:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+            .nav-links a.active {
+                background-color: rgba(255, 255, 255, 0.3);
+            }
+
+            .nav-links a::after {
+                content: '';
+                position: absolute;
+                bottom: -5px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 3px;
+                background-color: var(--white);
+                transition: width 0.3s;
+            }
+
+            .nav-links a.active::after {
+                width: 70%;
+            }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .notification {
+        position: relative;
+        cursor: pointer;
+    }
+
+        .notification i {
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+
+        .notification:hover i {
+            transform: scale(1.1);
+        }
+
+    .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #FF4757;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+    }
+
+    .doctor-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 20px;
+        transition: all 0.3s;
+    }
+
+        .doctor-profile:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+    .profile-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .profile-name {
+        font-weight: 500;
+    }
+
+    .dropdown-arrow {
+        transition: transform 0.3s;
+    }
+
+    .doctor-profile:hover .dropdown-arrow {
+        transform: rotate(180deg);
+    }
+
+    .profile-dropdown {
+        position: absolute;
+        top: 65px;
+        right: 30px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        width: 200px;
+        overflow: hidden;
+        z-index: 1001;
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .profile-dropdown a {
+        display: block;
+        padding: 12px 20px;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.3s;
+        border-left: 3px solid transparent;
+    }
+
+        .profile-dropdown a:hover {
+            background: #f5f5f5;
+            border-left: 3px solid #4A90E2;
+        }
+
+        .profile-dropdown a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+    .profile-dropdown.show {
+        display: block;
+    }
+
+    /* Responsive styles */
+    @@media (max-width: 768px) {
+        .doctor-navbar
+
+    {
+        padding: 0 15px;
+    }
+
+    .nav-left {
+        gap: 15px;
+    }
+
+    .logo h1 {
+        font-size: 20px;
+    }
+
+    .nav-links {
+        gap: 10px;
+    }
+
+        .nav-links a {
+            font-size: 14px;
+            padding: 6px 8px;
+        }
+
+    .nav-right {
+        gap: 10px;
+    }
+
+    }
+</style>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"> 
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HealthCareApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -26,28 +309,68 @@
                         </li>
                         <li class="nav-item">
 
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Appointment" asp-action="DisplayUpcomingAppoinments">Upcoming Appointments</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Appointment" asp-action="DisplayUpcomingAppoinments">Upcoming Appointments</a> 
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Appointment" asp-action="DisplayAllDoctorsAppoinments">All Doctors' Appointments</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Review" asp-action="Index">Reviews</a>
-                        </li>
-                        <li class="nav-item">
+                        </li> 
+                        <li class="nav-item"> 
                             <a class="nav-link text-dark" asp-area="" asp-controller="Review" asp-action="DisplayPendingReviews">Pending Reviews</a>
 
                             <a class="nav-link text-dark" asp-area="" asp-controller="MedicalRecord" asp-action="Index">Medical Records</a>
                         </li>
-                        <li class="nav-item">
+                       <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
 
-                        </li>
-                    </ul>
+                         </li>
+                    </ul> 
                     <partial name="_LoginPartial" />
                 </div>
-            </div>
-        </nav>
+           </div>
+         </nav>
+
+        @* <nav class="doctor-navbar"> *@
+        @*     <div class="nav-left"> *@
+        @*         <div class="logo"> *@
+        @*             <i class="fas fa-heartbeat"></i> *@
+        @*             <h1>MedConnect</h1>
+                </div> 
+
+                <div class="nav-links"> *@
+        @*             @* <a class="active" data-bg="var(--bg-color-1)" asp-area="" asp-controller="Appointment" asp-action="DisplayUpcomingAppoinments">Appointments</a> *@
+        @*             <a class="active" data-bg="var(--bg-color-1)" asp-area="" asp-controller="Appointment" asp-action="DisplayUpcomingAppoinments">Upcoming Appointments</a> *@
+
+        @*             <a data-bg="var(--bg-color-2)" asp-area="" asp-controller="DoctorAvailability" asp-action="GetAvailabilitiesForDr" asp-route-id="1">Availability</a> *@
+        @*             <a data-bg="var(--bg-color-4)">Patients</a> *@
+        @*         </div> *@
+        @*     </div> *@
+
+        @*     <div class="nav-right"> *@
+        @*         <div class="notification"> *@
+        @*             <i class="fas fa-bell"></i> *@
+        @*             <span class="notification-badge">3</span> *@
+        @*         </div> *@
+
+        @*         <div id="doctorProfile" class="doctor-profile"> *@
+        @*             <div class="profile-img"> *@
+        @*                 <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Doctor Profile"> *@
+        @*             </div> *@
+        @*             <span class="profile-name">Dr. Smith</span> *@
+        @*             <i class="fas fa-chevron-down dropdown-arrow"></i> *@
+        @*         </div> *@
+
+        @*         <div class="profile-dropdown" id="profileDropdown"> *@
+        @*             <a href="#"><i class="fas fa-user"></i> My Profile</a> *@
+        @*             <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a> *@
+        @*         </div> *@
+        @*     </div> *@
+        @* </nav> *@
+
+    
+
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -60,6 +383,57 @@
             &copy; 2025 - HealthCareApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+    @* <script> *@
+    @*     // Background color change on nav item click *@
+    @*     const navLinks = document.querySelectorAll('.nav-links a'); *@
+
+
+    @*     navLinks.forEach(link => { *@
+    @*         link.addEventListener('click', function(e) { *@
+    @*             e.preventDefault(); *@
+
+    @*             // Remove active class from all links *@
+    @*             navLinks.forEach(item => item.classList.remove('active')); *@
+
+    @*             // Add active class to clicked link *@
+    @*             this.classList.add('active'); *@
+
+
+
+    @*         }); *@
+    @*     }); *@
+
+    @*     // Profile dropdown functionality *@
+    @*     const doctorProfile = document.getElementById('doctorProfile'); *@
+    @*     const profileDropdown = document.getElementById('profileDropdown'); *@
+
+    @*     doctorProfile.addEventListener('click', function(e) { *@
+    @*         e.stopPropagation(); // Prevent immediate closing when clicking the profile *@
+    @*         profileDropdown.classList.toggle('show'); *@
+    @*     }); *@
+
+    @*     // Close dropdown when clicking anywhere else *@
+    @*     document.addEventListener('click', function(e) { *@
+    @*         if (!doctorProfile.contains(e.target)) { *@
+    @*             profileDropdown.classList.remove('show'); *@
+    @*         } *@
+    @*     }); *@
+
+    @*     // Handle dropdown item clicks *@
+    @*     document.querySelectorAll('.profile-dropdown a').forEach(item => { *@
+    @*         item.addEventListener('click', function(e) { *@
+    @*             e.preventDefault(); *@
+    @*             const action = this.textContent.trim(); *@
+    @*             alert(`${action} action would be performed here`); *@
+    @*             profileDropdown.classList.remove('show'); *@
+    @*         }); *@
+    @*     }); *@
+
+    @*     // Notification functionality *@
+    @*     document.querySelector('.notification').addEventListener('click', function() { *@
+    @*         alert('Notification panel would appear here'); *@
+    @*     }); *@
+    @* </script> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/font-awesome/js/all.min.js" asp-append-version="true"></script>

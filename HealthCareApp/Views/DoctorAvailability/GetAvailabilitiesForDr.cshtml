@@ -4,79 +4,257 @@
     ViewData["Title"] = "GetAvailabilitiesForDr";
 }
 
-<h1>Doctor Availabilities</h1>
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+        --bg-color-1: #f8f9fa;
+        --bg-color-2: #f0f8ff;
+        --bg-color-3: #f5fff0;
+        --bg-color-4: #fff0f5;
+    }
 
-<p>
-    <a asp-action="AddAvailability" asp-route-id="@ViewBag.DoctorId">Add New Availabilities</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.dayOfWeek)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TimeRange)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Duration)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.type)
-            </th>
+    body {
+        background-color: var(--light-gray);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+    }
+
+    h1 {
+        color: var(--dark-blue);
+        text-align: center;
+        margin: 25px 0;
+        font-weight: 600;
+        font-size: 1.8rem;
+    }
+
+    .table-container {
+        background: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        margin: 20px auto;
+        max-width: 98%;
+        overflow-x: auto;
+    }
+
+    .add-availability-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: var(--highlight-blue);
+        color: var(--white);
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        border: none;
+        width: auto;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+        .add-availability-btn:hover {
+            background: #a0b7da;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 15px;
+    }
+
+    thead {
+        background: var(--doctor-gradient);
+        color: var(--white);
+    }
+
+    th {
+        padding: 14px 16px;
+        text-align: center;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--dark-blue);
+    }
+
+    td {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        vertical-align: middle;
+        transition: all 0.2s ease;
+    }
+
+    tr {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+        tr:nth-child(even) {
+            background: linear-gradient(135deg, rgba(197, 211, 232, 0.3), rgba(255, 255, 255, 0.9));
+        }
+
+        tr:nth-child(odd) {
+            background: linear-gradient(135deg, rgba(197, 211, 232, 0.1), rgba(255, 255, 255, 0.95));
+        }
+
+        tr:hover {
+            transform: translateY(-1px);
+            z-index: 1;
+            background: linear-gradient(135deg, rgba(197, 211, 232, 0.4), rgba(255, 255, 255, 0.85));
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+            tr:hover td {
+                border-color: rgba(74, 144, 226, 0.2);
+            }
+
+    .action-links {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+        .action-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            color: var(--highlight-blue);
+            text-decoration: none;
+            margin: 0;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            padding: 6px 10px;
+            border-radius: 4px;
+            background-color: rgba(74, 144, 226, 0.1);
+            border: 1px solid rgba(74, 144, 226, 0.2);
+            text-align: center;
+        }
+
+            .action-links a:hover {
+                background-color: var(--highlight-blue);
+                color: white;
+                text-decoration: none;
+            }
+
+            /* Cancel button as X icon */
+            .action-links a[href*="DeleteAvailability"] {
+                min-width: auto;
+                width: 26px;
+                height: 35.5px;
+                padding: 0;
+                color: #dc3545;
+                background-color: rgba(220, 53, 69, 0.1);
+                border-color: rgba(220, 53, 69, 0.2);
+                position: relative;
+            }
+
+                .action-links a[href*="DeleteAvailability"]:hover {
+                    background-color: #dc3545;
+                    color: white;
+                }
+
+                .action-links a[href*="DeleteAvailability"]::after {
+                    content: "×";
+                    font-size: 1.2rem;
+                    line-height: 1;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+
+                .action-links a[href*="DeleteAvailability"] span {
+                    display: none;
+                }
+
+    .availability-type {
+        display: flex;
+        justify-content: center;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        width: fit-content;
+        margin: 0 auto;
+    }
 
 
-            <th>
-                @Html.DisplayNameFor(model => model.ClinicName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AvailableSlotsCnt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AppointmentCnt)
-            </th>
+    .count-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background-color: var(--highlight-blue);
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin: 0 auto;
+    }
 
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.dayOfWeek)
-            </td>
+    .text-center {
+        text-align: center;
+    }
+</style>
 
-            <td>
-                    @Html.DisplayFor(modelItem => item.TimeRange)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.Duration)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ClinicName)
-            </td>
-            <th>
-                @Html.DisplayFor(model => item.AvailableSlotsCnt)
-            </th>
-             <th>
-                    @Html.DisplayFor(model => item.AppointmentCnt)
-            </th>
-            <td>
-                    @Html.ActionLink("View Slots", "ViewSlots", new { drId = @ViewBag.DoctorId, availabilityId = item.Id }) |
-                    @Html.ActionLink("Reschedule Day", "RescheduleAvailability", new { availabilityId = item.Id })|
-                    @Html.ActionLink("Cancel Day", "DeleteAvailability", new { availabilityId = item.Id })
+<div class="table-container" style="background-color: #96a5ba;">
+    <div>
+        <a asp-action="AddAvailability" asp-route-id="@ViewBag.DoctorId" class="add-availability-btn">
+            <i class="fas fa-plus"></i> Add New Availability
+        </a>
+    </div>
+    <h1  class="mb-4">My Availabilities</h1>
 
-
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Date)</th>
+                <th>@Html.DisplayNameFor(model => model.dayOfWeek)</th>
+                <th>@Html.DisplayNameFor(model => model.TimeRange)</th>
+                <th>@Html.DisplayNameFor(model => model.Duration)</th>
+                <th>@Html.DisplayNameFor(model => model.type)</th>
+                <th>@Html.DisplayNameFor(model => model.ClinicName)</th>
+                <th>@Html.DisplayNameFor(model => model.AvailableSlotsCnt)</th>
+                <th>@Html.DisplayNameFor(model => model.AppointmentCnt)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@Html.DisplayFor(modelItem => item.Date)</td>
+                    <td class="text-center">@Html.DisplayFor(modelItem => item.dayOfWeek)</td>
+                    <td class="text-center">@Html.DisplayFor(modelItem => item.TimeRange)</td>
+                    <td class="text-center">@Html.DisplayFor(modelItem => item.Duration) min</td>
+                    <td>
+                        <span class="availability-type" data-type="@item.type">
+                            @Html.DisplayFor(modelItem => item.type)
+                        </span>
+                    </td>
+                    <td class="text-center">@Html.DisplayFor(modelItem => item.ClinicName)</td>
+                    <td class="text-center"><span class="count-badge">@Html.DisplayFor(model => item.AvailableSlotsCnt)</span></td>
+                    <td class="text-center"><span class="count-badge">@Html.DisplayFor(model => item.AppointmentCnt)</span></td>
+                    <td>
+                        <div class="action-links">
+                            @Html.ActionLink("View Slots", "ViewSlots", new { drId = @ViewBag.DoctorId, availabilityId = item.Id })
+                            @Html.ActionLink("Reschedule", "RescheduleAvailability", new { availabilityId = item.Id })
+                            @Html.ActionLink("", "DeleteAvailability", new { availabilityId = item.Id })
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

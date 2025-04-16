@@ -2,56 +2,209 @@
 
 @{
     ViewData["Title"] = "ViewSlots";
-    int CurrentIndex=0;
-    int idx = 0; 
+    int CurrentIndex = 0;
+    int idx = 0;
 }
 
-<h1>View Slots</h1>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TimeRange)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PatientName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PatientNumber)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-
-    @foreach(var item in Model) {
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+        --bg-color-1: #f8f9fa;
+        --bg-color-2: #f0f8ff;
+        --bg-color-3: #f5fff0;
+        --bg-color-4: #fff0f5;
+        --danger-red: #dc3545;
   
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TimeRange)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PatientName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PatientNumber)
-            </td>
-            <td>
-                    <a asp-action="CancelSlot" asp-route-slotId="@item.SlotId" class="btn btn-danger"> Cancel Slot</a>
+    }
 
-            </td>
-        </tr>
-        idx++;
+    body {
+        background-color: var(--light-gray);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+    }
+
+    h1 {
+        color: var(--dark-blue);
+        text-align: center;
+        margin: 25px 0;
+        font-weight: 600;
+        font-size: 1.8rem;
+    }
+
+    .table-container {
+        background: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        margin: 20px auto;
+        max-width: 98%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 15px;
+    }
+
+    thead {
+        background: var(--doctor-gradient);
+        color: var(--white);
+    }
+
+    th {
+        padding: 14px 16px;
+        text-align: center;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--dark-blue);
+    }
+
+    td {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        vertical-align: middle;
+        transition: all 0.2s ease;
+        text-align: center;
+    }
+
+    tr {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+        tr:nth-child(even) {
+            background: linear-gradient(135deg, rgba(197, 211, 232, 0.3), rgba(255, 255, 255, 0.9));
         }
-    </tbody>
-</table>
-<div>
-    <a asp-action="GetAvailabilitiesForDr" asp-route-id="@(ViewBag.drId)">Back to List</a>
 
+        tr:nth-child(odd) {
+            background: linear-gradient(135deg, rgba(197, 211, 232, 0.1), rgba(255, 255, 255, 0.95));
+        }
+
+        tr:hover {
+            transform: translateY(-1px);
+            z-index: 1;
+            background: linear-gradient(135deg, rgba(197, 211, 232, 0.4), rgba(255, 255, 255, 0.85));
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+    /* X Icon Cancel Button */
+    .cancel-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background-color: var(--danger-red);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .cancel-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .cancel-btn::after {
+            content: "×";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+    .back-to-list {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--highlight-blue);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(74, 144, 226, 0.2);
+        background-color: rgba(74, 144, 226, 0.1);
+        margin-top: 20px;
+    }
+
+        .back-to-list:hover {
+            color: var(--white);
+            background-color: var(--highlight-blue);
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .back-to-list i {
+            font-size: 0.9em;
+        }
+
+    .status-available {
+        color: #2e7d32;
+        font-weight: 500;
+    }
+
+    .status-booked {
+        color: #c2185b;
+        font-weight: 500;
+    }
+
+    .status-cancelled {
+        color: #6c757d;
+        font-weight: 500;
+    }
+</style>
+
+<div class="table-container" style="background-color: #96a5ba;">
+    <h1>View Slots</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.TimeRange)</th>
+                <th>@Html.DisplayNameFor(model => model.Status)</th>
+                <th>@Html.DisplayNameFor(model => model.PatientName)</th>
+                <th>@Html.DisplayNameFor(model => model.PatientNumber)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.TimeRange)</td>
+                    <td class="@($"status-{item.Status.ToString().ToLower()}")">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.PatientName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PatientNumber)</td>
+                    <td>
+                        @if (item.Status.ToString() != "Cancelled")
+                        {
+                            <a asp-action="CancelSlot" asp-route-slotId="@item.SlotId" class="cancel-btn" title="Cancel Slot"></a>
+                        }
+                    </td>
+                </tr>
+                idx++;
+            }
+        </tbody>
+    </table>
+
+    <div class="text-center">
+        <a asp-action="GetAvailabilitiesForDr" asp-route-id="@(ViewBag.drId)" class="back-to-list">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
 </div>
