@@ -24,7 +24,7 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
-        public IActionResult DetailsByID(int id, int page = 1)
+        public IActionResult DetailsByID(int id, int page)
         {
             ViewBag.CurrentPage = page;
             return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
@@ -50,33 +50,34 @@ namespace HealthCareApp.Controllers
 
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(int page)
         {
+            ViewBag.CurrentPage = page;
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(Specialization specialization)
+        public IActionResult Create(Specialization specialization, int page)
         {
             if (ModelState.IsValid)
             {
                 SpecializationRepo.Add(specialization);
                 SpecializationRepo.Save();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new {page});
             }
             else
                 return View(specialization);
         }
 
         [HttpGet]
-        public IActionResult Edit(int id, int page = 1)
+        public IActionResult Edit(int id, int page)
         {
             ViewBag.CurrentPage = page;
             return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
         }
 
         [HttpPost]
-        public IActionResult Edit(Specialization specialization, int page = 1)
+        public IActionResult Edit(Specialization specialization, int page)
         {
             if (ModelState.IsValid)
             {
@@ -89,18 +90,19 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int id, int page)
         {
+            ViewBag.CurrentPage = page;
             return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id, int page)
         {
             var deletedSpec = SpecializationRepo.GetById(id);
-            SpecializationRepo.Delete(deletedSpec);
+            SpecializationRepo.SoftDelete(deletedSpec);
             SpecializationRepo.Save();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new {page});
         }
     }
 }

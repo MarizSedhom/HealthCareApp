@@ -8,102 +8,101 @@
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-<table class="table mt-1">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Age)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContact)
-            </th>
-            <th> 
-                @Html.DisplayNameFor(model => model.MedicalHistory)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            var collapseId = $"medicalHistory_{item.Id}";
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FullName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Age)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EmergencyContact)
-                </td>
-                <td>
-                    <button type="button"
-                            class="btn btn-link text-info p-0 d-flex ms-5"
-                            data-bs-toggle="modal"
-                            data-bs-target="#medicalModal_@item.Id"
-                            title="View Medical History"
-                            id="medicalHistoryBtn_@item.Id">
-                        <i class="fas fa-file-medical-alt" style="font-size: 28px;"></i>
-                    </button>
 
-                    <!-- Modal -->
-                    <div class="modal fade" id="medicalModal_@item.Id" tabindex="-1" aria-labelledby="medicalModalLabel_@item.Id" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-scrollable">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="medicalModalLabel_@item.Id">Medical History - @item.FullName</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>@item.MedicalHistory</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                </div>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">@item.FullName</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Age: @item.Age</h6>
+                    <p class="card-text"><strong>Emergency Contact:</strong> @item.EmergencyContact</p>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <!-- Medical History Button -->
+                        <button type="button"
+                                class="btn btn-outline-info btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#medicalModal_@item.Id"
+                                title="View Medical History">
+                            <i class="fas fa-file-medical-alt"></i> History
+                        </button>
+
+                        <!-- Medical Records Button -->
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#medicalRecordsModal_@item.Id"
+                                title="View Medical Records"
+                                onclick="search('@item.Id', '@ViewBag.DoctorId')">
+                            <i class="fas fa-clipboard"></i> Records 
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical History Modal -->
+            <div class="modal fade" id="medicalModal_@item.Id" tabindex="-1" aria-labelledby="medicalModalLabel_@item.Id" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-md">
+                    <div class="modal-content border border-info rounded-3 shadow-sm">
+                        <div class="modal-header bg-info bg-opacity-10 text-info border-bottom border-info rounded-top-3">
+                            <h5 class="modal-title fw-semibold" id="medicalModalLabel_@item.Id">
+                                <i class="fas fa-file-medical-alt me-1"></i> Medical History - @item.FullName
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body text-start d-flex align-items-start justify-content-start px-4 py-2"
+                             style="white-space: pre-wrap; min-height: 100px; max-height: 300px; overflow-y: auto; word-break:break-word">
+                        @if (!string.IsNullOrWhiteSpace(item.MedicalHistory)) 
+                        { 
+                             <p class="mb-0">@item.MedicalHistory</p> 
+                        } 
+                        else
+                        {
+                            <div class="alert alert-info text-center py-2 px-3 mb-0 small">
+                                <i class="fas fa-info-circle me-1"></i> New patient (no medical history available).
                             </div>
+                        }
+                        </div>
+
+                        <div class="modal-footer justify-content-end py-2 px-3 border-top border-info">
+                            <button type="button" class="btn btn-outline-info btn-sm" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i> Close
+                            </button>
                         </div>
                     </div>
-                    </td>
-                    <td>
-                    <button type="button"
-                            class="btn btn-link text-info p-0 d-flex ms-5"
-                            title="View Medical Records"
-                            id="medicalHistoryBtn_@item.Id">
-                        <i class="fas fa-clipboard" style="font-size: 28px;"></i>
-                    </button>
-                    </td>
-                @* <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning" asp-route-page="@ViewBag.CurrentPage">Edit</a>
-                    <a asp-action="DetailsByID" asp-route-id="@item.Id" class="btn btn-info ms-2" asp-route-page="@ViewBag.CurrentPage">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-danger ms-2" >Delete</a>
-                </td> *@
-            </tr>
-        }
-    </tbody>
-</table>
+                </div>
+            </div>
 
-@* if (ViewBag.TotalPages > 1) 
- { 
-     <div class="d-flex justify-content-center mt-3"> 
-         <button class="btn btn-secondary me-2" 
-                 onclick="loadSearchPage(@(ViewBag.CurrentPage - 1))" 
-         @(ViewBag.CurrentPage == 1 ? "disabled" : "")> 
-             &lt; Prev 
-         </button> 
+            <!-- Medical Records Modal -->
+            <div class="modal fade" id="medicalRecordsModal_@item.Id" tabindex="2" aria-labelledby="medicalRecordsModalLabel_@item.Id" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-md">
+                    <div class="modal-content border border-primary rounded-3 shadow-sm">
+                        <div class="modal-header bg-primary bg-opacity-10 text-primary border-bottom border-primary rounded-top-3">
+                            <h5 class="modal-title fw-semibold" id="medicalRecordsModalLabel_@item.Id">
+                                <i class="fas fa-clipboard me-2"></i> Medical Records - @item.FullName
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-secondary small d-flex justify-content-center " id="medicalRecordsBody_@item.Id" style="height:100px">
+                            <!-- This will be populated by AJAX -->
+                        </div>
+                        <div class="modal-footer justify-content-end py-2 px-3 border-top border-primary">
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i> Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-         <span class="align-self-center">Page @ViewBag.CurrentPage of @ViewBag.TotalPages</span> 
-
-         <button class="btn btn-secondary ms-2" 
-                 onclick="loadSearchPage(@(ViewBag.CurrentPage + 1))" 
-         @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")> 
-             Next &gt; 
-         </button> 
-     </div> 
- } *@
+        </div>
+    }
+</div>
 
 @{
     int currentPage = ViewBag.CurrentPage;

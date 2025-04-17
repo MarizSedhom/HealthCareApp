@@ -7,7 +7,7 @@
 <h1>Specializations</h1>
 <hr class="w-75" />
 <p>
-    <a asp-action="Create" class="btn btn-success">Create New</a>
+    <a asp-action="Create" asp-route-page="@ViewBag.CurrentPage" class="btn btn-success">Create New</a>
 </p>
 <hr class="w-75" />
 <input type="text" name="name" id="searchInp" placeholder="DetailsByName" class="w-50 p-1" />

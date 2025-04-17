@@ -41,8 +41,8 @@
         </dd>
     </dl>
     
-    <form asp-action="Delete"> 
-         <input type="submit" value="Delete" class="btn btn-danger"/> | 
-         <a asp-action="Index">Back to List</a> 
+    <form asp-action="Delete" asp-route-page="@ViewBag.CurrentPage">
+        <input type="submit" value="Delete" class="btn btn-danger"/> |
+        <a asp-action="Index" asp-route-page="@ViewBag.CurrentPage">Back to List</a>
     </form> 
 </div>

@@ -24,9 +24,9 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
-        public IActionResult DetailsByID(int id, int page = 1)
+        public IActionResult DetailsByID(int id, int page)
         {
-            var result = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
+            var result = SubSpecializationRepo.Find(sspec => sspec.Id == id, sspec => sspec.Specialization);
             ViewBag.CurrentPage = page;
             return View(result);
         }
@@ -51,21 +51,22 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(int page)
         {
+            ViewBag.CurrentPage = page;
             SubSpecialization subSpecialization = new SubSpecialization();
             ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
             return View(subSpecialization);
         }
 
         [HttpPost]
-        public IActionResult Create(SubSpecialization subSpecialization)
+        public IActionResult Create(SubSpecialization subSpecialization, int page)
         {
             if (ModelState.IsValid)
             {
                 SubSpecializationRepo.Add(subSpecialization);
                 SubSpecializationRepo.Save();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new {page});
             }
             else
             {
@@ -75,19 +76,20 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id, int page = 1)
+        public IActionResult Edit(int id, int page)
         {
-            var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
+            ViewBag.CurrentPage = page;
+            var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, sspec => sspec.Specialization);
             ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
             ViewBag.CurrentPage = page;
             return View(editedObj);
         }
 
         [HttpPost]
-        public IActionResult Edit(SubSpecialization subSpecialization, int page = 1)
+        public IActionResult Edit(SubSpecialization subSpecialization, int page)
         {
             var existingSubSpecialization = SubSpecializationRepo.Find(
-                sspec => sspec.Id == subSpecialization.Id, ["Specialization"]);
+                sspec => sspec.Id == subSpecialization.Id, sspec => sspec.Specialization);
 
             existingSubSpecialization.Name = subSpecialization.Name;
             existingSubSpecialization.SpecializationId = subSpecialization.SpecializationId;
@@ -106,19 +108,20 @@ namespace HealthCareApp.Controllers
         }
 
             [HttpGet]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int id, int page)
         {
-            var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
+            ViewBag.CurrentPage = page;
+            var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, sspec => sspec.Specialization);
             return View(editedObj);
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id, int page)
         {
             var deletedSSpec = SubSpecializationRepo.GetById(id);
-            SubSpecializationRepo.Delete(deletedSSpec);
+            SubSpecializationRepo.SoftDelete(deletedSSpec);
             SubSpecializationRepo.Save();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new {page});
         }
     }
 }

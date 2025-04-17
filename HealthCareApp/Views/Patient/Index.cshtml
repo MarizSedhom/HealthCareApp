@@ -40,7 +40,7 @@
             data: {
                 name: currentSearchTerm,
                 page: page,
-                pageSize: 5
+                pageSize: 6
             },
             success: function (result) {
                 $('#initialContent').hide();
@@ -48,6 +48,30 @@
             },
             error: function (xhr) {
                 alert('An error occurred: ' + xhr.responseText);
+            }
+        });
+    }
+
+        function search(patientId, doctorId) {
+            console.log("Calling search:", patientId, doctorId);
+        const targetBodyId = `#medicalRecordsBody_${patientId}`;
+
+
+        // Optional: Show a loading message while waiting for the data
+        $(targetBodyId).html('<div class="text-muted">Loading...</div>');
+
+        $.ajax({
+            url: '/Patient/SearchForMedicalRecords',
+            type: 'GET',
+            data: {
+                patientId: patientId,
+                doctorId: doctorId
+            },
+            success: function (result) {
+                $(targetBodyId).html(result);
+            },
+            error: function (xhr) {
+                $(targetBodyId).html('<div class="text-danger">An error occurred: ' + xhr.responseText + '</div>');
             }
         });
     }

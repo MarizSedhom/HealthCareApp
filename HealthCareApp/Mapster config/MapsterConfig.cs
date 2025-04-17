@@ -1,7 +1,7 @@
-﻿using Mapster;
+﻿//using Mapster;
 
-public class MapsterConfig
-{
+//public class MapsterConfig
+//{
     //public static void RegisterMappings()
     //{
         //TypeAdapterConfig<SubSpecialization, SubSpecializationVM>.NewConfig()
@@ -10,7 +10,7 @@ public class MapsterConfig
         //TypeAdapterConfig<SubSpecializationVM, SubSpecialization>.NewConfig()
         //    .Map(dest => dest.Specialization.Name, src => src.SpecializationName);
     //}
-}
+//}
 
 
 

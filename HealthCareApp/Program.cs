@@ -1,7 +1,7 @@
 using HealthCareApp.Data;
 using HealthCareApp.RepositoryServices;
-using Mapster;
-using MapsterMapper;
+//using Mapster;
+//using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +16,7 @@ namespace HealthCareApp
             // Add services to the container.
             // var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("myConn")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("cs")));
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -32,12 +32,13 @@ namespace HealthCareApp
             // -> This method is used to configure ASP.NET Core Identity to use Entity Framework Core (EF Core) as the underlying data store for managing user-related data (like users, roles, etc.).
 
             // -> Register Mapster TypeAdapterConfig
-            var config = new TypeAdapterConfig();
-            builder.Services.AddSingleton(config);
+            //var config = new TypeAdapterConfig();
+            //builder.Services.AddSingleton(config);
 
             // -> Mapster Configuration
             //MapsterConfig.RegisterMappings();
-            builder.Services.AddSingleton<IMapper, ServiceMapper>();
+
+            //builder.Services.AddSingleton<IMapper, ServiceMapper>();
 
             builder.Services.AddControllersWithViews();
 
