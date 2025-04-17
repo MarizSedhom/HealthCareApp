@@ -12,6 +12,18 @@ namespace HealthCareApp.Controllers
         {
             this.PatientRepo = PatientRepo;
         }
+        public ActionResult DisplayPatientInfoForDoctor(string patientId)
+        {
+            var patientInfo = PatientRepo.FindWithSelect(p => p.Id == patientId,
+                p => new PatientInfoForDoctorVM
+                {
+                    PatientFullName = $"{p.FirstName} {p.LastName}",
+                    Age = DateTime.Now.Year - p.DateOfBirth.Year,
+                    MedicalHistory = p.MedicalHistory
+                });
+
+            return View(patientInfo);
+        }
 
         public IActionResult Index(int page = 1, int pageSize = 5)
         {
@@ -19,7 +31,7 @@ namespace HealthCareApp.Controllers
             var result = PatientRepo.FindAllForSearch(p => true, skip, pageSize, ["MedicalRecords"]);
 
             List<PatientVM> vm = new List<PatientVM>();
-            foreach(var item in result)
+            foreach (var item in result)
             {
                 PatientVM patient = new PatientVM()
                 {
