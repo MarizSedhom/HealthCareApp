@@ -16,7 +16,7 @@ namespace HealthCareApp.RepositoryServices
 
         public IEnumerable<T> GetAll()
         {
-            return _context.Set<T>().AsNoTracking().ToList();
+            return _context.Set<T>().ToList();
         }
 
         public IEnumerable<T> GetAllNoTracking()
@@ -25,6 +25,11 @@ namespace HealthCareApp.RepositoryServices
         }
 
         public T GetById(int id)
+        {
+            return _context.Set<T>().Find(id);
+        }
+        
+        public T GetById(string id)
         {
             return _context.Set<T>().Find(id);
         }
@@ -46,7 +51,8 @@ namespace HealthCareApp.RepositoryServices
 
             return query.SingleOrDefault(criteria);
         }
-        public IEnumerable<T> FindAll(
+
+        public IEnumerable<T> FindAllForSearch(
         Expression<Func<T, bool>> criteria,
         int? skip = null,
         int? take = null,
@@ -91,7 +97,7 @@ namespace HealthCareApp.RepositoryServices
             return entity;
         }
 
-        public T Update(T entity)
+        public T UpdateNoTracking(T entity)
         {
             var dbEntity = _context.Set<T>().Find(entity.GetType().GetProperty("Id")?.GetValue(entity));
 
@@ -103,40 +109,14 @@ namespace HealthCareApp.RepositoryServices
             _context.Update(entity);
 
             return entity;
-
         }
+
         public void Delete(T entity)
         {
-            var dbEntity = _context.Set<T>().Find(entity.GetType().GetProperty("Id")?.GetValue(entity)); // Get existing entity
-
-            if (dbEntity != null)
+            PropertyInfo property = entity.GetType().GetProperty("IsDeleted");
+            if (property != null && property.PropertyType == typeof(bool))
             {
-
-                PropertyInfo property = dbEntity.GetType().GetProperty("IsDeleted");
-                if (property != null && property.PropertyType == typeof(bool))
-                {
-                    property.SetValue(dbEntity, true);
-                }
-            }
-        }
-
-        public void DeleteWithComposite(T entity, params object[] keyValues) // update to delete with composite key
-        {
-            if (keyValues == null || keyValues.Length == 0)
-            {
-                throw new ArgumentException("Key values must be provided for composite keys.", nameof(keyValues));
-            }
-
-            var dbEntity = _context.Set<T>().Find(keyValues);
-
-            if (dbEntity != null)
-            {
-                PropertyInfo property = dbEntity.GetType().GetProperty("IsDeleted");
-
-                if (property != null && property.PropertyType == typeof(bool))
-                {
-                    property.SetValue(dbEntity, true);
-                }
+                property.SetValue(entity, true);
             }
         }
 

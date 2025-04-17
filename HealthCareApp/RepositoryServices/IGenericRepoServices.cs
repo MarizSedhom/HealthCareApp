@@ -7,13 +7,14 @@ namespace HealthCareApp.RepositoryServices
         IEnumerable<A> GetAll();
         IEnumerable<A> GetAllNoTracking();
         A GetById(int id);
+        public A GetById(string id);
         A GetByIdNoTracking(Func<A, bool> predicate);
         A Find(Expression<Func<A, bool>> criteria, string[] includes = null);
-        //IEnumerable<A> FindAll(Expression<Func<A, bool>> criteria, string[] includes = null);
-        //IEnumerable<A> FindAll(Expression<Func<A, bool>> criteria, int skip, int take, string[] includes = null);
-        //IEnumerable<A> FindAll(Expression<Func<A, bool>> criteria, int? take, int? skip,
+        //IEnumerable<A> FindAllForSearch(Expression<Func<A, bool>> criteria, string[] includes = null);
+        //IEnumerable<A> FindAllForSearch(Expression<Func<A, bool>> criteria, int skip, int take, string[] includes = null);
+        //IEnumerable<A> FindAllForSearch(Expression<Func<A, bool>> criteria, int? take, int? skip,
         //Expression<Func<A, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
-        public IEnumerable<A> FindAll(
+        public IEnumerable<A> FindAllForSearch(
         Expression<Func<A, bool>> criteria,
         int? skip = null,
         int? take = null,
@@ -22,9 +23,8 @@ namespace HealthCareApp.RepositoryServices
         string orderByDirection = OrderBy.Ascending);
 
         A Add(A entity);
-        A Update(A entity);
+        A UpdateNoTracking(A entity);
         void Delete(A entity);
-        void DeleteWithComposite(A entity, params object[] keyValues);
         int Count();
         int Count(Expression<Func<A, bool>> criteria);
         void Save();

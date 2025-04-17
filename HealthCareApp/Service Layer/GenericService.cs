@@ -46,23 +46,23 @@
 //            return result?.Adapt<V>();
 //        }
 
-//        public IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, string[] includes = null)
+//        public IEnumerable<V> FindAllForSearch(Expression<Func<V, bool>> criteria, string[] includes = null)
 //        {
 //            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
-//            return genericRepoServices.FindAll(entityCriteria, includes).ToList().Adapt<IEnumerable<V>>();
+//            return genericRepoServices.FindAllForSearch(entityCriteria, includes).ToList().Adapt<IEnumerable<V>>();
 //        }
 
-//        public IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, int take, int skip)
+//        public IEnumerable<V> FindAllForSearch(Expression<Func<V, bool>> criteria, int take, int skip)
 //        {
 //            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
-//            return genericRepoServices.FindAll(entityCriteria, take, skip).Adapt<IEnumerable<V>>();
+//            return genericRepoServices.FindAllForSearch(entityCriteria, take, skip).Adapt<IEnumerable<V>>();
 //        }
 
-//        public IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, int? take, int? skip, Expression<Func<V, object>> orderBy = null, string orderByDirection = "ASC")
+//        public IEnumerable<V> FindAllForSearch(Expression<Func<V, bool>> criteria, int? take, int? skip, Expression<Func<V, object>> orderBy = null, string orderByDirection = "ASC")
 //        {
 //            var entityCriteria = ExpressionConverter.Convert<A, V>(criteria);
 //            var entityOrderBy = orderBy?.Adapt<Expression<Func<A, object>>>();
-//            return genericRepoServices.FindAll(entityCriteria, take, skip, entityOrderBy, orderByDirection).Adapt<IEnumerable<V>>();
+//            return genericRepoServices.FindAllForSearch(entityCriteria, take, skip, entityOrderBy, orderByDirection).Adapt<IEnumerable<V>>();
 //        }
 
 //        public IEnumerable<V> GetAll()
@@ -96,10 +96,10 @@
 //            genericRepoServices.Clear();
 //        }
 
-//        public A Update(V entity)
+//        public A UpdateNoTracking(V entity)
 //        {
 //            var entityToUpdate = entity.Adapt<A>();
-//            var updatedEntity = genericRepoServices.Update(entityToUpdate);
+//            var updatedEntity = genericRepoServices.UpdateNoTracking(entityToUpdate);
 //            return updatedEntity;
 //        }
 

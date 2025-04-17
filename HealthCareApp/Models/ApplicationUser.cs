@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthCareApp.Models
 {
@@ -6,6 +7,7 @@ namespace HealthCareApp.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        [Display(Name = "Birth Date")]
         public DateOnly DateOfBirth { get; set; }
         public Gender gender { get; set; }
         public DateTime CreatedAt { get; set; }

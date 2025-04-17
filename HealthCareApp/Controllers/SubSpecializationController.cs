@@ -15,7 +15,7 @@ namespace HealthCareApp.Controllers
         public IActionResult Index(int page = 1, int pageSize = 5)
         {
             int skip = (page - 1) * pageSize;
-            var result = SubSpecializationRepo.FindAll(s => true, skip, pageSize, ["Specialization"]);
+            var result = SubSpecializationRepo.FindAllForSearch(s => true, skip, pageSize, ["Specialization"]);
             var totalCount = SubSpecializationRepo.Count();
 
             ViewBag.CurrentPage = page;
@@ -24,9 +24,10 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
-        public IActionResult DetailsByID(int id)
+        public IActionResult DetailsByID(int id, int page = 1)
         {
             var result = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
+            ViewBag.CurrentPage = page;
             return View(result);
         }
 
@@ -34,7 +35,7 @@ namespace HealthCareApp.Controllers
         {
             int skip = (page - 1) * pageSize;
 
-            var subSpecializations = SubSpecializationRepo.FindAll(
+            var subSpecializations = SubSpecializationRepo.FindAllForSearch(
                 spec => spec.Name.ToLower().Contains(name.ToLower()),
                 skip, pageSize, ["Specialization"], s => s.Name, OrderBy.Ascending
             );
@@ -74,15 +75,16 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult Edit(int id, int page = 1)
         {
             var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
             ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
+            ViewBag.CurrentPage = page;
             return View(editedObj);
         }
 
         [HttpPost]
-        public IActionResult Edit(SubSpecialization subSpecialization)
+        public IActionResult Edit(SubSpecialization subSpecialization, int page = 1)
         {
             var existingSubSpecialization = SubSpecializationRepo.Find(
                 sspec => sspec.Id == subSpecialization.Id, ["Specialization"]);
@@ -92,9 +94,9 @@ namespace HealthCareApp.Controllers
 
             if (ModelState.IsValid)
             {
-                SubSpecializationRepo.Update(existingSubSpecialization);
+                SubSpecializationRepo.UpdateNoTracking(existingSubSpecialization);
                 SubSpecializationRepo.Save();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new {page});
             }
             else
             {

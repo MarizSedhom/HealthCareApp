@@ -15,7 +15,7 @@ namespace HealthCareApp.Controllers
         public IActionResult Index(int page = 1, int pageSize = 5)
         {
             int skip = (page - 1) * pageSize;
-            var result = SpecializationRepo.FindAll(s => true, skip, pageSize);
+            var result = SpecializationRepo.FindAllForSearch(s => true, skip, pageSize);
             var totalCount = SpecializationRepo.Count();
 
             ViewBag.CurrentPage = page;
@@ -24,8 +24,9 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
-        public IActionResult DetailsByID(int id)
+        public IActionResult DetailsByID(int id, int page = 1)
         {
+            ViewBag.CurrentPage = page;
             return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
         }
 
@@ -33,7 +34,7 @@ namespace HealthCareApp.Controllers
         {
             int skip = (page - 1) * pageSize;
 
-            var specializations = SpecializationRepo.FindAll(
+            var specializations = SpecializationRepo.FindAllForSearch(
                 spec => spec.Name.ToLower().Contains(name.ToLower()),
                 skip, pageSize, null, s => s.Name, OrderBy.Ascending);
 
@@ -68,19 +69,20 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult Edit(int id, int page = 1)
         {
+            ViewBag.CurrentPage = page;
             return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
         }
 
         [HttpPost]
-        public IActionResult Edit(Specialization specialization)
+        public IActionResult Edit(Specialization specialization, int page = 1)
         {
             if (ModelState.IsValid)
             {
-                SpecializationRepo.Update(specialization);
+                SpecializationRepo.UpdateNoTracking(specialization);
                 SpecializationRepo.Save();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new {page});
             }
             else
                 return View(specialization);
@@ -95,7 +97,7 @@ namespace HealthCareApp.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            var deletedSpec = SpecializationRepo.GetByIdNoTracking(s => s.Id == id);
+            var deletedSpec = SpecializationRepo.GetById(id);
             SpecializationRepo.Delete(deletedSpec);
             SpecializationRepo.Save();
             return RedirectToAction(nameof(Index));

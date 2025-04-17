@@ -15,7 +15,7 @@ namespace HealthCareApp.Controllers
         public IActionResult Index(int page = 1, int pageSize = 5)
         {
             int skip = (page - 1) * pageSize;
-            var result = ClinicRepo.FindAll(s => true, skip, pageSize);
+            var result = ClinicRepo.FindAllForSearch(s => true, skip, pageSize);
             var totalCount = ClinicRepo.Count();
 
             ViewBag.CurrentPage = page;
@@ -24,8 +24,9 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
-        public IActionResult DetailsByID(int id)
+        public IActionResult DetailsByID(int id, int page = 1)
         {
+            ViewBag.CurrentPage = page;
             return View(ClinicRepo.Find(cl => cl.Id == id));
         }
 
@@ -33,7 +34,7 @@ namespace HealthCareApp.Controllers
         {
             int skip = (page - 1) * pageSize;
 
-            var subSpecializations = ClinicRepo.FindAll(
+            var subSpecializations = ClinicRepo.FindAllForSearch(
                 spec => spec.Name.ToLower().Contains(name.ToLower()),
                 skip, pageSize, null, s => s.Name, OrderBy.Ascending
             );
@@ -70,19 +71,20 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult Edit(int id, int page = 1)
         {
+            ViewBag.CurrentPage = page;
             return View(ClinicRepo.Find(cl => cl.Id == id));
         }
 
         [HttpPost]
-        public IActionResult Edit(Clinic clinic)
+        public IActionResult Edit(Clinic clinic, int page = 1)
         {
             if (ModelState.IsValid)
             {
-                ClinicRepo.Update(clinic);
+                ClinicRepo.UpdateNoTracking(clinic);
                 ClinicRepo.Save();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new {page});
             }
             else
             {

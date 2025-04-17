@@ -15,7 +15,7 @@ namespace HealthCareApp.Models
         [Display(Name = "Address")]
         [Required]
         [MaxLength(100)]
-        [RegularExpression(@"^[A-Za-z]+(?: [A-Za-z]+)*$", ErrorMessage = "Only letters and single spaces between words are allowed.")]
+        [RegularExpression(@"^[0-9A-Za-z]+(?: [A-Za-z]+)*$", ErrorMessage = "Only letters and single spaces between words are allowed.")]
         public string ClinicAddress { get; set; }
 
         [Display(Name = "City")]

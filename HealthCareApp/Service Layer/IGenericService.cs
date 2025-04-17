@@ -11,14 +11,14 @@
 //        IEnumerable<V> GetAllWithNoTracking();
 
 //        A Add(V entity);
-//        A Update(V entity);
+//        A UpdateNoTracking(V entity);
 //        void Delete(V entity);
 //        void DeleteWithComposite(V entity, params object[] keyValues);
 //        V Find(Expression<Func<V, bool>> criteria, string[] includes = null);
-//        public IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, string[] includes = null);
+//        public IEnumerable<V> FindAllForSearch(Expression<Func<V, bool>> criteria, string[] includes = null);
 
-//        IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, int take, int skip);
-//        IEnumerable<V> FindAll(Expression<Func<V, bool>> criteria, int? take, int? skip,
+//        IEnumerable<V> FindAllForSearch(Expression<Func<V, bool>> criteria, int take, int skip);
+//        IEnumerable<V> FindAllForSearch(Expression<Func<V, bool>> criteria, int? take, int? skip,
 //            Expression<Func<V, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
 
 //        int Count();

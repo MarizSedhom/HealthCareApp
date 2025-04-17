@@ -36,7 +36,7 @@ namespace HealthCareApp
             builder.Services.AddSingleton(config);
 
             // -> Mapster Configuration
-            MapsterConfig.RegisterMappings();
+            //MapsterConfig.RegisterMappings();
             builder.Services.AddSingleton<IMapper, ServiceMapper>();
 
             builder.Services.AddControllersWithViews();

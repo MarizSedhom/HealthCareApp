@@ -48,7 +48,7 @@ public class UniqueAttribute<T> : ValidationAttribute where T : class
         }).ToList();
 
         // Add expression id != current id (to check if any object with another id has the unique values)
-        var idProp = modelType.GetProperty("Id");
+        var idProp = modelType.GetProperty("Id"); // ensure matching property id if there is a view model
         if (idProp != null)
         {
             var idValue = idProp.GetValue(validationContext.ObjectInstance);
@@ -75,7 +75,7 @@ public class UniqueAttribute<T> : ValidationAttribute where T : class
         var lambda = Expression.Lambda<Func<T, bool>>(finalExpr, parameter);
 
         // Check if the combination of properties exists
-        var exists = repo.FindAll(lambda).Any();
+        var exists = repo.FindAllForSearch(lambda).Any();
         return exists
             ? new ValidationResult($"{_errorMessage}")
             : ValidationResult.Success;

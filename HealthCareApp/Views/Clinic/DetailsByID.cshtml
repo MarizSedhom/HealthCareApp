@@ -5,7 +5,7 @@
 }
 
 <div>
-    <h3>Clinic Details</h3>
+    <h3>Clinic Info</h3>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -41,6 +41,6 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id" asp-route-page="@ViewBag.CurrentPage">Edit</a> |
+    <a asp-action="Index" asp-route-page="@ViewBag.CurrentPage">Back to List</a>
 </div>

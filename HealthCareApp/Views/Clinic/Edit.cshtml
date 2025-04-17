@@ -8,7 +8,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" asp-route-page="@ViewBag.CurrentPage">
             <input type="hidden" asp-for="Id"/>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -43,7 +43,7 @@
 </div>
 
 <div class="mt-1">
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-route-page="@ViewBag.CurrentPage">Back to List</a>
 </div>
 
 @section Scripts {
