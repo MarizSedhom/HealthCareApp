@@ -13,6 +13,23 @@
         </tr>
     </thead>
     <tbody>
+        @* @foreach (var item in Model) *@
+        @* { *@
+        @*     <tr> *@
+        @*         <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;"> *@
+        @*             @item.Name *@
+        @*         </td> *@
+        @*         <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;"> *@
+        @*             @item.Specialization.Name *@
+        @*         </td> *@
+        @*         <td class="text-end action-buttons"> *@
+        @*             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-md" asp-route-page="@ViewBag.CurrentPage">Edit</a> *@
+        @*             <a asp-action="DetailsByID" asp-route-id="@item.Id" class="btn btn-info btn-md ms-2" asp-route-page="@ViewBag.CurrentPage">Details</a> *@
+        @*             <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-md ms-2" asp-route-page="@ViewBag.CurrentPage">Delete</a> *@
+        @*         </td> *@
+        @*     </tr> *@
+        @* } *@
+
         @foreach (var item in Model)
         {
             <tr>

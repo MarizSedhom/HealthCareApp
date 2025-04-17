@@ -120,7 +120,7 @@ namespace HealthCareApp.Controllers
 
             if (medicalRecords != null && medicalRecords.Any())
             {
-                return RedirectToAction("Eman enter your controller and action");
+                return RedirectToAction("Eman enter your controller and action here");
             }
             else
             {

@@ -34,6 +34,7 @@ namespace HealthCareApp.Models
         [Required]
         [MaxLength(20)]
         [RegularExpression(@"^(\+?\d{1,3})?[- ]?\d{10}$", ErrorMessage = "Phone number must be 10 digits, with optional country code.")]
+        [Unique<Clinic>("The phone number is already in use.", "ClinicPhoneNumber")]
         public string ClinicPhoneNumber { get; set; }
 
 

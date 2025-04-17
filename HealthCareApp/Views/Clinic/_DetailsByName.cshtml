@@ -25,20 +25,20 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                    @item.Name
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ClinicAddress)
+                <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                    @item.ClinicAddress
+                </td> 
+                <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                    @item.ClinicCity
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ClinicCity)
+                <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                    @item.ClinicRegion
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ClinicRegion)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ClinicPhoneNumber)
+                <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                    @item.ClinicPhoneNumber
                 </td>
                 <td class="text-end action-buttons">
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-md" asp-route-page="@ViewBag.CurrentPage">Edit</a>
