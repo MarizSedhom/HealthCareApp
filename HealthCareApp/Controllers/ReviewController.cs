@@ -1,5 +1,6 @@
-﻿using HealthCareApp.Models;
+using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
+using HealthCareApp.ViewModel.Review;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,50 +14,94 @@ namespace HealthCareApp.Controllers
         IGenericRepoServices<Review> reviewService;
         IGenericRepoServices<ApplicationUser> userService;
         IGenericRepoServices<Patient> patientService;
-        private readonly NotificationService notificationService;
-        private readonly UserManager<ApplicationUser> userManager;
+        IGenericRepoServices<Models.Doctor> doctorService;
+        
+        IGenericRepoServices<Notification> notificationRepoService;
+        NotificationService notificationService;
 
-        public ReviewController(IGenericRepoServices<Review> _reviewService,
-                        IGenericRepoServices<ApplicationUser> _userService,
-                        IGenericRepoServices<Patient> _patientService,
-                        NotificationService _notificationService,
-                        UserManager<ApplicationUser> _userManager)
+
+        public ReviewController(IGenericRepoServices<Review> _reviewService, IGenericRepoServices<ApplicationUser> _userService, IGenericRepoServices<Patient> _patientService, IGenericRepoServices<Models.Doctor> _docttorService, IGenericRepoServices<Notification> _notificationRepoService, NotificationService _notificationService)
         {
             reviewService = _reviewService;
             userService = _userService;
             patientService = _patientService;
+            doctorService = _docttorService;
+            notificationRepoService = _notificationRepoService;
             notificationService = _notificationService;
-            userManager = _userManager;
         }
 
 
-        public ActionResult Index(string doctorId = "d2dffdfa-3168-4fe8-8e52-60ed1c08fc72", string userId = "324a5999-2878-415d-a8c5-7a0b7be468db") // id of patient who views specific doctor reviews
+        public ActionResult GetDoctorReviews(string doctorId = null)//"80ac78e2-def2-4e42-a1db-a3b58939f63b")
         {
-            IEnumerable<Review> doctorReviews = reviewService.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
-            Patient patient = patientService.Find(u => u.Id == userId);
+            // Doctor view
+            if (doctorId == null)
+            {
+                doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
 
-            ViewBag.userId = userId;
-            ViewBag.isPatient = patient != null;
+            var dr = doctorService.GetById(doctorId);
+            IEnumerable<Review> reviews = reviewService.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
 
-            return View(doctorReviews);
+            var approvedReviews = reviews.Where(r => r.IsApproved).ToList();
+            var doctorReviews = new DoctorReviewsVM
+            {
+                TotalRating = approvedReviews.Any() ? approvedReviews.Average(r => r.Rating) : 0.0,
+                ReviewsCount = approvedReviews.Count(),
+                DoctorName = $"{dr.Title} {dr.FirstName} {dr.LastName}",
+                DoctorId = doctorId
+            };
+
+            doctorReviews.Reviews = reviews.Select(r => new ReviewVM
+            {
+                Id = r.Id,
+                Rating = r.Rating,
+                ReviewText = r.ReviewText,
+                ReviewDate = r.ReviewDate,
+                IsApproved = r.IsApproved,
+                IsEdited = r.IsEdited,
+                PatientId = r.PatientId,
+                PatientName = $"{r.Patient.FirstName} {r.Patient.LastName}",
+                Age = DateOnly.FromDateTime(DateTime.Now).Year - r.Patient.DateOfBirth.Year,
+                IsDeleted = r.IsDeleted
+            });
+
+            if(User.IsInRole("Patient"))
+            {
+                return View(doctorReviews);
+            }
+            else
+            {
+                return View("GetReviewsForDr", doctorReviews);
+            }
         }
 
-        
-        public ActionResult Create(string doctorId = "d2dffdfa-3168-4fe8-8e52-60ed1c08fc72", string patientId = "324a5999-2878-415d-a8c5-7a0b7be468db")
-        {
-            ViewBag.patientId = patientId;
-            ViewBag.doctorId = doctorId;
 
-            return View();
+        public ActionResult AddReview(string doctorId = "80ac78e2-def2-4e42-a1db-a3b58939f63b")
+        {
+            var review = new AddReviewVM()
+            {
+                DoctorId = doctorId,
+            };
+            return View(review);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Review review)
+        public ActionResult AddReview(AddReviewVM reviewVM)
         {
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             if (ModelState.IsValid)
             {
+                var review = new Review()
+                {
+                    Rating = reviewVM.Rating,
+                    ReviewText = reviewVM.ReviewText,
+                    PatientId = userId,
+                    DoctorId = reviewVM.DoctorId
+                };
+
                 Patient patient = patientService.Find(p => p.Id == review.PatientId);
                 review.Patient = patient;
 
@@ -70,33 +115,34 @@ namespace HealthCareApp.Controllers
                 };
 
                 notificationService.Notify(notification);
-                return RedirectToAction(nameof(Index));
+
+                reviewService.Add(review);
+                return RedirectToAction(nameof(GetDoctorReviews));
             }
             else
             {
-                return View(review);
+                return View(reviewVM);
             }
         }
 
 
-        public ActionResult Edit(int id)
+        public ActionResult EditReview(int id)
         {
-            Review review = reviewService.Find(r => r.Id == id, r => r.Patient, r => r.Doctor);
+            Review review = reviewService.Find(r => r.Id == id);
 
             return View(review);
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Review review)
+        public ActionResult EditReview(int id, Review review)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 review.IsEdited = true;
                 reviewService.Update(review);
-
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(GetDoctorReviews));
             }
             else
             {
@@ -104,11 +150,11 @@ namespace HealthCareApp.Controllers
             }
         }
 
-        public ActionResult Delete(int id)
+        public ActionResult DeleteReview(int id)
         {
             reviewService.SoftDelete(reviewService.GetById(id));
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(GetDoctorReviews));
         }
 
 
@@ -116,8 +162,23 @@ namespace HealthCareApp.Controllers
         // admin : approave, delete
         public ActionResult DisplayPendingReviews()
         {
-            IEnumerable<Review> pendingReviews= reviewService.FindAll(r => !r.IsApproved && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
-            return View(pendingReviews);
+            IEnumerable<Review> pendingReviews = reviewService.FindAll(r => !r.IsApproved && !r.IsDeleted, r => r.Doctor, r => r.Patient).ToList();
+            var pendingReviewsVM = pendingReviews.Select(r => new ReviewVM
+            {
+                Id = r.Id,
+                Rating = r.Rating,
+                ReviewText = r.ReviewText,
+                ReviewDate = r.ReviewDate,
+                IsApproved = r.IsApproved,
+                IsEdited = r.IsEdited,
+                PatientId = r.PatientId,
+                PatientName = $"{r.Patient.FirstName} {r.Patient.LastName}",
+                Age = DateOnly.FromDateTime(DateTime.Now).Year - r.Patient.DateOfBirth.Year,
+                IsDeleted = r.IsDeleted,
+                DoctorName = $"{r.Doctor.Title} {r.Doctor.FirstName} {r.Doctor.LastName}"
+
+            });
+            return View(pendingReviewsVM);
         }
 
         public ActionResult ApproveReview(int reviewId)
