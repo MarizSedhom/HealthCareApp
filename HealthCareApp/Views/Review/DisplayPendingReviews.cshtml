@@ -1,0 +1,18 @@
+﻿@model IEnumerable<HealthCareApp.ViewModel.Review.ReviewVM>
+
+@{
+    ViewData["Title"] = "DisplayPendingReviews";
+}
+
+<h2 class="text-center text-primary mb-4">Pending Reviews</h2>
+
+
+@foreach (var item in Model.OrderByDescending(r => r.ReviewDate))
+{
+    <div class="card mb-4 shadow-sm bg-secondary-subtle opacity-75">
+        <partial name="_ReviewCardPartial" model="@item"></partial>
+        <a asp-action="ApproveReview" asp-route-reviewId="@item.Id" class="text-success text-decoration-none fw-bold" style="position:absolute; right:80px; bottom:5px">Approve</a>
+        <a asp-action="RejectReview" asp-route-reviewId="@item.Id" class="text-danger text-decoration-none fw-bold" style="position:absolute; right:20px; bottom:5px">Reject</a>
+        <p class="ms-2 text-primary-emphasis fw-bold">To @item.DoctorName</p>
+    </div>
+}

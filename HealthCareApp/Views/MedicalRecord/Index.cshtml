@@ -4,56 +4,172 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<style>
+     .modal-backdrop{
+          background-color: rgba(0, 0, 0, 0.7) !important;  
+          backdrop-filter: blur(25px);
+      }
+
+    body.modal-open {
+        overflow: hidden; /* Prevent scrolling when modal is open */
+    }
+
+
+    .custom-modal .modal-content {
+        background: linear-gradient(135deg, #31304D 0%, #161A30 100%);
+        color: #F0ECE5;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .custom-modal .modal-header {
+        border-bottom: 1px solid rgba(240, 236, 229, 0.1);
+    }
+
+    .custom-modal .modal-title {
+        color: #F0ECE5;
+    }
+
+    .custom-modal .modal-body {
+        padding: 1.5rem;
+    }
+
+    .custom-modal .modal-footer {
+        border-top: 1px solid rgba(240, 236, 229, 0.1);
+    }
+
+    .custom-modal .btn-secondary {
+        background: rgba(240, 236, 229, 0.1);
+        border: none;
+        color: #F0ECE5;
+        transition: background 0.3s ease;
+    }
+
+        .custom-modal .btn-secondary:hover {
+            background: rgba(240, 236, 229, 0.2);
+        }
+
+    /* Fade-in Hover Effect */
+    .custom-modal .modal-content:hover {
+        opacity: 0.95;
+        transform: scale(1.02);
+    }
+
+</style>
+
+<div class="container">
+
+<h1>Medical Records</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-success" asp-action="Create">Create New Record</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Diagnosis)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Prescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Patient)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsDeleted)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Diagnosis)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Prescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Patient.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDeleted)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class=" mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">@($"{item.Patient.FirstName} {item.Patient.LastName}")</h5>
+                    <h6 class="card-subtitle text-muted">
+                        Age:
+                        @(DateOnly.FromDateTime(DateTime.Today).Year - item.Patient.DateOfBirth.Year -
+                            (DateOnly.FromDateTime(DateTime.Today) < item.Patient.DateOfBirth.AddYears(DateOnly.FromDateTime(DateTime.Today).Year - item.Patient.DateOfBirth.Year) ? 1 : 0))
+                    </h6>
+                </div>
+                <div class="card-body">
+					<h6 class="card-title"><strong>Diagnosis : </strong> @item.Diagnosis</h6>
+                    <p class="card-text">
+                        <strong>Created At :</strong> @item.CreatedAt.ToString("dd MMM yyyy")
+                    </p>
+                    <p class="card-text">
+                        @* <strong>Prescription:</strong> *@
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#prescriptionModal-@item.Id">
+                            View Prescription
+                        </button>
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#medicalHistoryModal-@item.Id">
+                            View Medical History
+                        </button>
+                    </p>
+                   
+                </div>
+                <div class="card-footer text-end">
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a class="btn btn-info" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    @* <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@item.Id">
+                            Delete
+                        </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prescription Modal -->
+        <div class="modal fade custom-modal" id="prescriptionModal-@item.Id" tabindex="-1" aria-labelledby="prescriptionModalLabel-@item.Id" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="prescriptionModalLabel-@item.Id">Prescription Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>@item.Prescription</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical History Modal -->
+        <div class="modal fade custom-modal" id="medicalHistoryModal-@item.Id" tabindex="-1" aria-labelledby="medicalHistoryModalLabel-@item.Id" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="medicalHistoryModalLabel-@item.Id">Medical History</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>@item.Patient.MedicalHistory</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            
+     
+
+
+    }
+</div>
+</div>
+
+@await Html.PartialAsync("_DeleteModal")
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+            $('#deleteModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var id = button.data('id'); // Extract info from data-* attributes
+                var modal = $(this);
+                modal.find('#recordIdToDelete').val(id);
+            });
+        });
+    </script>
+
 }
-    </tbody>
-</table>
+
+
+
+
+

@@ -16,6 +16,7 @@ namespace HealthCareApp.Models
         public virtual ICollection<Clinic>? Clinics { get; set; } =new List<Clinic>();
         public virtual ICollection<Availability>? availabilities { get; set; }=new List<Availability>();
         public virtual ICollection<SubSpecialization>? SubSpecializations { get; set; }=new List<SubSpecialization>();
+        public virtual ICollection<MedicalRecord>? MedicalRecords { get; set; } = new List<MedicalRecord>();
        
         [ForeignKey("Specialization")]
         public int SpecializationId { get; set; }
