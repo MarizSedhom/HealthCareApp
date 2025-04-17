@@ -32,8 +32,18 @@ namespace HealthCareApp.RepositoryServices
 
         int Count();
         int Count(Expression<Func<T, bool>> criteria);
-         void SaveChanges();
-
+        void SaveChanges();
+        public IEnumerable<T> GetAllNoTracking();
+        public T GetByIdNoTracking(Func<T, bool> predicate);
+        public IEnumerable<T> FindAllForSearch(
+        Expression<Func<T, bool>> criteria,
+        int? skip = null,
+        int? take = null,
+        string[] includes = null,
+        Expression<Func<T, object>> orderBy = null,
+        string orderByDirection = OrderBy.Ascending);
+        public T UpdateNoTracking(T entity);
+        public void Save();
     }
     public static class OrderBy
     {
