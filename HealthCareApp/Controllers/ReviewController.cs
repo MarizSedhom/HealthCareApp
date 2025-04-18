@@ -78,7 +78,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult AddReview(string doctorId = "fa6c5bd9-c27e-4328-8105-32d092a0ecd9")
+        public ActionResult AddReview(string doctorId = "1")
         {
             var review = new AddReviewVM()
             {
