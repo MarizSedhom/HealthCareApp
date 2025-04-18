@@ -33,7 +33,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult GetDoctorReviews(string doctorId = "80ac78e2-def2-4e42-a1db-a3b58939f63b")
+        public ActionResult GetDoctorReviews(string doctorId = "fa6c5bd9-c27e-4328-8105-32d092a0ecd9")
         {
             // Doctor view
             if (doctorId == null)
@@ -78,7 +78,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult AddReview(string doctorId = "80ac78e2-def2-4e42-a1db-a3b58939f63b")
+        public ActionResult AddReview(string doctorId = "fa6c5bd9-c27e-4328-8105-32d092a0ecd9")
         {
             var review = new AddReviewVM()
             {

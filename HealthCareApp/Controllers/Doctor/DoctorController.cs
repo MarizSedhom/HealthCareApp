@@ -29,7 +29,7 @@ namespace HealthCareApp.Controllers.Doctor
                 LastName = d.LastName,
                 ExperienceYears = d.ExperienceYears,
                 Specialization = d.Specialization.Name,
-                Title = d.Title,
+              //  Title = d.Title,
                 verificationStatus = d.verificationStatus
 
             });
@@ -67,7 +67,7 @@ namespace HealthCareApp.Controllers.Doctor
                 doctor.gender = profileVM.gender;
                 doctor.Fees = profileVM.Fees;
                 doctor.Description = profileVM.Description;
-                doctor.Title = profileVM.Title;
+             //   doctor.Title = profileVM.Title;
                 doctor.Description = profileVM.Description;
                 doctor.ExperienceYears = profileVM.ExperienceYears;
                 doctor.WaitingTimeInMinutes = profileVM.WaitingTimeInMinutes;
@@ -148,7 +148,7 @@ namespace HealthCareApp.Controllers.Doctor
                 LastName = d.LastName,
                 gender = d.gender,
                 Specialization = d.Specialization.Name,
-                Title = d.Title,
+              //  Title = d.Title,
                 SubSpecializations = d.SubSpecializations.Select(s => s.Name),
                 WaitingTimeInMinutes = d.WaitingTimeInMinutes,
                 DrId = d.Id,

@@ -27,7 +27,7 @@ namespace HealthCareApp.Controllers.Doctor
             this.doctorRepository = doctorRepository;
         }
 
-        public IActionResult DisplayDaysSlots(string DrId="1")
+        public IActionResult DisplayDaysSlots(string DrId= "fa6c5bd9-c27e-4328-8105-32d092a0ecd9")
         {
             IEnumerable<AvailabilityWithSlotVM> drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == DrId, v => new AvailabilityWithSlotVM()
             {

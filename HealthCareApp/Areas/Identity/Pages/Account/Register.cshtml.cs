@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using HealthCareApp.Data;
 
 namespace HealthCareApp.Areas.Identity.Pages.Account
 {
@@ -31,6 +33,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _context;
 
         private readonly RoleManager<IdentityRole> _roleManager;
 
@@ -41,7 +44,8 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
 
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -51,6 +55,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
             _emailSender = emailSender;
 
             _roleManager = roleManager;
+            _context = context;
         }
 
         /// <summary>
@@ -122,6 +127,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
             public string UserType { get; set; } // This will be "Patient" or "Doctor"
 
             // Patient-specific fields
+            [RegularExpression(@"^\d{11}$", ErrorMessage = "Mobile Number must be exactly 11 digits.")]
             [Display(Name = "Emergency Contact")]
             public string EmergencyContact { get; set; }
 
@@ -131,21 +137,14 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
 
             // Doctor-specific fields
             [Display(Name = "Professional Title")]
-            public string Title { get; set; }
+            public Title Title { get; set; }
 
             [Display(Name = "Description")]
             [DataType(DataType.MultilineText)]
             public string Description { get; set; }
 
-            [Display(Name = "Consultation Fees")]
-            [DataType(DataType.Currency)]
-            public decimal? Fees { get; set; }
-
             [Display(Name = "Years of Experience")]
             public int? ExperienceYears { get; set; }
-
-            [Display(Name = "Average Waiting Time (minutes)")]
-            public int? WaitingTimeInMinutes { get; set; }
 
             [Display(Name = "Specialization")]
             public int? SpecializationId { get; set; }
@@ -153,6 +152,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
 
 
         public SelectList RoleList { get; set; }
+        public List<SelectListItem> Specializations { get; set; }
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
@@ -160,6 +160,14 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
 
             var roles = new List<string> { "Patient", "Doctor" };
             RoleList = new SelectList(roles);
+
+            Specializations = await _context.Specializations
+           .Select(s => new SelectListItem
+           {
+               Value = s.Id.ToString(),
+               Text = s.Name
+           })
+           .ToListAsync();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -239,11 +247,8 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                         CreatedAt = DateTime.Now,
                         Title = Input.Title,
                         Description = Input.Description,
-                        Fees = Input.Fees ?? 0,
                         ExperienceYears = Input.ExperienceYears ?? 0,
-                        WaitingTimeInMinutes = Input.WaitingTimeInMinutes ?? 0,
-
-                        SpecializationId = Input.SpecializationId ?? 1, //////////modify it back to ZEROOOOOOO
+                        SpecializationId = Input.SpecializationId ?? 0, //////////modify it back to ZEROOOOOOO
                         verificationStatus = VerificationStatus.Pinding
                     };
 
