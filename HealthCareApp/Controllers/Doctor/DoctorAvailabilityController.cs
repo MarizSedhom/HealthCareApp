@@ -40,7 +40,7 @@ namespace HealthCareApp.Controllers.Doctor
                    EndTime = s.EndTime,
                    IsBooked = s.IsBooked,
                    SlotId=s.Id,
-                   StartTime = s.StartTime,    
+                   StartTime = s.StartTime
                 })
             }).OrderBy(v=>v.AvailabilityDate);
             return View(drAvailabilities);
@@ -122,8 +122,8 @@ namespace HealthCareApp.Controllers.Doctor
             ViewBag.DoctorId = id;
             return View(drAvailabilities);
         }
-       /////////////////////////////////////////////////////////
-       
+        /////////////////////////////////////////////////////////
+
 
         private GetAvailabilityForDrVM GetAvailabilityForDrVM(int availabilityId)
         {
@@ -144,7 +144,7 @@ namespace HealthCareApp.Controllers.Doctor
             });
             return drAvailabilities;
         }
-         public IActionResult DeleteAvailability(int availabilityId)
+        public IActionResult DeleteAvailability(int availabilityId)
          {
             var drAvailabilities = GetAvailabilityForDrVM(availabilityId);
             return View(drAvailabilities);
@@ -152,12 +152,24 @@ namespace HealthCareApp.Controllers.Doctor
          }
 
 
-        public IActionResult CancelDay(int availabilityId)
+
+        ////////////////////////////////////CancelDay for Notification/////////////////////////////////////////////
+        public IActionResult CancelDay(int oldAvailabilityId)
         {
-            Availability availability = AvailabilityRepository.Find(v => v.Id == availabilityId, v => v.AvailableSlots, v => v.AvailableSlots);
-            string drId = availability.DoctorId;
-            SlotRepository.HardDeleteRange(availability.AvailableSlots);
-            AvailabilityRepository.HardDelete(availability);
+            Availability oldAvailability =  AvailabilityRepository.GetAvailabilitySlotsAppointment(oldAvailabilityId);
+            string drId = oldAvailability.DoctorId;
+
+            foreach ( var slot in oldAvailability.AvailableSlots)
+            {
+                if (slot.IsBooked)
+                {
+                    /////////////////////////////notification for Cancel Appointment/////////////////////////////////////////
+                    //string msg =slot.Appointment.Id.ToString();
+                }
+            }
+
+            SlotRepository.HardDeleteRange(oldAvailability.AvailableSlots);
+            AvailabilityRepository.HardDelete(oldAvailability);
             return RedirectToAction(nameof(GetAvailabilitiesForDr), new { id = drId });
 
         }
@@ -184,13 +196,16 @@ namespace HealthCareApp.Controllers.Doctor
             return View();
 
         }
+
+
+        //////////////////////////////////RescheduleAvailability For Notification///////////////////////////////////////////
         [HttpPost]
         public IActionResult RescheduleAvailability(Item<DateOnly,int> RescheduleAvailabilityDate, int previousAvailabilityId)
         {
             Availability previousAvailability = AvailabilityRepository.GetAvailabilitySlotsAppointment(previousAvailabilityId);
             
             List<Notification>notifications = new List<Notification>();
-            Availability availability = new Availability()
+            Availability newAvailability = new Availability()
             {
                 AvailableSlots = new List<AvailabilitySlots>(),
                 ClinicId = previousAvailability.ClinicId,
@@ -203,10 +218,12 @@ namespace HealthCareApp.Controllers.Doctor
                 type = previousAvailability.type,
 
             };
-            DateTime todayTime = DateTime.Now;////////////////////////////////////////////////////
+            DateTime todayTime = DateTime.Now;
+
             foreach (var slot in previousAvailability.AvailableSlots) {
-                availability.AvailableSlots.Add(slot);
+                newAvailability.AvailableSlots.Add(slot);
                 if (slot.IsBooked) {
+                    /////////////////////////////notification for Reschdule Appointment/////////////////////////////////////////
                     notifications.Add(new Notification()
                     {
                         CreatedDate = todayTime,
@@ -215,14 +232,14 @@ namespace HealthCareApp.Controllers.Doctor
                     });
                 }
             }
-            AvailabilityRepository.Add(availability);
+            AvailabilityRepository.Add(newAvailability);
             previousAvailability.AvailableSlots.Clear();
             AvailabilityRepository.HardDelete(previousAvailability);
 
             //NotificationRepository.(notifications)
             NotificationRepository.AddRange(notifications);
 
-            return RedirectToAction(nameof(GetAvailabilitiesForDr), new { id = availability.DoctorId });
+            return RedirectToAction(nameof(GetAvailabilitiesForDr), new { id = newAvailability.DoctorId });
 
         }
         private IEnumerable<DateOnly> GetScheduleDays(IEnumerable<DateOnly> currentAvailabilities)
@@ -292,9 +309,11 @@ namespace HealthCareApp.Controllers.Doctor
 
             return Json(Slots);
         }
-        public IActionResult CancelSlot(int slotId )
+        public IActionResult CancelSlot(int slotId)
         {
+
             ViewSlotVM Slot = SlotRepository.FindWithSelect(s => s.Id == slotId,s => new ViewSlotVM()
+
             {
                 TimeRange = $"{s.StartTime} - {s.EndTime}",
                 PatientName = (s.Appointment == null) ? "-" : s.Appointment.PatientName,
@@ -311,6 +330,7 @@ namespace HealthCareApp.Controllers.Doctor
         }
 
 
+        //////////////////////////// Notification for patient about the cancelation ///////////////////
         public IActionResult CancelSlotPost(int slotId)
         {
             AvailabilitySlots slot = SlotRepository.Find(s => s.Id == slotId, s => s.Appointment);
@@ -344,6 +364,8 @@ namespace HealthCareApp.Controllers.Doctor
             };
             return View(slot_AvailbilityVM);
         }
+
+        ////////////////////////Notification for patient about Reschedule Appointment ////////////////
 
         [HttpPost]
         public IActionResult RescheduleAppointment(Slot_AvailbilityVM slot_Availbility )

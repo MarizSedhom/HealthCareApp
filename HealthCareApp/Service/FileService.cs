@@ -4,7 +4,8 @@
     {
         static string BasePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         public static string ImgPath = Path.Combine(BasePath, "image");
-        public static string DrPath = Path.Combine(ImgPath, "Doctor");
+        public static string DrImagesPath = Path.Combine(ImgPath, "Doctor");
+        public static string DrVerificationPath = Path.Combine(BasePath, "DoctorVerificationFile");
         public static string DrPathRelative = "/uploads/image/Doctor/";
 
 

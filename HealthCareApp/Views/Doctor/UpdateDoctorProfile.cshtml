@@ -37,7 +37,9 @@
                 <input type="file" asp-for="ProfilePicture" id="ProfilePicture" class="d-none" accept="image/*" />
                 <div class="mt-2">
                     <span asp-validation-for="ProfilePicture" class="text-danger small"></span>
-                    <small class="form-text text-muted d-block">Click on image to change. Recommended size: 300x300 pixels</small>
+                    <small class="form-text text-muted d-block">Click on image to change</small>
+                        <h3 class="mb-0">@($"{Model.Title}. {Model.FirstName} {Model.LastName}")</h3>
+
                 </div>
             </div>
         </div>
@@ -47,7 +49,6 @@
 <div class="container mt-4">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">@($"{Model.Title}/ {Model.FirstName} {Model.LastName}")</h3>
         </div>
         <div class="card-body">
 
@@ -80,7 +81,7 @@
                         </div>
                         <div class="form-group mb-3">
                             <label asp-for="PhoneNumber" class="form-label fw-bold"></label>
-                            <textarea asp-for="PhoneNumber" class="form-control" rows="3"></textarea>
+                            <input asp-for="PhoneNumber" class="form-control" rows="3"></input>
                             <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                         </div>
                     </div>
@@ -178,9 +179,9 @@
                     <button type="submit" class="btn btn-primary px-4 py-2">
                         <i class="fas fa-save me-2"></i>Save Changes
                     </button>
-                    <a asp-action="Index" class="btn btn-outline-secondary ms-2 px-4 py-2">
+@*                     <a asp-action="Index" class="btn btn-outline-secondary ms-2 px-4 py-2">
                         <i class="fas fa-arrow-left me-2"></i>Back to List
-                    </a>
+                    </a> *@
                 </div>
         </div>
     </div>

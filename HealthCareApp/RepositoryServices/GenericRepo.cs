@@ -41,37 +41,6 @@ namespace HealthCareApp.RepositoryServices
         }
 
 
-        public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes)
-        {
-            IQueryable<T> query = _context.Set<T>();
-
-            if (includes != null)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
-            }
-            
-            return query.Where(criteria).ToList();
-        }
-
-        //////with select
-        //public TResult FindWithSelect<TResult>(Expression<Func<T, TResult>> selector, Expression<Func<TResult, bool>> criteria, params Expression<Func<T, object>>[] includes)
-        //{ 
-        //IQueryable<T> query = _context.Set<T>();
-
-        //    if (includes != null )
-        //    {
-        //        foreach (var include in includes)
-        //        {
-        //            query = query.Include(include);
-        //        }
-        //    }
-        //    return query
-        //        .Select(selector)        
-        //        .FirstOrDefault(criteria);  
-        //}
         public TResult FindWithSelect<TResult>( Expression<Func<T, bool>> criteria,Expression<Func<T, TResult>> selector,params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();
@@ -83,7 +52,6 @@ namespace HealthCareApp.RepositoryServices
                     query = query.Include(include);
                 }
             }
-
             return query
                 .Where(criteria)
                 .Select(selector)
@@ -106,6 +74,21 @@ namespace HealthCareApp.RepositoryServices
                 return query.Select(selector).ToList();
             else
                 return query.Where(criteria).Select(selector).ToList();
+        }
+
+        public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            
+            return query.Where(criteria).ToList();
         }
 
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int skip, int take)

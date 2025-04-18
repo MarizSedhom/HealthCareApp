@@ -14,7 +14,7 @@
  
     @Html.Partial("_AvailabilityInfoPartial",Model)
 
-    <a asp-action="CancelDay" asp-route-availabilityId="@Model.Id" class="btn btn-danger">Cancel Day</a>
+    <a asp-action="CancelDay" asp-route-oldAvailabilityId="@Model.Id" class="btn btn-danger">Cancel Day</a>
 @*     @if (Model.AppointmentCnt > 0)
     {
         <a asp-action="RescheduleAppointmentsForDay" asp-route-availabilityId="@Model.Id" class=" btn btn-danger">Reschedule Appointment</a>
