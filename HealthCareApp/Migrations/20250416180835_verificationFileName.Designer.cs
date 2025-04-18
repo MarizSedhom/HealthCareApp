@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace HealthCareApp.Data.Migrations
+namespace HealthCareApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250403182958_UpdateDoctorAndMedicalReecordTables")]
-    partial class UpdateDoctorAndMedicalReecordTables
+    [Migration("20250416180835_verificationFileName")]
+    partial class verificationFileName
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -155,18 +155,19 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<string>("PatientPhone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<int>("SlotId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<int>("paymentMethod")
                         .HasColumnType("int");
 
                     b.Property<int>("paymentStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -388,6 +389,9 @@ namespace HealthCareApp.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsEdited")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PatientId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -536,10 +540,12 @@ namespace HealthCareApp.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -576,10 +582,12 @@ namespace HealthCareApp.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -616,6 +624,10 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<int>("WaitingTimeInMinutes")
                         .HasColumnType("int");
+
+                    b.Property<string>("verificationFileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("verificationStatus")
                         .HasColumnType("int");

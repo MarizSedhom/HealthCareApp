@@ -1,10 +1,11 @@
 ﻿using HealthCareApp.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace HealthCareApp.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public partial class  ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -126,6 +127,14 @@ namespace HealthCareApp.Data
                 .WithMany(s => s.SubSpecialization)
                 .HasForeignKey(s => s.SpecializationId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            OnModelCreatingPartial(modelBuilder);
+
         }
+
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
     }
+
+
 }

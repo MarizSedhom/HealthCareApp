@@ -1,0 +1,37 @@
+﻿//using System.Linq.Expressions;
+
+//namespace HealthCareApp.Service_Layer
+//{
+//    public interface IGenericService<A, V>
+//        where A : class
+//        where V : class
+//    {
+//        V GetById(int id);
+//        IEnumerable<V> GetAll();
+//        IEnumerable<V> GetAllWithNoTracking();
+
+//        A Add(V entity);
+//        A UpdateNoTracking(V entity);
+//        void Delete(V entity);
+//        void DeleteWithComposite(V entity, params object[] keyValues);
+//        V Find(Expression<Func<V, bool>> criteria, string[] includes = null);
+//        public IEnumerable<V> FindAllForSearch(Expression<Func<V, bool>> criteria, string[] includes = null);
+
+//        IEnumerable<V> FindAllForSearch(Expression<Func<V, bool>> criteria, int take, int skip);
+//        IEnumerable<V> FindAllForSearch(Expression<Func<V, bool>> criteria, int? take, int? skip,
+//            Expression<Func<V, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
+
+//        int Count();
+//        int Count(Expression<Func<V, bool>> criteria);
+//        void Save();
+
+//        V GetByIdNoTracking(Expression<Func<V, bool>> criteria);
+
+//        public void Clear();
+//        public static class OrderBy
+//        {
+//            public const string Ascending = "ASC";
+//            public const string Descending = "DESC";
+//        }
+//    }
+//}

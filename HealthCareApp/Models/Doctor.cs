@@ -11,6 +11,7 @@ namespace HealthCareApp.Models
         public int WaitingTimeInMinutes { get; set; }
         public string ProfilePicture {  get; set; }
         public VerificationStatus verificationStatus { get; set; }
+        public string verificationFileName { get; set; }
 
         public virtual ICollection<Review>? Reviews { get; set; }=new List<Review>();
         public virtual ICollection<Clinic>? Clinics { get; set; } =new List<Clinic>();

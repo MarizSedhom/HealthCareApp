@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace HealthCareApp.Data.Migrations
+namespace HealthCareApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -34,7 +34,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("SubSpecializationsId");
 
-                    b.ToTable("DoctorSubSpecialization", (string)null);
+                    b.ToTable("DoctorSubSpecialization");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.ApplicationUser", b =>
@@ -174,7 +174,7 @@ namespace HealthCareApp.Data.Migrations
                     b.HasIndex("SlotId")
                         .IsUnique();
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Availability", b =>
@@ -219,7 +219,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Availability", (string)null);
+                    b.ToTable("Availability");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.AvailabilitySlots", b =>
@@ -249,7 +249,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("AvailabilityId");
 
-                    b.ToTable("AvailabilitySlots", (string)null);
+                    b.ToTable("AvailabilitySlots");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Clinic", b =>
@@ -291,7 +291,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Clinics", (string)null);
+                    b.ToTable("Clinics");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.MedicalRecord", b =>
@@ -330,7 +330,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("MedicalRecords", (string)null);
+                    b.ToTable("MedicalRecords");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Notification", b =>
@@ -365,7 +365,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Review", b =>
@@ -409,7 +409,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Specialization", b =>
@@ -429,7 +429,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specializations", (string)null);
+                    b.ToTable("Specializations");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.SubSpecialization", b =>
@@ -454,7 +454,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("SpecializationId");
 
-                    b.ToTable("SubSpecializations", (string)null);
+                    b.ToTable("SubSpecializations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -537,10 +537,12 @@ namespace HealthCareApp.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -577,10 +579,12 @@ namespace HealthCareApp.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -617,6 +621,10 @@ namespace HealthCareApp.Data.Migrations
 
                     b.Property<int>("WaitingTimeInMinutes")
                         .HasColumnType("int");
+
+                    b.Property<string>("verificationFileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("verificationStatus")
                         .HasColumnType("int");

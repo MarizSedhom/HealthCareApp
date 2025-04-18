@@ -1,10 +1,12 @@
 using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using HealthCareApp.ViewModel.Review;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
@@ -15,7 +17,7 @@ namespace HealthCareApp.Controllers
         IGenericRepoServices<ApplicationUser> userService;
         IGenericRepoServices<Patient> patientService;
         IGenericRepoServices<Models.Doctor> doctorService;
-        
+
         IGenericRepoServices<Notification> notificationRepoService;
         NotificationService notificationService;
 
@@ -31,7 +33,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult GetDoctorReviews(string doctorId ="80ac78e2-def2-4e42-a1db-a3b58939f63b")
+        public ActionResult GetDoctorReviews(string doctorId = "80ac78e2-def2-4e42-a1db-a3b58939f63b")
         {
             // Doctor view
             if (doctorId == null)
@@ -65,7 +67,7 @@ namespace HealthCareApp.Controllers
                 IsDeleted = r.IsDeleted
             });
 
-            if(User.IsInRole("Patient"))
+            if (User.IsInRole("Patient"))
             {
                 return View(doctorReviews);
             }
@@ -102,7 +104,7 @@ namespace HealthCareApp.Controllers
                     DoctorId = reviewVM.DoctorId
                 };
 
-                
+
 
                 reviewService.Add(review);
                 return RedirectToAction(nameof(GetDoctorReviews));
@@ -178,7 +180,7 @@ namespace HealthCareApp.Controllers
             Patient patient = patientService.Find(p => p.Id == review.PatientId);
             review.Patient = patient;
 
-            Models.Doctor doctor =doctorService.Find(d=>d.Id == review.DoctorId);
+            Models.Doctor doctor = doctorService.Find(d => d.Id == review.DoctorId);
             review.Doctor = doctor;
 
             //notification for Patient

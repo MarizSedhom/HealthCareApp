@@ -1,0 +1,56 @@
+﻿@using HealthCareApp.ViewModel.Patient
+@model IEnumerable<PatientVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Patients</h1>
+
+<input type="text" name="name" id="searchInp" placeholder="DetailsByName" class="w-50 p-1 " />
+<input type="button" value="Search" class="btn btn-primary ms-3 mb-1" id="searchBtn" onclick="fun()" />
+
+<div id="searchResults"></div>
+
+<div id="initialContent">@Html.Partial("_DetailsByName", Model)</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    var currentSearchTerm = "";
+
+    function fun() {
+        currentSearchTerm = $('#searchInp').val().trim();
+
+        if (currentSearchTerm === "") {
+            alert("Please enter a Clinic name.");
+            return;
+        }
+
+        loadSearchPage(1);
+    }
+
+    function loadSearchPage(page) {
+        if (currentSearchTerm === "") {
+            window.location.href = '/Patient/Index?page=' + page + '&pageSize=5';
+            return;
+        }
+
+        $.ajax({
+            url: '/Patient/DetailsByName',
+            type: 'GET',
+            data: {
+                name: currentSearchTerm,
+                page: page,
+                pageSize: 5
+            },
+            success: function (result) {
+                $('#initialContent').hide();
+                $('#searchResults').html(result);
+            },
+            error: function (xhr) {
+                alert('An error occurred: ' + xhr.responseText);
+            }
+        });
+    }
+</script>
+
