@@ -24,7 +24,7 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
-        public IActionResult DetailsByID(int id, int page = 1)
+        public IActionResult DetailsByID(int id, int page)
         {
             ViewBag.CurrentPage = page;
             return View(ClinicRepo.Find(cl => cl.Id == id));
@@ -50,19 +50,20 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(int page)
         {
+            ViewBag.CurrentPage = page;
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(Clinic clinic)
+        public IActionResult Create(Clinic clinic, int page)
         {
             if (ModelState.IsValid)
             {
                 ClinicRepo.Add(clinic);
                 ClinicRepo.Save();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { page });
             }
             else
             {
@@ -71,20 +72,20 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id, int page = 1)
+        public IActionResult Edit(int id, int page)
         {
             ViewBag.CurrentPage = page;
             return View(ClinicRepo.Find(cl => cl.Id == id));
         }
 
         [HttpPost]
-        public IActionResult Edit(Clinic clinic, int page = 1)
+        public IActionResult Edit(Clinic clinic, int page)
         {
             if (ModelState.IsValid)
             {
                 ClinicRepo.UpdateNoTracking(clinic);
                 ClinicRepo.Save();
-                return RedirectToAction(nameof(Index), new {page});
+                return RedirectToAction(nameof(Index), new { page });
             }
             else
             {
@@ -93,18 +94,19 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int id, int page)
         {
+            ViewBag.CurrentPage = page;
             return View(ClinicRepo.Find(cl => cl.Id == id));
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id, int page)
         {
-            var deletedClin = ClinicRepo.GetByIdNoTracking(cl => cl.Id == id);
-            ClinicRepo.Delete(deletedClin);
+            var deletedClin = ClinicRepo.GetById(id);
+            ClinicRepo.SoftDelete(deletedClin);
             ClinicRepo.Save();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { page });
         }
     }
 }
