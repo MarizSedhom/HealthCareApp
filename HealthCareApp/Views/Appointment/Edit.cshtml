@@ -44,22 +44,22 @@
                        value="@($"{Model.AvailableSlot?.Availability?.Doctor?.FirstName} {Model.AvailableSlot?.Availability?.Doctor?.LastName}")" readonly />
             </div><br />
 
-            <div class="form-group">
-                <label asp-for="PatientName" class="control-label"></label>
-                <input asp-for="PatientName" class="form-control" />
-                <span asp-validation-for="PatientName" class="text-danger"></span>
-            </div><br />
+            @* <div class="form-group"> *@
+            @*     <label asp-for="PatientName" class="control-label"></label> *@
+            @*     <input asp-for="PatientName" class="form-control" /> *@
+            @*     <span asp-validation-for="PatientName" class="text-danger"></span> *@
+            @* </div><br /> *@
+
+            @* <div class="form-group"> *@
+            @*     <label asp-for="PatientPhone" class="control-label"></label> *@
+            @*     <input asp-for="PatientPhone" class="form-control" /> *@
+            @*     <span asp-validation-for="PatientPhone" class="text-danger"></span> *@
+            @* </div><br /> *@
 
             <div class="form-group">
-                <label asp-for="PatientPhone" class="control-label"></label>
-                <input asp-for="PatientPhone" class="form-control" />
-                <span asp-validation-for="PatientPhone" class="text-danger"></span>
-            </div><br />
-
-            <div class="form-group">
-                <label asp-for="paymentMethod" class="control-label"></label>
-                <input asp-for="paymentMethod" class="form-control" readonly/>
-                <span asp-validation-for="paymentMethod" class="text-danger"></span>
+                <label asp-for="PaymentMethod" class="control-label"></label>
+                <input asp-for="PaymentMethod" class="form-control" readonly/>
+                <span asp-validation-for="PaymentMethod" class="text-danger"></span>
             </div><br />
 
             <div class="form-group mt-3">

@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCareApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
+<<<<<<<< HEAD:HealthCareApp/Migrations/20250416002555_intial.Designer.cs
     [Migration("20250416002555_intial")]
     partial class intial
+========
+    [Migration("20250417223641_updatedAppointment")]
+    partial class updatedAppointment
+>>>>>>>> rahma2:HealthCareApp/Migrations/20250417223641_updatedAppointment.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -145,18 +150,25 @@ namespace HealthCareApp.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PatientId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("PatientName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
 
+<<<<<<<< HEAD:HealthCareApp/Migrations/20250416002555_intial.Designer.cs
                     b.Property<string>("PatientPhone")
                         .IsRequired()
                         .HasMaxLength(11)
                         .HasColumnType("nvarchar(11)");
+========
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+>>>>>>>> rahma2:HealthCareApp/Migrations/20250417223641_updatedAppointment.Designer.cs
 
                     b.Property<int>("SlotId")
                         .HasColumnType("int");
@@ -164,12 +176,15 @@ namespace HealthCareApp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+<<<<<<<< HEAD:HealthCareApp/Migrations/20250416002555_intial.Designer.cs
                     b.Property<int>("paymentMethod")
                         .HasColumnType("int");
 
                     b.Property<int>("paymentStatus")
                         .HasColumnType("int");
 
+========
+>>>>>>>> rahma2:HealthCareApp/Migrations/20250417223641_updatedAppointment.Designer.cs
                     b.HasKey("Id");
 
                     b.HasIndex("PatientId");

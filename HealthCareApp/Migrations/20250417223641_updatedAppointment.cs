@@ -6,7 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HealthCareApp.Migrations
 {
     /// <inheritdoc />
+<<<<<<<< HEAD:HealthCareApp/Migrations/20250416002555_intial.cs
     public partial class intial : Migration
+========
+    public partial class updatedAppointment : Migration
+>>>>>>>> rahma2:HealthCareApp/Migrations/20250417223641_updatedAppointment.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -402,6 +406,7 @@ namespace HealthCareApp.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Status = table.Column<int>(type: "int", nullable: false),
+<<<<<<<< HEAD:HealthCareApp/Migrations/20250416002555_intial.cs
                     PatientName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PatientPhone = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
                     PatientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -409,6 +414,14 @@ namespace HealthCareApp.Migrations
                     paymentStatus = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     paymentMethod = table.Column<int>(type: "int", nullable: false)
+========
+                    PatientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SlotId = table.Column<int>(type: "int", nullable: false),
+                    PaymentStatus = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+>>>>>>>> rahma2:HealthCareApp/Migrations/20250417223641_updatedAppointment.cs
                 },
                 constraints: table =>
                 {

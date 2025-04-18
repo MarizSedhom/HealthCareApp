@@ -23,17 +23,17 @@ namespace HealthCareApp.ViewModel.Doctor
         public int? AppointmentId {  get; set; }
         public int? AvailabilityId {  get; set; }
         public int?drId { get; set; }
-        public void SetViewSlotVM(AvailabilitySlots s)
-        {
-            TimeRange = $"{s.StartTime} - {s.EndTime}";
-            PatientName = (s.Appointment == null) ? "-" : s.Appointment.PatientName;
-            PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.PatientPhone;
-            IsBooked = s.IsBooked;
-            Status = (s.IsBooked) ? "Booked" : "Available";
-            AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id;
-            SlotId = s.Id;
-            AvailabilityId = s.AvailabilityId;
+        //public void SetViewSlotVM(AvailabilitySlots s)
+        //{
+        //    TimeRange = $"{s.StartTime} - {s.EndTime}";
+        //    PatientName = (s.Appointment == null) ? "-" : s.Appointment.PatientName;
+        //    PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.PatientPhone;
+        //    IsBooked = s.IsBooked;
+        //    Status = (s.IsBooked) ? "Booked" : "Available";
+        //    AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id;
+        //    SlotId = s.Id;
+        //    AvailabilityId = s.AvailabilityId;
 
-        }
+        //}
     }
 }
