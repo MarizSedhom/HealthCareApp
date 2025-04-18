@@ -1,0 +1,48 @@
+﻿@model HealthCareApp.ViewModel.Appointment.PatientUpcomingAppointmentsVM
+
+@{
+    ViewData["Title"] = "Cancel Appointment";
+}
+
+<h3 class="text-center text-danger">Are you sure you want to cancel this appointment?</h3>
+
+<div class="card shadow-sm rounded-3 mb-4 border-0">
+    <div class="card-body">
+        <h5 class="card-title mb-3">
+            Appointment with Dr. @Model.DoctorTitle @Model.DoctorName
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted">@Model.Specialization - @Model.Clinic clinic</h6>
+
+        <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item">
+                <strong>Status:</strong> @Model.Status
+            </li>
+            <li class="list-group-item">
+                <strong>Mode:</strong> @Model.Mode
+            </li>
+            <li class="list-group-item">
+                <strong>Date:</strong> @Model.Date (@Model.Day)
+            </li>
+            <li class="list-group-item">
+                <strong>Time:</strong> @Model.StartTime - @Model.EndTime
+            </li>
+            <li class="list-group-item">
+                <strong>Payment Status:</strong> @Model.PaymentStatus
+            </li>
+            <li class="list-group-item">
+                <strong>Payment Method:</strong> @Model.PaymentMethod
+            </li>
+            <li class="list-group-item">
+                <strong>Fees:</strong> @Model.Fees L.E
+            </li>
+        </ul>
+
+        <form asp-action="CancelAppointment">
+            <input type="hidden" asp-for="Id" />
+            <div class="d-flex justify-content-center">
+                <input type="submit" value="Confirm Cancel" class="btn btn-danger mx-2" />
+                <a asp-action="PatientUpcomingAppointments" class="btn btn-secondary">Back to Appointments</a>
+            </div>
+        </form>
+    </div>
+</div>

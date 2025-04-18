@@ -25,9 +25,16 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult GetDoctorReviews(string doctorId = "3")
+        public ActionResult GetDoctorReviews(string doctorId= "hggvftgf55555555")
         {
+            // Doctor view
+            if(doctorId == null)
+            {
+                doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
+
             var dr = doctorService.GetById(doctorId);
+
             IEnumerable<Review> reviews = reviewService.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
 
             var approvedReviews = reviews.Where(r => r.IsApproved).ToList();

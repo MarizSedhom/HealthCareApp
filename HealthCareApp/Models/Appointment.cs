@@ -7,23 +7,8 @@ namespace HealthCareApp.Models
     {
         public int Id { get; set; }
 
-
         [EnumDataType(typeof (Status))]
-        public Status Status { get; set; } = Status.Pending;
-
-
-        [Required(ErrorMessage = "You Must Enter Patient Name...!!")]
-        [RegularExpression(@"^\w+\s\w+$", ErrorMessage = "You Must Enter Full Name [First, Last]")]
-        [Display(Name ="Patient Name")]
-        public string PatientName { set; get; }
-
-
-        [Required(ErrorMessage = "You Must Enter Phone Number...!!")]
-        [DataType(DataType.PhoneNumber)]
-        [StringLength(11, MinimumLength = 11 ,ErrorMessage = "Phone Number Must Be Exactly 11 Digits.")]
-        [Display(Name = "Patient Phone")]
-        public string PatientPhone { set; get; }
-
+        public Status Status { get; set; } = Status.Upcoming;
 
         [ForeignKey("Patient")]
         public string PatientId { get; set; }
@@ -37,27 +22,31 @@ namespace HealthCareApp.Models
 
         [EnumDataType(typeof(PaymentStatus))]
         [Display(Name = "Payment Status")]
-        public PaymentStatus paymentStatus { get; set; } = PaymentStatus.Pending;
+        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
 
         public decimal Amount { get; set; }
 
         [Required]
         [EnumDataType(typeof(PaymentMethod))]
         [Display(Name = "Payment Method")]
-        public PaymentMethod paymentMethod { get; set; }
+        public PaymentMethod PaymentMethod { get; set; }
+        public bool IsDeleted { get; set; } = false;
     }
 
     public enum Status
     {
-        Pending,
+        Upcoming,
         Completed,
-        Cancelled // ?? won't mark it as cancelled because it'll be auto deleted
+        CancelledByDoctor,
+        CancelledByPatient,
+        RescheduledByDoctor
     }
     public enum PaymentStatus
     {
         Pending,
         Failed,
-        Paid
+        Paid,
+        Refunded
     }
     public enum PaymentMethod
     {

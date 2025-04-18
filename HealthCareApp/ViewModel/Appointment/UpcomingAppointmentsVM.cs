@@ -5,6 +5,8 @@ namespace HealthCareApp.ViewModel.Appointment
 {
     public class UpcomingAppointmentsVM
     {
+        [EnumDataType(typeof(Status))]
+        public Status Status { get; set; } 
         public DayOfWeek Day { get; set; }
         public DateOnly Date { get; set; }
         public TimeOnly Time { get; set; }
