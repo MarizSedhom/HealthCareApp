@@ -5,6 +5,7 @@
         outline: none;
         box-shadow: none;
     }
+
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -31,21 +32,19 @@
                             <i class="fas fa-file-medical-alt"></i> History
                         </button>
 
-                        <!-- Medical Records Button -->
                         <button type="button"
                                 class="btn btn-outline-primary btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#medicalRecordsModal_@item.Id"
                                 title="View Medical Records"
                                 onclick="search('@item.Id', '@ViewBag.DoctorId')">
-                            <i class="fas fa-clipboard"></i> Records 
+                            <i class="fas fa-clipboard"></i> Records
                         </button>
+
                     </div>
                 </div>
             </div>
 
             <!-- Medical History Modal -->
-            <div class="modal fade" id="medicalModal_@item.Id" tabindex="2" aria-labelledby="medicalModalLabel_@item.Id" aria-hidden="true">
+            <div class="modal fade" id="medicalModal_@item.Id" tabindex="-1" aria-labelledby="medicalModalLabel_@item.Id" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable modal-md">
                     <div class="modal-content border border-info rounded-3 shadow-sm">
                         <div class="modal-header bg-info bg-opacity-10 text-info border-bottom border-info rounded-top-3">
@@ -79,7 +78,7 @@
             </div>
 
             <!-- Medical Records Modal -->
-            <div class="modal fade" id="medicalRecordsModal_@item.Id" tabindex="2" aria-labelledby="medicalRecordsModalLabel_@item.Id" aria-hidden="true">
+            <div class="modal fade" id="medicalRecordsModal_@item.Id" tabindex="-1" aria-labelledby="medicalRecordsModalLabel_@item.Id" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable modal-md">
                     <div class="modal-content border border-primary rounded-3 shadow-sm">
                         <div class="modal-header bg-primary bg-opacity-10 text-primary border-bottom border-primary rounded-top-3">
@@ -88,8 +87,9 @@
                             </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body text-secondary small d-flex justify-content-center " id="medicalRecordsBody_@item.Id" style="height:100px">
-                            <!-- This will be populated by AJAX -->
+                        <div class="modal-body text-secondary small d-flex justify-content-center" id="medicalRecordsBody_@item.Id"
+                             style="min-height: 100px; max-height: 300px; overflow-y: auto;">
+                            <!-- AJAX result will be injected here -->
                         </div>
                         <div class="modal-footer justify-content-end py-2 px-3 border-top border-primary">
                             <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">

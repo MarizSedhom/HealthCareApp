@@ -1,7 +1,6 @@
 ﻿using HealthCareApp.RepositoryServices;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
-using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
@@ -114,16 +113,18 @@ namespace HealthCareApp.Controllers
             return View(patientInfo);
         }
 
-        public ActionResult SearchForMedicalRecords(string patientId, string doctorId)
+        public IActionResult SearchForMedicalRecords(string patientId, string doctorId)
         {
             var medicalRecords = MedicalRepo.FindAll(mr => mr.PatientId == patientId && mr.DoctorId == doctorId);
 
             if (medicalRecords != null && medicalRecords.Any())
             {
-                return RedirectToAction("Eman enter your controller and action here");
+                // Tell JS to redirect if there are medical records
+                return Json(new { redirectTo = Url.Action("Index", "Clinic", new { patientId, doctorId }) });
             }
             else
             {
+                // Return a partial view (No records found)
                 return PartialView("_NoMedicalRecords");
             }
         }

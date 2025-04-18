@@ -52,28 +52,43 @@
         });
     }
 
-        function search(patientId, doctorId) {
-            console.log("Calling search:", patientId, doctorId);
+    function search(patientId, doctorId) {
         const targetBodyId = `#medicalRecordsBody_${patientId}`;
+        const modalElement = document.querySelector(`#medicalRecordsModal_${patientId}`);
+        const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
 
+        // First, hide the modal to prevent showing it prematurely
+        modalInstance.hide();
 
-        // Optional: Show a loading message while waiting for the data
+        // Clear any existing content and show loading message
         $(targetBodyId).html('<div class="text-muted">Loading...</div>');
 
         $.ajax({
             url: '/Patient/SearchForMedicalRecords',
             type: 'GET',
-            data: {
-                patientId: patientId,
-                doctorId: doctorId
-            },
-            success: function (result) {
-                $(targetBodyId).html(result);
+            data: { patientId, doctorId },
+            dataType: 'text', // Force as text to parse JSON manually
+            success: function (response) {
+                try {
+                    const json = JSON.parse(response);
+                    if (json.redirectTo) {
+                        window.location.href = json.redirectTo;
+                        return; // Prevent further execution if redirect happens
+                    }
+                } catch (err) {
+                    // Not JSON (indicating partial view): render the response in modal body
+                    $(targetBodyId).html(response);
+
+                    // Show modal after content is successfully loaded
+                    modalInstance.show();
+                }
             },
             error: function (xhr) {
+                // Handle error response
                 $(targetBodyId).html('<div class="text-danger">An error occurred: ' + xhr.responseText + '</div>');
             }
         });
     }
+
 </script>
 
