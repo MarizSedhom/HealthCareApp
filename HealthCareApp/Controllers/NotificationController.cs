@@ -35,8 +35,21 @@ namespace HealthCareApp.Controllers
         // GET: NotificationController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            return View(notificationRepoServices.Find(n=>n.Id==id));
         }
+
+        [HttpPost]
+        public IActionResult MarkAsRead(int id)
+        {
+            var notification = notificationRepoServices.Find(n => n.Id == id);
+            if (notification != null && !notification.IsRead)
+            {
+                notification.IsRead = true;
+                notificationRepoServices.Update(notification);
+            }
+            return Ok();
+        }
+
 
         // GET: NotificationController/Create
         public ActionResult Create()
