@@ -4,7 +4,9 @@
     ViewData["Title"] = "Notifications";
 }
 
-<!-- Custom Styling -->
+<!-- jQuery for toggle and AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <style>
     body {
         background-color: #f9f9fc;
@@ -24,26 +26,25 @@
         color: white;
     }
 
-    table.table tr.unread,
-    .table-bordered tr.unread,
-    .notification-table table tr.unread {
-        background-color: #e6f0ff !important;
-        font-weight: 700 !important;
-    }
-
+    
     .table td, .table th {
         vertical-align: middle;
         text-align: center;
     }
 
-    .action-links a {
+    .action-links a,
+    .action-links button {
         margin: 0 5px;
         text-decoration: none;
         color: #007bff;
         font-weight: 500;
+        background: none;
+        border: none;
+        cursor: pointer;
     }
 
-        .action-links a:hover {
+        .action-links a:hover,
+        .action-links button:hover {
             text-decoration: underline;
         }
 
@@ -51,13 +52,29 @@
         margin: auto;
         max-width: 1000px;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        /* background: white; */
         border-radius: 10px;
         overflow: hidden;
     }
 
+    .details-row {
+        display: none;
+        background-color: #f2f2f2;
+    }
+
+    .details-cell {
+        padding: 20px;
+        text-align: left;
+    }
+
     th {
-        background-color: #e6f0ff !important; /* Soft blue shade */
+        background-color: #e6f0ff !important;
+    }
+
+    table.table tr.unread,
+    .table-bordered tr.unread,
+    .notification-table table tr.unread {
+        background-color: #e6f0ff !important;
+        font-weight: 700 !important;
     }
 
 </style>
@@ -69,9 +86,6 @@
         <thead>
             <tr>
                 <th>@Html.DisplayNameFor(model => model.Message)</th>
-                <th>@Html.DisplayNameFor(model => model.notificationType)</th>
-                <th>@Html.DisplayNameFor(model => model.IsRead)</th>
-                <th>@Html.DisplayNameFor(model => model.CreatedDate)</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -79,19 +93,45 @@
             @foreach (var item in Model)
             {
                 string rowClass = item.IsRead ? "" : "unread";
-                <tr class="@rowClass">
+                <tr class="notification-row @rowClass" data-id="@item.Id">
                     <td>@Html.DisplayFor(modelItem => item.Message)</td>
-                    <td>@Html.DisplayFor(modelItem => item.notificationType)</td>
-                    <td>
-                        <input type="checkbox" @(item.IsRead ? "checked" : "") disabled />
-                    </td>
-                    <td>@item.CreatedDate.ToString("g")</td>
                     <td class="action-links">
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <button class="toggle-details" data-id="@item.Id">Details</button> |
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+                <tr class="details-row" id="details-@item.Id">
+                    <td colspan="5" class="details-cell">
+                        <strong>Message:</strong> @item.Message<br />
+                        <strong>Type:</strong> @item.notificationType<br />
+                        <strong>Created:</strong> @item.CreatedDate.ToString("f")
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $(".toggle-details").click(function () {
+            const id = $(this).data("id");
+            const $detailsRow = $("#details-" + id);
+            const $mainRow = $(".notification-row[data-id='" + id + "']");
+
+            $detailsRow.toggle();
+
+            // If unread, mark as read
+            if ($mainRow.hasClass("unread")) {
+                $.ajax({
+                    url: '/Notification/MarkAsRead/' + id,
+                    type: 'POST',
+                    success: function () {
+                        $mainRow.removeClass("unread");
+                        $mainRow.find(".read-status input").prop("checked", true);
+                    }
+                });
+            }
+        });
+    });
+</script>

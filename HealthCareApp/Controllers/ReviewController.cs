@@ -31,7 +31,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult GetDoctorReviews(string doctorId = null)//"80ac78e2-def2-4e42-a1db-a3b58939f63b")
+        public ActionResult GetDoctorReviews(string doctorId ="80ac78e2-def2-4e42-a1db-a3b58939f63b")
         {
             // Doctor view
             if (doctorId == null)
@@ -102,19 +102,7 @@ namespace HealthCareApp.Controllers
                     DoctorId = reviewVM.DoctorId
                 };
 
-                Patient patient = patientService.Find(p => p.Id == review.PatientId);
-                review.Patient = patient;
-
-                reviewService.Add(review);
-                var notification = new Notification
-                {
-                    UserId = review.DoctorId,
-                    Message = $"A review has been added to you by {patient.FirstName} {patient.LastName}",
-                    CreatedDate = DateTime.Now,
-                    notificationType = NotificationType.Review
-                };
-
-                notificationService.Notify(notification);
+                
 
                 reviewService.Add(review);
                 return RedirectToAction(nameof(GetDoctorReviews));
@@ -186,6 +174,33 @@ namespace HealthCareApp.Controllers
             Review review = reviewService.GetById(reviewId);
             review.IsApproved = true;
             reviewService.Update(review);
+
+            Patient patient = patientService.Find(p => p.Id == review.PatientId);
+            review.Patient = patient;
+
+            Models.Doctor doctor =doctorService.Find(d=>d.Id == review.DoctorId);
+            review.Doctor = doctor;
+
+            //notification for Patient
+            var notificationPt = new Notification
+            {
+                UserId = review.PatientId,
+                Message = $"Your review for Dr {doctor.FirstName} {doctor.LastName} has been approved and published successfully",
+                CreatedDate = DateTime.Now,
+                notificationType = NotificationType.Review
+            };
+            notificationService.Notify(notificationPt);
+
+            //notification for dr
+            var notificationDr = new Notification
+            {
+                UserId = review.DoctorId,
+                Message = $"A review has been added to you by {patient.FirstName} {patient.LastName}",
+                CreatedDate = DateTime.Now,
+                notificationType = NotificationType.Review
+            };
+
+            notificationService.Notify(notificationDr);
 
             return RedirectToAction(nameof(DisplayPendingReviews));
         }
