@@ -35,8 +35,8 @@
 
             @if (Model.IsApproved && userId == Model.PatientId)
             {
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="text-secondary-emphasis text-decoration-none" style="position:absolute; right:20px; bottom:5px">Edit</a>
-                <a asp-action="Delete" asp-route-id="@Model.Id" class="text-danger text-decoration-none" style="position:absolute; right:60px; bottom:5px">Delete</a>
+                <a asp-action="EditReview" asp-route-id="@Model.Id" class="text-secondary-emphasis text-decoration-none" style="position:absolute; right:20px; bottom:5px">Edit</a>
+                <a asp-action="DeleteReview" asp-route-id="@Model.Id" class="text-danger text-decoration-none" style="position:absolute; right:60px; bottom:5px">Delete</a>
             }
         </div>
     </div>

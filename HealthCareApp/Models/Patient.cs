@@ -1,7 +1,10 @@
-﻿namespace HealthCareApp.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HealthCareApp.Models
 {
     public class Patient:ApplicationUser
     {
+        [Display(Name = "Emergency Contact")]
         public string EmergencyContact { get; set; }
         public string MedicalHistory { get; set; }
 

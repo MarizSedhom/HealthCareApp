@@ -1,25 +1,25 @@
-﻿@model HealthCareApp.Models.Review
+﻿@model HealthCareApp.ViewModel.Review.AddReviewVM
+@using System.Security.Claims
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "AddReview";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
-<h2 class="text-center text-secondary-emphasis">Edit Your Review</h2>
+<h2 class="text-center text-secondary-emphasis">Add Review</h2>
 
 <div class="card shadow-sm w-50 mx-auto mt-4">
     <div class="card-body">
-        <form asp-action="Edit">
+        <form asp-action="AddReview">
 
             <div asp-validation-summary="All" class="text-danger"></div>
 
-            <input asp-for="Id" type="hidden" />
-            <input asp-for="PatientId" type="hidden" />
-            <input asp-for="DoctorId" type="hidden" />
-            <input asp-for="IsApproved" type="hidden" />
+            <input type="hidden" name="PatientId" value="@userId" />
+            <input type="hidden" name="DoctorId" value="@Model.DoctorId" />
 
             <div class="form-group">
                 <label asp-for="Rating" class="control-label">Rating:</label>
-                <input asp-for="Rating" class="form-control" min="0" max="5" />
+                <input asp-for="Rating" class="form-control" min="0" max="5" placeholder="Enter rating from 0 to 5"/>
                 <span asp-validation-for="Rating" class="text-danger"></span>
             </div><br />
 
@@ -28,10 +28,10 @@
                 <textarea asp-for="ReviewText" class="form-control"></textarea>
                 <span asp-validation-for="ReviewText" class="text-danger"></span>
             </div><br />
-
+           
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-success me-4" />|
-                <a asp-action="Index" asp-route-patientId="@Model.PatientId" asp-route-doctorId="@Model.DoctorId" class="btn btn-secondary ms-3">Back to Reviews</a>
+                <input type="submit" value="Add" class="btn btn-success me-4" />|
+                <a asp-action="GetDoctorReviews" asp-route-doctorId="@Model.DoctorId" class="btn btn-secondary ms-3">Back to Reviews</a>
             </div>
         </form>
     </div>

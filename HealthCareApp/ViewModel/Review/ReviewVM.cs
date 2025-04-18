@@ -8,6 +8,7 @@
         public DateTime ReviewDate { get; set; }
         public string PatientId { get; set; }
         public string PatientName { get; set; }
+        public string DoctorName { get; set; }
         public int Age { get; set; }
         public bool IsApproved { get; set; }
         public bool IsDeleted { get; set; } 

@@ -242,7 +242,8 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                         Fees = Input.Fees ?? 0,
                         ExperienceYears = Input.ExperienceYears ?? 0,
                         WaitingTimeInMinutes = Input.WaitingTimeInMinutes ?? 0,
-                        SpecializationId = Input.SpecializationId ?? 1,
+
+                        SpecializationId = Input.SpecializationId ?? 1, //////////modify it back to ZEROOOOOOO
                         verificationStatus = VerificationStatus.Pinding
                     };
 
