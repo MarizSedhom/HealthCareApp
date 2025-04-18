@@ -255,26 +255,26 @@ namespace HealthCareApp.Controllers.Doctor
             }
             return ScheduleDays;
         }
-        [HttpGet]
-        public IActionResult ViewSlots( string drId,int availabilityId )
-        {
-            List<ViewSlotVM> Slots = SlotRepository.FindAllWithSelect(
-                s => s.AvailabilityId == availabilityId,
-                s => new ViewSlotVM()
-                {
-                    TimeRange = $"{s.StartTime} - {s.EndTime}",
-                    PatientName = (s.Appointment==null)?"-": s.Appointment.PatientName,
-                    PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.PatientPhone,
-                    IsBooked = s.IsBooked,
-                    Status = (s.IsBooked) ? "Booked" : "Available",
-                    AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
-                    SlotId = s.Id,
-                    AvailabilityId = s.AvailabilityId
-                }
-            ).ToList();
-            ViewBag.drId = drId;
-            return View(Slots);
-        }
+        //[HttpGet]
+        //public IActionResult ViewSlots( string drId,int availabilityId )
+        //{
+        //    List<ViewSlotVM> Slots = SlotRepository.FindAllWithSelect(
+        //        s => s.AvailabilityId == availabilityId,
+        //        s => new ViewSlotVM()
+        //        {
+        //            TimeRange = $"{s.StartTime} - {s.EndTime}",
+        //            PatientName = (s.Appointment==null)?"-": s.Appointment.PatientName,
+        //            PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.PatientPhone,
+        //            IsBooked = s.IsBooked,
+        //            Status = (s.IsBooked) ? "Booked" : "Available",
+        //            AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
+        //            SlotId = s.Id,
+        //            AvailabilityId = s.AvailabilityId
+        //        }
+        //    ).ToList();
+        //    ViewBag.drId = drId;
+        //    return View(Slots);
+        //}
 
         //url of ajax call
         [HttpPost]
@@ -309,38 +309,38 @@ namespace HealthCareApp.Controllers.Doctor
 
             return Json(Slots);
         }
-        public IActionResult CancelSlot(int slotId)
-        {
+        //public IActionResult CancelSlot(int slotId)
+        //{
 
-            ViewSlotVM Slot = SlotRepository.FindWithSelect(s => s.Id == slotId,s => new ViewSlotVM()
+        //    ViewSlotVM Slot = SlotRepository.FindWithSelect(s => s.Id == slotId,s => new ViewSlotVM()
 
-            {
-                TimeRange = $"{s.StartTime} - {s.EndTime}",
-                PatientName = (s.Appointment == null) ? "-" : s.Appointment.PatientName,
-                PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.PatientPhone,
-                IsBooked = s.IsBooked,
-                Status = (s.IsBooked) ? "Booked" : "Available",
-                AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
-                SlotId = s.Id,
-                AvailabilityId = s.AvailabilityId
+        //    {
+        //        TimeRange = $"{s.StartTime} - {s.EndTime}",
+        //        PatientName = (s.Appointment == null) ? "-" : s.Appointment.PatientName,
+        //        PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.PatientPhone,
+        //        IsBooked = s.IsBooked,
+        //        Status = (s.IsBooked) ? "Booked" : "Available",
+        //        AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
+        //        SlotId = s.Id,
+        //        AvailabilityId = s.AvailabilityId
 
-            });
+        //    });
 
-            return View(Slot);
-        }
+        //    return View(Slot);
+        //}
 
 
         //////////////////////////// Notification for patient about the cancelation ///////////////////
-        public IActionResult CancelSlotPost(int slotId)
-        {
-            AvailabilitySlots slot = SlotRepository.Find(s => s.Id == slotId, s => s.Appointment);
-            /***************************************** Notification for patient about the cancelation ********************************************/
-            /***************************************** how dealing with digital payment ********************************************/
-            if(slot != null)
-                SlotRepository.HardDelete(slot); //delete slot with appoiment 
+        //public IActionResult CancelSlotPost(int slotId)
+        //{
+        //    AvailabilitySlots slot = SlotRepository.Find(s => s.Id == slotId, s => s.Appointment);
+        //    /***************************************** Notification for patient about the cancelation ********************************************/
+        //    /***************************************** how dealing with digital payment ********************************************/
+        //    if(slot != null)
+        //        SlotRepository.HardDelete(slot); //delete slot with appoiment 
 
-            return RedirectToAction(nameof(ViewSlots), new { availabilityId  =slot.AvailabilityId });
-        }
+        //    return RedirectToAction(nameof(ViewSlots), new { availabilityId  =slot.AvailabilityId });
+        //}
         public IActionResult RescheduleAppointment(int slotId)
         {
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
