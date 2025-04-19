@@ -22,7 +22,7 @@ namespace HealthCareApp.Controllers.Doctor
         [HttpGet]
         public IActionResult ViewApprovedDoctors()
         {
-            IEnumerable<DoctorIdxVM> doctors = DoctorRepository.FindAllWithSelect(null, d => new DoctorIdxVM()
+            IEnumerable<DoctorIdxVM> doctors = DoctorRepository.FindAllWithSelect(d=>d.verificationStatus==VerificationStatus.Accepted, d => new DoctorIdxVM()
             { 
                 DoctorId = d.Id,
                 FirstName = d.FirstName,
@@ -30,7 +30,7 @@ namespace HealthCareApp.Controllers.Doctor
                 ExperienceYears = d.ExperienceYears,
                 Specialization = d.Specialization.Name,
                 Title = d.Title,
-                verificationStatus = d.verificationStatus
+                //verificationStatus = d.verificationStatus
 
             });
             return View(doctors);
@@ -43,14 +43,14 @@ namespace HealthCareApp.Controllers.Doctor
         }
 
         [HttpGet]
-        public IActionResult GetDoctorDetail(string DoctorId = "1")
+        public IActionResult GetDoctorDetail(string DoctorId = "cda63727-9da1-4c94-99e6-5d32a952b186")
         {
             DrUpdateProfileVM profileVM = GetDrUpdateProfileVm(DoctorId);
             return View(profileVM);
         }
 
         [HttpGet]
-        public IActionResult UpdateDoctorProfile(string DoctorId = "1")
+        public IActionResult UpdateDoctorProfile(string DoctorId = "cda63727-9da1-4c94-99e6-5d32a952b186")
         {
 
             DrUpdateProfileVM profileVM = GetDrUpdateProfileVm(DoctorId);
@@ -84,7 +84,7 @@ namespace HealthCareApp.Controllers.Doctor
             return View(GetDrUpdateProfileVm(profileVM.DrId));
 
         }        
-        public IActionResult AfterDrRegisteration(string DoctorId = "1")
+        public IActionResult AfterDrRegisteration(string DoctorId = "cda63727-9da1-4c94-99e6-5d32a952b1861")
         {
             //string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             AfterDrRegisterationVM AfterDrRegisteration = DoctorRepository.FindWithSelect(d => d.Id == DoctorId,
