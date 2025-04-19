@@ -57,25 +57,28 @@ namespace HealthCareApp.Controllers
             return View(clinic);
         }
 
-        public IActionResult DetailsByName(string name, int page = 1, int pageSize = 5)
+        public IActionResult DetailsByName(string name)
         {
-            int skip = (page - 1) * pageSize;
+            IEnumerable<ClinicInfoVM> clinicInfoVMs ;
+            if (name != null)
+            {
+                clinicInfoVMs = ClinicRepo.FindAllWithSelect(
+                    spec => spec.Name.ToLower().Contains(name.ToLower()),
+                    c => new ClinicInfoVM()
+                    {
+                        ClinicAddress = c.ClinicAddress,
+                        ClinicCity = c.Region.City.CityNameEn,
+                        ClinicPhoneNumber = c.ClinicPhoneNumber,
+                        ClinicRegion = c.Region.RegionNameEn,
+                        Id = c.Id,
+                        Name = c.Name,
+                    }
+                );
+            }
+            else
+                clinicInfoVMs= new List<ClinicInfoVM>();
 
-            var subSpecializations = ClinicRepo.FindAllWithSelect(
-                spec => spec.Name.ToLower().Contains(name.ToLower()),
-                c=>new ClinicInfoVM()
-                {
-                    ClinicAddress = c.ClinicAddress,
-                    ClinicCity = c.Region.City.CityNameEn,
-                    ClinicPhoneNumber = c.ClinicPhoneNumber,
-                    ClinicRegion = c.Region.RegionNameEn,
-                    Id = c.Id,
-                    Name = c.Name,
-                }
-            );
-
-
-            return PartialView("_DetailsByName", subSpecializations);
+            return View("GetDoctorClinics", clinicInfoVMs);
         }
 
         /// Ajax Call

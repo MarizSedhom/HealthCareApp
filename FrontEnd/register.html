@@ -49,7 +49,7 @@
         
         .logo i {
             font-size: 2.5rem;
-            color: var(--primary-blue);
+            color: var(--dark-blue);
             margin-right: 15px;
             animation: pulse 2s infinite;
         }
@@ -88,6 +88,7 @@
             overflow: hidden;
             transition: all 0.5s ease;
         }
+
         
         .illustration-side.patient-mode {
             background: linear-gradient(135deg, var(--patient-green), #D0E8C5);
@@ -183,18 +184,18 @@
         }
         
         .role-option:hover {
-            border-color: var(--primary-blue);
+            border-color: var(--dark-blue);
         }
         
         .role-option.selected {
-            border-color: var(--primary-blue);
+            border-color: var(--dark-blue);
             background-color: var(--light-blue);
         }
         
         .role-option i {
             font-size: 1.5rem;
             margin-bottom: 8px;
-            color: var(--primary-blue);
+            color: var(--dark-blue);
         }
         
         .role-option h3 {
@@ -257,7 +258,7 @@
         }
         
         .form-control:focus {
-            border-color: var(--primary-blue);
+            border-color: var(--dark-blue);
             box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
             outline: none;
         }
@@ -317,9 +318,9 @@
         }
         
         .specialty-option.selected {
-            background-color: var(--primary-blue);
+            background-color: var(--dark-blue);
             color: white;
-            border-color: var(--primary-blue);
+            border-color: var(--dark-blue);
         }
         
         .progress-container {
@@ -350,22 +351,34 @@
         .btn {
             display: inline-block;
             padding: 12px;
-            background-color: var(--primary-blue);
+            /* background-color: var(--dark-blue); */
+            background: linear-gradient(to right, var(--dark-blue), #3a4d6d);
             color: white;
             border: none;
             border-radius: 6px;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-align: center;
             width: 100%;
+
         }
         
-        .btn:hover {
-            background-color: var(--dark-blue);
+        
+        /* Doctor mode hover */
+        .illustration-side:not(.patient-mode) + .form-side .btn:hover {
+            background: linear-gradient(to right, #C5D3E8, var(--dark-blue));
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
+
+        .patient-mode + .form-side .btn:hover {
+            background: linear-gradient(to right, #D0E8C5, var(--dark-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
         
         .btn i {
             margin-right: 6px;
@@ -379,7 +392,7 @@
         }
         
         .terms a {
-            color: var(--primary-blue);
+            color: var(--dark-blue);
             text-decoration: none;
         }
         
@@ -415,6 +428,8 @@
                 flex-direction: column;
             }
         }
+
+
     </style>
 </head>
 <body>

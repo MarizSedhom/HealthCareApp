@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Dashboard | MedConnect</title>
-    <link rel="stylesheet" href="~/css/DoctorNavBar.css" />
+    <link rel="stylesheet" href="~/css/PatientNavBar.css" />
 
 </head>
 <style>
@@ -29,10 +29,10 @@
                        asp-action="GetAvailabilitiesForDr"
                        class="nav-link"
                        data-bg="var(--bg-color-2)">Availability</a>
-                    <a asp-controller="Review"
-                       asp-action="GetDoctorReviews"
+                    <a asp-controller="Doctor"
+                       asp-action="GetAllDoctorsInfo"
                        class="nav-link"
-                       data-bg="var(--bg-color-2)">My Reviews</a>
+                       data-bg="var(--bg-color-2)">All Doctors</a>
                 </div>
             </div>
         </div>
@@ -82,8 +82,15 @@
             alert('Notification panel would appear here');
         });
 
-      
-      
+        // Profile dropdown actions
+        // document.querySelectorAll('.profile-dropdown a').forEach(item => {
+        //     item.addEventListener('click', function (e) {
+        //         e.preventDefault();
+        //         const action = this.textContent.trim();
+        //         alert(`${action} action would be performed here`);
+        //         profileDropdown.classList.remove('show');
+        //     });
+        // });
         // Navigation functionality
         const navLinks = document.querySelectorAll('a');
         navLinks.forEach(link => {
