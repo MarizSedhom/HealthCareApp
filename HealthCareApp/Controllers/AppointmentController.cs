@@ -1,5 +1,4 @@
-﻿using HealthCareApp.Models;
-using HealthCareApp.RepositoryServices;
+﻿using HealthCareApp.RepositoryServices;
 using HealthCareApp.ViewModel.Appointment;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,7 +21,7 @@ namespace HealthCareApp.Controllers
             patientService = _patientService;
         }
 
-     
+
         public ActionResult PatientUpcomingAppointments()
         {
             var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -54,7 +53,7 @@ namespace HealthCareApp.Controllers
                     DoctorTitle = app.AvailableSlot.Availability.Doctor.Title.ToString(),
                     DoctorName = $"{app.AvailableSlot.Availability.Doctor.FirstName} {app.AvailableSlot.Availability.Doctor.LastName}",
                     Specialization = app.AvailableSlot.Availability.Doctor.Specialization.Name,
-                    Clinic = $"{app.AvailableSlot.Availability.Clinic.ClinicAddress} {app.AvailableSlot.Availability.Clinic.ClinicRegion} {app.AvailableSlot.Availability.Clinic.ClinicCity}",
+                    Clinic = $"{app.AvailableSlot.Availability.Clinic.ClinicAddress} {app.AvailableSlot.Availability.Clinic.Region.RegionNameEn} {app.AvailableSlot.Availability.Clinic.Region.City.CityNameEn}",
                     PaymentStatus = app.PaymentStatus,
                     Mode = app.AvailableSlot.Availability.type,
                     Fees = app.AvailableSlot.Availability.Doctor.Fees
@@ -88,7 +87,7 @@ namespace HealthCareApp.Controllers
                     Mode = slot.Availability.type,
                     Specialization = slot.Availability.Doctor.Specialization.Name,
                     DoctorDescription = slot.Availability.Doctor.Description,
-                    Clinic = $"{slot.Availability.Clinic.ClinicAddress} {slot.Availability.Clinic.ClinicRegion} {slot.Availability.Clinic.ClinicCity}",
+                    Clinic = $"{slot.Availability.Clinic.ClinicAddress} {slot.Availability.Clinic.Region.RegionNameEn} {slot.Availability.Clinic.Region.City.CityNameEn}",
                     Fees = slot.Availability.Doctor.Fees
                 }
             );
@@ -145,7 +144,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult SaveAppointmentWithVisa()    
+        public ActionResult SaveAppointmentWithVisa()
         {
             Appointment appointment = null;
 
@@ -222,7 +221,7 @@ namespace HealthCareApp.Controllers
             return View(appointToBeCancelled);
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CancelAppointment(int id, Appointment appointment)
@@ -254,7 +253,7 @@ namespace HealthCareApp.Controllers
             string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var upcomingAppointments = appointmentService.FindAllWithSelect(app => app.AvailableSlot.Availability.DoctorId == doctorId && app.Status == Status.Upcoming
-            ,app => new UpcomingAppointmentsVM
+            , app => new UpcomingAppointmentsVM
             {
                 Status = app.Status,
                 Day = app.AvailableSlot.Availability.dayOfWeek,

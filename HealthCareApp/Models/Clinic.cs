@@ -18,19 +18,21 @@ namespace HealthCareApp.Models
         [RegularExpression(@"^[0-9A-Za-z]+(?: [A-Za-z]+)*$", ErrorMessage = "Only letters and single spaces between words are allowed.")]
         public string ClinicAddress { get; set; }
 
-        [Display(Name = "City")]
-        [Required]
-        [MaxLength(100)]
-        [RegularExpression(@"^[A-Za-z]+(?: [A-Za-z]+)*$", ErrorMessage = "Only letters and single spaces between words are allowed.")]
-        public string ClinicCity { get; set; }
+        //[Display(Name = "City")]
+        //[Required]
+        //[MaxLength(100)]
+        //[RegularExpression(@"^[A-Za-z]+(?: [A-Za-z]+)*$", ErrorMessage = "Only letters and single spaces between words are allowed.")]
+        //public string ClinicCity { get; set; }
         //public City ClinicCity { get; set; }
 
-        [Display(Name = "Region")]
-        [Required]
-        [MaxLength(100)]
-        [RegularExpression(@"^[A-Za-z]+(?: [A-Za-z]+)*$", ErrorMessage = "Only letters and single spaces between words are allowed.")]
-        public string ClinicRegion { get; set; }
-        //public Region ClinicRegion { get; set; }
+        //[Display(Name = "Region")]
+        //[Required]
+        //[MaxLength(100)]
+        //[RegularExpression(@"^[A-Za-z]+(?: [A-Za-z]+)*$", ErrorMessage = "Only letters and single spaces between words are allowed.")]
+        //public string ClinicRegion { get; set; }
+        [ForeignKey("ClinicRegion")]
+        public int RegionId {  get; set; }
+        public Region Region { get; set; }
 
         [Display(Name = "Phone Number")]
         [Required]

@@ -224,6 +224,46 @@ namespace HealthCareApp.RepositoryServices
 
             return query.ToList();
         }
+        public IEnumerable<TResult> FindAllWithSelectForSearch<TResult>(
+            Expression<Func<T, bool>> criteria
+            ,Expression<Func<T, TResult>>selector,
+            int? skip = null,
+            int? take = null,
+            string[] includes = null,
+            Expression<Func<T, object>> orderBy = null,
+            string orderByDirection = OrderBy.Ascending
+         )
+        {
+            IQueryable<T> query = _context.Set<T>().Where(criteria);
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            if (orderBy != null)
+            {
+                if (orderByDirection == OrderBy.Ascending)
+                {
+                    query = query.OrderBy(orderBy);
+                }
+                else if (orderByDirection == OrderBy.Descending)
+                {
+                    query = query.OrderByDescending(orderBy);
+                }
+            }
+
+            if (skip.HasValue)
+                query = query.Skip(skip.Value);
+
+            if (take.HasValue)
+                query = query.Take(take.Value);
+            
+            return query.Select(selector).ToList();
+        }
         public T UpdateNoTracking(T entity)
         {
             var dbEntity = _context.Set<T>().Find(entity.GetType().GetProperty("Id")?.GetValue(entity));

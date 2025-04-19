@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HealthCareApp.ViewModel.Clinic;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthCareApp.ViewModel.Doctor
 {

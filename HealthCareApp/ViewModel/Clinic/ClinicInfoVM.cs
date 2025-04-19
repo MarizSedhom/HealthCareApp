@@ -1,4 +1,6 @@
-﻿namespace HealthCareApp.ViewModel.Doctor
+﻿using HealthCareApp.ViewModel.Doctor;
+
+namespace HealthCareApp.ViewModel.Clinic
 {
     public class ClinicInfoVM
     {
@@ -8,5 +10,8 @@
         public string ClinicCity { get; set; }
         public string ClinicRegion { get; set; }
         public string ClinicPhoneNumber { get; set; }
+        public string? doctorId { get; set; }
+        public PaginationInfo? PaginationInfo { get; set; }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using HealthCareApp.Service;
+using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -157,7 +158,7 @@ namespace HealthCareApp.Controllers.Doctor
         {
             DrUpdateProfileVM profileVM = DoctorRepository.FindWithSelect(d => d.Id == DrId, d => new DrUpdateProfileVM()
             {
-                Clinics = d.Clinics.Select(c => $"{c.Name} ({c.ClinicRegion})"),
+                Clinics = d.Clinics.Select(c => $"{c.Region.City.CityNameEn} ({c.Region.RegionNameEn})"),
                 DateOfBirth = d.DateOfBirth,
                 Description = d.Description,
                 ExperienceYears = d.ExperienceYears,
@@ -203,10 +204,10 @@ namespace HealthCareApp.Controllers.Doctor
                     {
                         Id = c.Id,
                         Name = c.Name,
-                        ClinicRegion = c.ClinicRegion,
+                        ClinicRegion = c.Region.RegionNameEn,
                         ClinicAddress = c.ClinicAddress,
                         ClinicPhoneNumber = c.ClinicPhoneNumber,
-                        ClinicCity = c.ClinicCity,
+                        ClinicCity = c.Region.City.CityNameEn,
                     }).ToList()
                 }
             );
