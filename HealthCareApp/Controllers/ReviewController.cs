@@ -1,10 +1,12 @@
 using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using HealthCareApp.ViewModel.Review;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
@@ -16,18 +18,29 @@ namespace HealthCareApp.Controllers
         IGenericRepoServices<Patient> patientService;
         IGenericRepoServices<Models.Doctor> doctorService;
 
-        public ReviewController(IGenericRepoServices<Review> _reviewService, IGenericRepoServices<ApplicationUser> _userService, IGenericRepoServices<Patient> _patientService, IGenericRepoServices<Models.Doctor> _docttorService)
+        IGenericRepoServices<Notification> notificationRepoService;
+        NotificationService notificationService;
+
+
+        public ReviewController(IGenericRepoServices<Review> _reviewService, IGenericRepoServices<ApplicationUser> _userService, IGenericRepoServices<Patient> _patientService, IGenericRepoServices<Models.Doctor> _docttorService, IGenericRepoServices<Notification> _notificationRepoService, NotificationService _notificationService)
         {
             reviewService = _reviewService;
             userService = _userService;
             patientService = _patientService;
             doctorService = _docttorService;
+            notificationRepoService = _notificationRepoService;
+            notificationService = _notificationService;
         }
 
 
-        public ActionResult GetDoctorReviews()
+        public ActionResult GetDoctorReviews(string doctorId = "1")
         {
-            string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // Doctor view
+            if (doctorId == null)
+            {
+                doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
+
             var dr = doctorService.GetById(doctorId);
             IEnumerable<Review> reviews = reviewService.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
 
@@ -54,7 +67,7 @@ namespace HealthCareApp.Controllers
                 IsDeleted = r.IsDeleted
             });
 
-            if(User.IsInRole("Patient"))
+            if (User.IsInRole("Patient"))
             {
                 return View(doctorReviews);
             }
@@ -65,7 +78,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult AddReview(string doctorId = "80ac78e2-def2-4e42-a1db-a3b58939f63b")
+        public ActionResult AddReview(string doctorId = "1")
         {
             var review = new AddReviewVM()
             {
@@ -90,6 +103,8 @@ namespace HealthCareApp.Controllers
                     PatientId = userId,
                     DoctorId = reviewVM.DoctorId
                 };
+
+
 
                 reviewService.Add(review);
                 return RedirectToAction(nameof(GetDoctorReviews));
@@ -161,6 +176,33 @@ namespace HealthCareApp.Controllers
             Review review = reviewService.GetById(reviewId);
             review.IsApproved = true;
             reviewService.Update(review);
+
+            Patient patient = patientService.Find(p => p.Id == review.PatientId);
+            review.Patient = patient;
+
+            Models.Doctor doctor = doctorService.Find(d => d.Id == review.DoctorId);
+            review.Doctor = doctor;
+
+            //notification for Patient
+            var notificationPt = new Notification
+            {
+                UserId = review.PatientId,
+                Message = $"Your review for Dr {doctor.FirstName} {doctor.LastName} has been approved and published successfully",
+                CreatedDate = DateTime.Now,
+                notificationType = NotificationType.Review
+            };
+            notificationService.Notify(notificationPt);
+
+            //notification for dr
+            var notificationDr = new Notification
+            {
+                UserId = review.DoctorId,
+                Message = $"A review has been added to you by {patient.FirstName} {patient.LastName}",
+                CreatedDate = DateTime.Now,
+                notificationType = NotificationType.Review
+            };
+
+            notificationService.Notify(notificationDr);
 
             return RedirectToAction(nameof(DisplayPendingReviews));
         }

@@ -4,13 +4,14 @@ namespace HealthCareApp.Models
 {
     public class Doctor:ApplicationUser
     {
-        public string Title { get; set; }
+        public Title Title { get; set; }
         public string Description { get; set; }
         public decimal Fees { get; set; }
         public int ExperienceYears { get; set; }
         public int WaitingTimeInMinutes { get; set; }
         public string ProfilePicture {  get; set; }
         public VerificationStatus verificationStatus { get; set; }
+        public string verificationFileName { get; set; }
 
         public virtual ICollection<Review>? Reviews { get; set; }=new List<Review>();
         public virtual ICollection<Clinic>? Clinics { get; set; } =new List<Clinic>();
@@ -29,5 +30,13 @@ namespace HealthCareApp.Models
         Accepted,
         Rejected,
         Pinding
+    }
+
+    public enum Title
+    {
+        Professor,
+        Lecturer,
+        Consultant,
+        Specialist
     }
 }

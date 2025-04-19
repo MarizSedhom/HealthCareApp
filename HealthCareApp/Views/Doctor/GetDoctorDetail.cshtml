@@ -1,0 +1,132 @@
+﻿@model HealthCareApp.ViewModel.Doctor.DrUpdateProfileVM
+
+@{
+    ViewData["Title"] = "Update Profile";
+    var GenderList = Enum.GetValues(typeof(Gender))
+    .Cast<Gender>()
+    .Select(s => new
+    {
+        Id = (int)s,
+        Name = s.ToString()
+    });
+}
+
+<!-- Profile Picture Section -->
+<div class="row mt-3 justify-content-center">
+    <div class="col-md-6 text-center">
+        <div class="form-group mb-3">
+            <div class="profile-picture-container">
+                <label for="ProfilePicture" style="display: inline-block;">
+                   @if (!string.IsNullOrEmpty(Model.CurrentPicturePath))
+                   {
+                        <img src="@Model.CurrentPicturePath" alt="Profile Picture"
+                             class="img-thumbnail rounded-circle profile-picture-preview"
+                             style="width: 150px; height: 150px; object-fit: cover;" />
+                   }
+                   else
+                   {
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center profile-picture-preview"
+                             style="width: 150px; height: 150px;">
+                            <i class="fas fa-user-md fa-3x text-secondary"></i>
+                        </div>
+                   }
+                </label>
+                <div class="mt-2">
+                    <h3 class="mb-0">@($"{Model.Title}. {Model.FirstName} {Model.LastName}")</h3>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container mt-4">
+    <div class="card border rounded">
+        <div class="card-header bg-light text-dark fw-bold">
+            Doctor Profile Information
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Name</label>
+                        <div>@(Model.FirstName+" "+@Model.LastName)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Date of Birth</label>
+                        <div>@Model.DateOfBirth</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Gender</label>
+                        <div>@Model.gender</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Phone Number</label>
+                        <div>@Model.PhoneNumber</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Title</label>
+                        <div>@Model.Title</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <div>@Model.Description</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Fees</label>
+                        <div>LE @Model.Fees</div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Waiting Time</label>
+                        <div>@Model.WaitingTimeInMinutes minutes</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Experience Years</label>
+                        <div>@Model.ExperienceYears</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Specialization</label>
+                        <div>@Model.Specialization</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Sub Specializations</label>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in Model.SubSpecializations)
+                            {
+                                <li class="list-group-item">@item</li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Clinics</label>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in Model.Clinics)
+                            {
+                                <li class="list-group-item">@item</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a asp-action="UpdateDoctorProfile" asp-route-DoctorId="@Model.DrId" class="btn btn-outline-primary">
+                    <i class="fas fa-save me-2"></i>Update
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}
