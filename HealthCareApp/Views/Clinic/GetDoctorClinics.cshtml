@@ -19,7 +19,56 @@
 
 <div id="searchResults"></div>
 
-<div id="initialContent">@Html.Partial("_DetailsByName", Model)</div>
+<table class="table mt-1">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClinicAddress)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.ClinicCity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClinicRegion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClinicPhoneNumber)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClinicAddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClinicCity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClinicRegion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClinicPhoneNumber)
+                </td>
+                <td class="text-end action-buttons">
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-md" >Edit</a>
+                    <a asp-action="DetailsByID" asp-route-id="@item.Id" class="btn btn-info btn-md ms-2" >Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-md ms-2">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

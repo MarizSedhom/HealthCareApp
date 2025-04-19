@@ -27,6 +27,8 @@ namespace HealthCareApp.RepositoryServices
 
         T Update(T entity);
         void SoftDelete(T entity);
+        void SoftDeleteRange(IEnumerable<T> entities);
+
         void HardDelete(T entity);
         void HardDeleteRange(IEnumerable<T> entities);
 

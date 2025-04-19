@@ -9,6 +9,7 @@ namespace HealthCareApp.ViewModel.Doctor
 
         [DisplayName("Time Range")]
         public string TimeRange { get; set; }
+        public TimeOnly? startTime { get; set; }
 
         [DisplayName("Status")]
         public string Status {  get; set; }

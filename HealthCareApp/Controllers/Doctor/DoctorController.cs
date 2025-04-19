@@ -62,7 +62,7 @@ namespace HealthCareApp.Controllers.Doctor
         }
 
         [HttpGet]
-        public IActionResult GetDoctorDetail(string DoctorId = "8e4db0dd-7d23-4584-beae-c417a477fb12")
+        public IActionResult GetDoctorDetail(string DoctorId = "cc585985-b938-4551-b341-b96ed484d836")
         {
             DrUpdateProfileVM profileVM = GetDrUpdateProfileVm(DoctorId);
             return View(profileVM);

@@ -151,6 +151,20 @@ namespace HealthCareApp.RepositoryServices
 
             _context.SaveChanges();
         }
+        public void SoftDeleteRange(IEnumerable< T> entities)
+        {
+            //_context.Set<T>().Remove(entity);
+            foreach (T entity in entities)
+            {
+                PropertyInfo property = entity.GetType().GetProperty("IsDeleted");
+                if (property != null && property.PropertyType == typeof(bool))
+                {
+                    property.SetValue(entity, true);
+                    _context.Entry(entity).State = EntityState.Modified;
+                }
+            }
+            _context.SaveChanges();
+        }
 
         public void HardDelete(T entity)
         {

@@ -96,12 +96,12 @@ namespace HealthCareApp.Data
                 .HasForeignKey(a => a.PatientId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Configure Appointment relationship with AvailabilitySlots
-            //modelBuilder.Entity<Appointment>()
-            //    .HasOne(a => a.AvailableSlot)
-            //    .WithOne(s => s.Appointment)
-            //    .HasForeignKey<Appointment>(a => a.SlotId)
-            //    .OnDelete(DeleteBehavior.NoAction);
+            //Configure Appointment relationship with AvailabilitySlots
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.AvailableSlot)
+                .WithOne(s => s.Appointment)
+                .HasForeignKey<Appointment>(a => a.SlotId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             // Configure circular reference between Appointment and Payment
             //modelBuilder.Entity<Appointment>()

@@ -58,6 +58,7 @@ namespace HealthCareApp.Controllers.Doctor
         }
         private IEnumerable<DrWithAvailabilityVM> GetDrWithAvailabilities(string drname="")
         {
+            
             Expression<Func<Availability, bool>> criteria=null;
             if (drname != "")
             {
@@ -65,8 +66,7 @@ namespace HealthCareApp.Controllers.Doctor
                 var firstName = nameParts[0];
                 var lastName = nameParts.Length > 1 ? nameParts[1] : "";
                 criteria = v => v.Doctor.FirstName == firstName && v.Doctor.LastName == lastName;
-            }
-            
+            }           
            var datat= AvailabilityRepository.FindAllWithSelect(criteria,v => new DrWithAvailabilityVM()
                 {
                     DrId = v.DoctorId,
@@ -106,8 +106,9 @@ namespace HealthCareApp.Controllers.Doctor
             string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             //??isDeleted in AVibility?
             //??diplay avaibiliy of today and future? not past ?or doctor need data for past
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
 
-            var drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == doctorId
+            var drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == doctorId && (v.Date == DateOnly.FromDateTime(DateTime.Today) || v.Date > today)
             , v => new GetAvailabilityForDrVM
             {
                 AvailableSlotsCnt = v.AvailableSlots.Count(v=>!v.IsBooked),
@@ -122,14 +123,12 @@ namespace HealthCareApp.Controllers.Doctor
                 TimeRange = $"{v.StartTime} - {v.EndTime}",  
                  Id = v.Id,
                 type = v.type,     
-            });
+            }).OrderBy(v=>v.Date);
 
             ViewBag.DoctorId = doctorId;
             return View(drAvailabilities);
         }
         /////////////////////////////////////////////////////////
-
-
         private GetAvailabilityForDrVM GetAvailabilityForDrVM(int availabilityId)
         {
             var drAvailabilities = AvailabilityRepository.FindWithSelect(v => v.Id == availabilityId, v => new GetAvailabilityForDrVM
@@ -149,7 +148,6 @@ namespace HealthCareApp.Controllers.Doctor
             });
             Models.Doctor doctor = new Models.Doctor();
             return drAvailabilities;
-
         }
         public IActionResult DeleteAvailability(int availabilityId)
          {
@@ -175,7 +173,13 @@ namespace HealthCareApp.Controllers.Doctor
                 }
             }
 
-            SlotRepository.HardDeleteRange(oldAvailability.AvailableSlots);
+            //SlotRepository.HardDeleteRange(oldAvailability.AvailableSlots);
+
+            //foreach(var slot in oldAvailability.AvailableSlots)
+            //{
+            //    slot.Appointment.
+            //}
+
             AvailabilityRepository.HardDelete(oldAvailability);
             return RedirectToAction(nameof(GetAvailabilitiesForDr), new { id = drId });
 
@@ -187,7 +191,7 @@ namespace HealthCareApp.Controllers.Doctor
             IEnumerable<DateOnly> currentAvailabilities = AvailabilityRepository.FindAllWithSelect(
                 v=>v.Date>=dateToday,
                 v=>v.Date
-            );
+            ).Order();
 
             IEnumerable<Item<DateOnly, string>> ScheduleDays = GetScheduleDays(currentAvailabilities).Select(d =>
                 new Item<DateOnly, string>()
@@ -254,7 +258,7 @@ namespace HealthCareApp.Controllers.Doctor
             List<DateOnly> ScheduleDays = new List<DateOnly>();
             DateOnly dateToday = DateOnly.FromDateTime(DateTime.Now);
 
-            for (int i = 0; i < 14; i++)
+            for (int i = 0; i < AvailabilityDays; i++)
             {
                 DateOnly currentDay = dateToday.AddDays(i);
                 if (!currentAvailabilities.Contains(currentDay))
@@ -276,9 +280,11 @@ namespace HealthCareApp.Controllers.Doctor
                     Status = (s.IsBooked) ? "Booked" : "Available",
                     AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
                     SlotId = s.Id,
-                    AvailabilityId = s.AvailabilityId
+                    AvailabilityId = s.AvailabilityId,
+                     startTime = s.StartTime,
+                    
                 }
-            ).ToList();
+            ).OrderBy(s=>s.startTime).ToList();
             ViewBag.drId = drId;
             return View(Slots);
         }
@@ -293,25 +299,24 @@ namespace HealthCareApp.Controllers.Doctor
             List<Item<int, string>> Slots;
             if (avail.Date==dateToday)
             {
-                Slots= SlotRepository.FindAllWithSelect(
-                  s => s.AvailabilityId == AvailableId && s.Id != OldSlotId&&s.StartTime>timeNow&&!s.IsBooked,
-                  s => new Item<int, string>
-                  {
-                      Name = $"{s.StartTime} - {s.EndTime}",
+                Slots = SlotRepository.FindAll
+                (s => s.AvailabilityId == AvailableId && s.Id != OldSlotId && s.StartTime > timeNow && !s.IsBooked)
+                .OrderBy(s => s.StartTime).Select(s => new Item<int, string>()
+                 {
                       Id = s.Id,
-                  }
-              ).ToList();
+                      Name = $"{s.StartTime} - {s.EndTime}"
+                 }).ToList();
+
             }
             else
             {
-                Slots = SlotRepository.FindAllWithSelect(
-                  s => s.AvailabilityId == AvailableId && s.Id != OldSlotId&&!s.IsBooked,
-                  s => new Item<int, string>
-                  {
-                      Name = $"{s.StartTime} - {s.EndTime}",
-                      Id = s.Id,
-                  }
-              ).ToList();
+                Slots = SlotRepository.FindAll(
+                  s => s.AvailabilityId == AvailableId && s.Id != OldSlotId && !s.IsBooked).OrderBy(s=>s.StartTime)
+                        .Select(s => new Item<int, string>
+                        {
+                            Name = $"{s.StartTime} - {s.EndTime}",
+                            Id = s.Id,
+                        }).ToList();
             }
 
             return Json(Slots);
@@ -356,7 +361,7 @@ namespace HealthCareApp.Controllers.Doctor
                 v => v.Date >= today && v.AvailableSlots.Any(s => !s.IsBooked),
                 v => new Item<int, DateOnly>() { Id = v.Id , Name = v.Date}
             ).OrderBy(t=>t.Name).ToList();
-
+           
             List<Item<int, string>> DrAvailabeDays = new List<Item<int, string>>();
             for (int i = 0; i < AvailabeDays.Count; i++)
                 DrAvailabeDays.Add(new Item<int, string>()
