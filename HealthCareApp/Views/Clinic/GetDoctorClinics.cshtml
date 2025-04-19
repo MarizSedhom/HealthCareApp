@@ -1,0 +1,24 @@
+﻿@model IEnumerable<HealthCareApp.ViewModel.Clinic.ClinicInfoVM>
+
+@{
+    ViewData["Title"] = "GetDoctorClinics";
+}
+
+<h1>Clinic</h1>
+<hr class="w-75" />
+<p>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
+</p>
+<hr class="w-75" />
+<input type="text" name="name" id="searchInp" placeholder="DetailsByName" class="w-50 p-1 " />
+<input type="button" value="Search" class="btn btn-primary ms-3 mb-1" id="searchBtn" onclick="fun()" />
+
+<div id="searchResults"></div>
+
+<div id="initialContent">@Html.Partial("_DetailsByName", Model)</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+</script>
+

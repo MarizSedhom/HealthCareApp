@@ -42,6 +42,16 @@ namespace HealthCareApp.RepositoryServices
         string[] includes = null,
         Expression<Func<T, object>> orderBy = null,
         string orderByDirection = OrderBy.Ascending);
+
+        public IEnumerable<TResult> FindAllWithSelectForSearch<TResult>(
+            Expression<Func<T, bool>> criteria
+            , Expression<Func<T, TResult>> selector,
+            int? skip = null,
+            int? take = null,
+            string[] includes = null,
+            Expression<Func<T, object>> orderBy = null,
+            string orderByDirection = OrderBy.Ascending
+         );
         public T UpdateNoTracking(T entity);
         public void Save();
     }

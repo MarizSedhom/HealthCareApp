@@ -37,7 +37,7 @@ namespace HealthCareApp.Controllers.Doctor
                 AvailabilityDate = v.Date,
                 AvailabilityId = v.Id,
                 AvailabilityType = v.type,
-                ClinicName = $"{v.Clinic.Name} ({v.Clinic.ClinicRegion})",
+                ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
                 Slots = v.AvailableSlots.Select(s => new Slot()
                 {
                    EndTime = s.EndTime,
@@ -76,7 +76,7 @@ namespace HealthCareApp.Controllers.Doctor
                     {
                         AvailableSlotsCnt = v.AvailableSlots.Count(v => !v.IsBooked),
                         AppointmentCnt = v.AvailableSlots.Count(v => v.IsBooked),
-                        ClinicName = $"{v.Clinic.Name} ({v.Clinic.ClinicRegion}) ",
+                        ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
                         Date = v.Date,
                         dayOfWeek = v.dayOfWeek,
                         DoctorId = v.DoctorId,
@@ -112,7 +112,7 @@ namespace HealthCareApp.Controllers.Doctor
             {
                 AvailableSlotsCnt = v.AvailableSlots.Count(v=>!v.IsBooked),
                 AppointmentCnt = v.AvailableSlots.Count(v=>v.IsBooked),
-                ClinicName = $"{v.Clinic.Name} ({v.Clinic.ClinicRegion}) ",
+                ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
                 Date = v.Date,
                 dayOfWeek = v.dayOfWeek,
                 DoctorId = doctorId,
@@ -136,7 +136,7 @@ namespace HealthCareApp.Controllers.Doctor
             {
                 AvailableSlotsCnt = v.AvailableSlots.Count(v => !v.IsBooked),
                 AppointmentCnt = v.AvailableSlots.Count(v => v.IsBooked),
-                ClinicName = $"{v.Clinic.Name} ({v.Clinic.ClinicRegion}) ",
+                ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
                 Date = v.Date,
                 dayOfWeek = v.dayOfWeek,
                 DoctorId = v.DoctorId,
@@ -482,10 +482,10 @@ namespace HealthCareApp.Controllers.Doctor
             }
 
             addAvailability.id = id;
-            addAvailability.DrClincs = ClinicRepository.FindAll
+            addAvailability.DrClincs = ClinicRepository.FindAllWithSelect
             (
-                c => c.DoctorId == id)
-                .Select(c => new Item<int,string> { Id = c.Id, Name = $"{c.Name} ({c.ClinicRegion})" }
+                c => c.DoctorId == id,
+                c => new Item<int,string> { Id = c.Id, Name =$"{c.Region.City.CityNameEn} ({c.Region.RegionNameEn})" }
             ).ToList();
             return addAvailability;
 
@@ -551,10 +551,10 @@ namespace HealthCareApp.Controllers.Doctor
             }
 
             addAvailability.id = id;
-            addAvailability.DrClincs = ClinicRepository.FindAll
+            addAvailability.DrClincs = ClinicRepository.FindAllWithSelect
             (
-                c => c.DoctorId == id)
-                .Select(c => new Item<int, string> { Id = c.Id, Name = $"{c.Name} ({c.ClinicRegion})" }
+                c => c.DoctorId == id,
+                c => new Item<int, string> { Id = c.Id, Name = $"{c.Region.City.CityNameEn} ({c.Region.RegionNameEn})" }
             ).ToList();
             return View(addAvailability);
 
