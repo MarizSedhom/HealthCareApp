@@ -23,7 +23,7 @@ namespace HealthCareApp.ViewModel.Doctor
 
         [DisplayName("Gender")]
         public Gender gender { get; set; }
-        public Title Title { get; set; }
+        public Title? Title { get; set; }
         public string Description { get; set; }
 
         [DataType(DataType.Currency,ErrorMessage ="Fees must be Number")]  

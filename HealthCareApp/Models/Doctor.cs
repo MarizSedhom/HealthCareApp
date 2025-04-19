@@ -4,7 +4,7 @@ namespace HealthCareApp.Models
 {
     public class Doctor:ApplicationUser
     {
-        public Title Title { get; set; }
+        public Title? Title { get; set; }
         public string Description { get; set; }
         public decimal Fees { get; set; }
         public int ExperienceYears { get; set; }
