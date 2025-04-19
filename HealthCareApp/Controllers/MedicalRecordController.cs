@@ -24,7 +24,7 @@ namespace HealthCareApp.Controllers
 
         }
         // GET: MedicalReportController
-        public ActionResult Index(string doctorId = "E123")
+        public ActionResult Index(string doctorId = "d2dffdfa-3168-4fe8-8e52-60ed1c08fc72")
         {
             return View(_medicalRecordService.FindAll(med => med.DoctorId == doctorId, med => med.Patient ,med => med.Doctor));
         }
@@ -40,7 +40,6 @@ namespace HealthCareApp.Controllers
             return View(_medicalRecordService.Find(med => med.DoctorId == doctorId && med.PatientId == patientId, med => med.Patient, med => med.Doctor));
         }
         // GET: MedicalReportController/Create
-        //editing 
         public ActionResult Create(string doctorId = "E123")
         {
 
@@ -63,7 +62,7 @@ namespace HealthCareApp.Controllers
         // POST: MedicalReportController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(MedicalRecord medicalRecord, string doctorId = "E123")
+        public ActionResult Create(MedicalRecord medicalRecord, string doctorId = "d2dffdfa-3168-4fe8-8e52-60ed1c08fc72")
         {
             var patients = _patientService.GetAll()
                 .Select(d => new SelectListItem
