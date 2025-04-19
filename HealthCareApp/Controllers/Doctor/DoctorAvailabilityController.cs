@@ -103,9 +103,9 @@ namespace HealthCareApp.Controllers.Doctor
         [HttpGet]
         public IActionResult GetAvailabilitiesForDr()
         {
+            string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             //??isDeleted in AVibility?
             //??diplay avaibiliy of today and future? not past ?or doctor need data for past
-            string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == doctorId
             , v => new GetAvailabilityForDrVM
@@ -454,10 +454,12 @@ namespace HealthCareApp.Controllers.Doctor
         //}
 
         [HttpGet]
-        public IActionResult AddAvailability(string id)
+        public IActionResult AddAvailability()
         {
             //DateTime.Today.AddDays(i)
-            return View(SetAddAvailabilityVM(id));
+            string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return View(SetAddAvailabilityVM(DoctorId));
         }
         private AddAvailabilityVM SetAddAvailabilityVM(string id)
         {

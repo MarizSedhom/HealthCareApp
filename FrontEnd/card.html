@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <style>
+        .border-highlight-blue {
+            border-color: var(--highlight-blue) !important;
+        }
+        .bg-color-2 {
+            background-color: var(--bg-color-2);
+        }
+        .text-virtual-blue {
+            color: var(--virtual-blue);
+        }
+        .text-dark-blue {
+            color: var(--dark-blue);
+        }
+    </style>
+<body>
+    <div class="card border-highlight-blue shadow-sm mb-4">
+        <div class="card-body p-4">
+            <!-- Patient Header -->
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h3 class="text-dark-blue mb-1">John Doe</h3>
+                    <p class="text-muted mb-0">(555) 123-4567</p>
+                </div>
+                <span class="badge bg-virtual-blue text-white rounded-pill px-3 py-2">Virtual</span>
+            </div>
+    
+            <!-- Appointment Details -->
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="bg-color-2 p-3 rounded">
+                        <p class="text-muted small mb-1">Date</p>
+                        <p class="text-dark-blue mb-0">
+                            <span class="badge bg-warning text-dark me-2">Today</span>
+                            4/19/2025
+                        </p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="bg-color-2 p-3 rounded">
+                        <p class="text-muted small mb-1">Time</p>
+                        <p class="text-dark-blue mb-0">9:00 AM</p>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Payment Info -->
+            <div class="bg-color-2 p-3 rounded">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small mb-1">Payment Status</p>
+                        <p class="text-dark-blue mb-0">Paid</p>
+                    </div>
+                    <div class="text-end">
+                        <p class="text-muted small mb-1">Method</p>
+                        <p class="text-dark-blue mb-0">Credit Card</p>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Patient Info Footer -->
+            <div class="mt-4 pt-3 border-top border-highlight-blue">
+                <p class="text-virtual-blue small mb-0 fw-semibold">PATIENT INFO</p>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
+
+

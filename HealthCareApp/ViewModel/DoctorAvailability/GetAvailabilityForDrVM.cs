@@ -12,17 +12,17 @@ namespace HealthCareApp.ViewModel.Doctor
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
 
-        [DisplayName("Time Range")]
+        [DisplayName("Hours")]
 
         public string? TimeRange { get; set; }
         public DateOnly Date { get; set; }
 
-        [DisplayName("Session Duration")]
+        [DisplayName("Session")]
         public int Duration { get; set; }
-        [DisplayName("Session Type")]
+        [DisplayName("Type")]
 
         public Models.Type type { get; set; }
-        [DisplayName("Available Slots")]
+        [DisplayName("Slots")]
         public int AvailableSlotsCnt { get; set; }
 
         [DisplayName("Appointments")]
