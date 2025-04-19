@@ -4,6 +4,7 @@ using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using HealthCareApp.Service;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
 
@@ -36,6 +37,9 @@ namespace HealthCareApp
 
             // builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             //.AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //allowing sending emails
+            builder.Services.AddTransient<IEmailSender, HealthCareApp.Service.EmailSender>();
 
             builder.Services.AddDefaultIdentity<ApplicationUser>(
                 options => options.SignIn.RequireConfirmedAccount = true)
