@@ -63,10 +63,13 @@ namespace HealthCareApp.Controllers
             {
                 SpecializationRepo.Add(specialization);
                 SpecializationRepo.Save();
-                return RedirectToAction(nameof(Index), new {page});
+                return RedirectToAction(nameof(Index), new { page });
             }
             else
+            {
+                ViewBag.CurrentPage = page;
                 return View(specialization);
+            }
         }
 
         [HttpGet]

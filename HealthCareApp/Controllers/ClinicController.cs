@@ -1,5 +1,6 @@
 ﻿using HealthCareApp.RepositoryServices;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
@@ -59,6 +60,7 @@ namespace HealthCareApp.Controllers
         [HttpPost]
         public IActionResult Create(Clinic clinic, int page)
         {
+            clinic.DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (ModelState.IsValid)
             {
                 ClinicRepo.Add(clinic);
@@ -67,6 +69,7 @@ namespace HealthCareApp.Controllers
             }
             else
             {
+                ViewBag.CurrentPage = page;
                 return View(clinic);
             }
         }

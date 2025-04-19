@@ -41,7 +41,7 @@ namespace HealthCareApp.Controllers
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-            string doctorId = "24D0C3DD-0CA8-44A3-A7CF-C054B75CDA8B";
+            string doctorId = "d1";
             //= User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             ViewBag.DoctorId = doctorId;
 

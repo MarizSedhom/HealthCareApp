@@ -54,19 +54,23 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
-                        <div class="modal-body text-start d-flex align-items-start justify-content-start px-4 py-2"
-                             style="white-space: pre-wrap; min-height: 100px; max-height: 300px; overflow-y: auto; word-break:break-word">
+                       
                         @if (!string.IsNullOrWhiteSpace(item.MedicalHistory)) 
-                        { 
-                             <p class="mb-0">@item.MedicalHistory</p> 
+                        {
+                            <div class="modal-body text-start d-flex align-items-start justify-content-start px-4 py-2"
+                                 style="white-space: pre-wrap; min-height: 100px; max-height: 300px; overflow-y: auto; word-break:break-word">
+                             <p class="mb-0">@item.MedicalHistory</p>
+                            </div>
                         } 
                         else
                         {
-                            <div class="alert alert-info text-center py-2 px-3 mb-0 small">
-                                <i class="fas fa-info-circle me-1"></i> New patient (no medical history available).
+                            <div class="modal-body text-start small d-flex justify-content-center"
+                                 style="min-height: 100px; max-height: 300px; overflow-y: auto;">
+                            <div class="alert alert-success text-center my-auto">
+                                <i class="fas fa-info-circle"></i> New patient (no medical history available).
+                            </div>
                             </div>
                         }
-                        </div>
 
                         <div class="modal-footer justify-content-end py-2 px-3 border-top border-info">
                             <button type="button" class="btn btn-outline-info btn-sm" data-bs-dismiss="modal">

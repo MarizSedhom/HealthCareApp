@@ -71,6 +71,7 @@ namespace HealthCareApp.Controllers
             else
             {
                 ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
+                ViewBag.CurrentPage = page;
                 return View(subSpecialization);
             }
         }
