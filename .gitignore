@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/HealthCareApp/Migrations/20250418143209_initial.cs
+/HealthCareApp/Migrations/20250418143209_initial.Designer.cs
+/HealthCareApp/Migrations/20250418164246_addEnumTitleDr.cs
+/HealthCareApp/Migrations/20250418164246_addEnumTitleDr.Designer.cs
+/.gitignore
