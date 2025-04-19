@@ -22,7 +22,7 @@ namespace HealthCareApp.Models
 
         [EnumDataType(typeof(PaymentStatus))]
         [Display(Name = "Payment Status")]
-        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Unpaid;
 
         public decimal Amount { get; set; }
 
@@ -37,13 +37,12 @@ namespace HealthCareApp.Models
     {
         Upcoming,
         Completed,
-        CancelledByDoctor,
-        CancelledByPatient,
-        RescheduledByDoctor
+        Cancelled,
+        Rescheduled
     }
     public enum PaymentStatus
     {
-        Pending,
+        Unpaid,
         Failed,
         Paid,
         Refunded

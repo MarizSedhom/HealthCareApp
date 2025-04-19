@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
 using System.Xml;
+using HealthCareApp.ViewModel.Appointment;
 
 namespace HealthCareApp.Data
 {
@@ -96,6 +97,11 @@ namespace HealthCareApp.Data
                 .HasForeignKey(a => a.PatientId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Appointment>()
+              .HasIndex(a => a.SlotId)
+              .IsUnique()
+              .HasFilter("[IsDeleted] = 0");
+
             // Configure Appointment relationship with AvailabilitySlots
             //modelBuilder.Entity<Appointment>()
             //    .HasOne(a => a.AvailableSlot)
@@ -139,6 +145,7 @@ namespace HealthCareApp.Data
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+        public DbSet<HealthCareApp.ViewModel.Appointment.AppointmentsHistoryVM> AppointmentsHistoryVM { get; set; } = default!;
 
     }
 
