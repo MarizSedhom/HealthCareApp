@@ -137,7 +137,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
 
             // Doctor-specific fields
             [Display(Name = "Professional Title")]
-            public Title Title { get; set; }
+            public Title? Title { get; set; }
 
             [Display(Name = "Description")]
             [DataType(DataType.MultilineText)]
@@ -214,9 +214,34 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                             values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                             protocol: Request.Scheme);
 
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
+                        await _emailSender.SendEmailAsync(
+                             Input.Email,
+                             "Confirm your HealthCareApp account",
+                             $@"
+                            <html>
+                            <body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
+                                <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>
+                                    <div style='text-align: center; margin-bottom: 20px;'>
+                                        <h2 style='color: #4285f4;'>Welcome to HealthCareApp!</h2>
+                                    </div>
+                                    <p>Thank you for registering with HealthCareApp. We're excited to have you join us!</p>
+                                    <p>Please confirm your email address by clicking the button below:</p>
+                                    <div style='text-align: center; margin: 25px 0;'>
+                                        <a href='{HtmlEncoder.Default.Encode(callbackUrl)}' 
+                                           style='background-color: #4285f4; color: white; padding: 10px 20px; 
+                                                  text-decoration: none; border-radius: 4px; font-weight: bold;'>
+                                            Confirm Email
+                                        </a>
+                                    </div>
+                                    <p>If you didn't create an account with HealthCareApp, you can safely ignore this email.</p>
+                                    <hr style='border: 0; border-top: 1px solid #ddd; margin: 20px 0;'>
+                                    <p style='font-size: 12px; color: #777; text-align: center;'>
+                                        &copy; ${DateTime.Now.Year} HealthCareApp. All rights reserved.
+                                    </p>
+                                </div>
+                            </body>
+                            </html>
+                            ");
                         if (_userManager.Options.SignIn.RequireConfirmedAccount)
                         {
                             return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
@@ -259,6 +284,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                         _logger.LogInformation("User created a new account with password.");
 
                         var userId = await _userManager.GetUserIdAsync(user);
+
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                         var callbackUrl = Url.Page(
@@ -267,8 +293,34 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                             values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                             protocol: Request.Scheme);
 
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                          await _emailSender.SendEmailAsync(
+                          Input.Email,
+                          "Confirm your HealthCareApp account",
+                          $@"
+                        <html>
+                        <body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
+                            <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>
+                                <div style='text-align: center; margin-bottom: 20px;'>
+                                    <h2 style='color: #4285f4;'>Welcome to HealthCareApp!</h2>
+                                </div>
+                                <p>Thank you for registering with HealthCareApp. We're excited to have you join us!</p>
+                                <p>Please confirm your email address by clicking the button below:</p>
+                                <div style='text-align: center; margin: 25px 0;'>
+                                    <a href='{HtmlEncoder.Default.Encode(callbackUrl)}' 
+                                       style='background-color: #4285f4; color: white; padding: 10px 20px; 
+                                              text-decoration: none; border-radius: 4px; font-weight: bold;'>
+                                        Confirm Email
+                                    </a>
+                                </div>
+                                <p>If you didn't create an account with HealthCareApp, you can safely ignore this email.</p>
+                                <hr style='border: 0; border-top: 1px solid #ddd; margin: 20px 0;'>
+                                <p style='font-size: 12px; color: #777; text-align: center;'>
+                                    &copy; ${DateTime.Now.Year} HealthCareApp. All rights reserved.
+                                </p>
+                            </div>
+                        </body>
+                        </html>
+                        ");
 
                         if (_userManager.Options.SignIn.RequireConfirmedAccount)
                         {

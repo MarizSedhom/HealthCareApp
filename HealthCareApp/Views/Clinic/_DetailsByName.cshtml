@@ -1,5 +1,5 @@
-﻿@model IEnumerable<Clinic>
-
+﻿
+@model IEnumerable<ClinicInfoVM>
 <table class="table mt-1">
     <thead>
         <tr>
@@ -9,6 +9,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.ClinicAddress)
             </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.ClinicCity)
             </th>
@@ -41,8 +42,8 @@
                     @Html.DisplayFor(modelItem => item.ClinicPhoneNumber)
                 </td>
                 <td class="text-end action-buttons">
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-md" asp-route-page="@ViewBag.CurrentPage">Edit</a>
-                    <a asp-action="DetailsByID" asp-route-id="@item.Id" class="btn btn-info btn-md ms-2" asp-route-page="@ViewBag.CurrentPage">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-md" >Edit</a>
+                    <a asp-action="DetailsByID" asp-route-id="@item.Id" class="btn btn-info btn-md ms-2" >Details</a>
                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-md ms-2">Delete</a>
                 </td>
             </tr>
@@ -50,7 +51,9 @@
     </tbody>
 </table>
 
-@{
+
+
+@* @{
     int currentPage = ViewBag.CurrentPage;
     int totalPages = ViewBag.TotalPages;
     int pagesPerGroup = 5;
@@ -100,4 +103,4 @@
             <a class="page-link" href="javascript:void(0);" onclick="loadSearchPage(@totalPages)">»</a>
         </li>
     </ul>
-</nav>
+</nav> *@

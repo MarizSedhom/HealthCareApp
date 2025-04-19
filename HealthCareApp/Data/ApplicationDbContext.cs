@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
+using System.Xml;
 
 namespace HealthCareApp.Data
 {
@@ -23,7 +24,8 @@ namespace HealthCareApp.Data
         public virtual DbSet<MedicalRecord> MedicalRecords { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<Appointment> Appointments { get; set; }
-
+        public virtual DbSet<City> Cities { get; set; }
+        public virtual DbSet<Region>Regions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -127,6 +129,10 @@ namespace HealthCareApp.Data
                 .WithMany(s => s.SubSpecialization)
                 .HasForeignKey(s => s.SpecializationId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<City>()
+           .Property(e => e.Id)
+           .ValueGeneratedNever();
 
             OnModelCreatingPartial(modelBuilder);
 

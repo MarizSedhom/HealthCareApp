@@ -4,6 +4,7 @@ using HealthCareApp.ViewModel.Doctor;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
@@ -28,14 +29,15 @@ namespace HealthCareApp.Controllers.Doctor
             this.doctorRepository = doctorRepository;
         }
 
-        public IActionResult DisplayDaysSlots(string DrId= "fa6c5bd9-c27e-4328-8105-32d092a0ecd9")
+        public IActionResult DisplayDaysSlots(string DrId="1")
         {
+
             IEnumerable<AvailabilityWithSlotVM> drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == DrId, v => new AvailabilityWithSlotVM()
             {
                 AvailabilityDate = v.Date,
                 AvailabilityId = v.Id,
                 AvailabilityType = v.type,
-                ClinicName = $"{v.Clinic.Name} ({v.Clinic.ClinicRegion})",
+                ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
                 Slots = v.AvailableSlots.Select(s => new Slot()
                 {
                    EndTime = s.EndTime,
@@ -74,7 +76,7 @@ namespace HealthCareApp.Controllers.Doctor
                     {
                         AvailableSlotsCnt = v.AvailableSlots.Count(v => !v.IsBooked),
                         AppointmentCnt = v.AvailableSlots.Count(v => v.IsBooked),
-                        ClinicName = $"{v.Clinic.Name} ({v.Clinic.ClinicRegion}) ",
+                        ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
                         Date = v.Date,
                         dayOfWeek = v.dayOfWeek,
                         DoctorId = v.DoctorId,
@@ -104,12 +106,13 @@ namespace HealthCareApp.Controllers.Doctor
             string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             //??isDeleted in AVibility?
             //??diplay avaibiliy of today and future? not past ?or doctor need data for past
+
             var drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == doctorId
             , v => new GetAvailabilityForDrVM
             {
                 AvailableSlotsCnt = v.AvailableSlots.Count(v=>!v.IsBooked),
                 AppointmentCnt = v.AvailableSlots.Count(v=>v.IsBooked),
-                ClinicName = $"{v.Clinic.Name} ({v.Clinic.ClinicRegion}) ",
+                ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
                 Date = v.Date,
                 dayOfWeek = v.dayOfWeek,
                 DoctorId = doctorId,
@@ -133,7 +136,7 @@ namespace HealthCareApp.Controllers.Doctor
             {
                 AvailableSlotsCnt = v.AvailableSlots.Count(v => !v.IsBooked),
                 AppointmentCnt = v.AvailableSlots.Count(v => v.IsBooked),
-                ClinicName = $"{v.Clinic.Name} ({v.Clinic.ClinicRegion}) ",
+                ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
                 Date = v.Date,
                 dayOfWeek = v.dayOfWeek,
                 DoctorId = v.DoctorId,
@@ -144,7 +147,9 @@ namespace HealthCareApp.Controllers.Doctor
                 Id = v.Id,
                 type = v.type,
             });
+            Models.Doctor doctor = new Models.Doctor();
             return drAvailabilities;
+
         }
         public IActionResult DeleteAvailability(int availabilityId)
          {
@@ -257,26 +262,26 @@ namespace HealthCareApp.Controllers.Doctor
             }
             return ScheduleDays;
         }
-        //[HttpGet]
-        //public IActionResult ViewSlots( string drId,int availabilityId )
-        //{
-        //    List<ViewSlotVM> Slots = SlotRepository.FindAllWithSelect(
-        //        s => s.AvailabilityId == availabilityId,
-        //        s => new ViewSlotVM()
-        //        {
-        //            TimeRange = $"{s.StartTime} - {s.EndTime}",
-        //            PatientName = (s.Appointment==null)?"-": s.Appointment.PatientName,
-        //            PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.PatientPhone,
-        //            IsBooked = s.IsBooked,
-        //            Status = (s.IsBooked) ? "Booked" : "Available",
-        //            AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
-        //            SlotId = s.Id,
-        //            AvailabilityId = s.AvailabilityId
-        //        }
-        //    ).ToList();
-        //    ViewBag.drId = drId;
-        //    return View(Slots);
-        //}
+        [HttpGet]
+        public IActionResult ViewSlots(string drId, int availabilityId)
+        {
+            List<ViewSlotVM> Slots = SlotRepository.FindAllWithSelect(
+                s => s.AvailabilityId == availabilityId,
+                s => new ViewSlotVM()
+                {
+                    TimeRange = $"{s.StartTime} - {s.EndTime}",
+                    PatientName = (s.Appointment == null) ? "-" : $"{s.Appointment.Patient.FirstName} {s.Appointment.Patient.LastName}",
+                    PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.Patient.PhoneNumber,
+                    IsBooked = s.IsBooked,
+                    Status = (s.IsBooked) ? "Booked" : "Available",
+                    AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
+                    SlotId = s.Id,
+                    AvailabilityId = s.AvailabilityId
+                }
+            ).ToList();
+            ViewBag.drId = drId;
+            return View(Slots);
+        }
 
         //url of ajax call
         [HttpPost]
@@ -311,38 +316,38 @@ namespace HealthCareApp.Controllers.Doctor
 
             return Json(Slots);
         }
-        //public IActionResult CancelSlot(int slotId)
-        //{
+        public IActionResult CancelSlot(int slotId)
+        {
 
-        //    ViewSlotVM Slot = SlotRepository.FindWithSelect(s => s.Id == slotId,s => new ViewSlotVM()
+            ViewSlotVM Slot = SlotRepository.FindWithSelect(s => s.Id == slotId, s => new ViewSlotVM()
 
-        //    {
-        //        TimeRange = $"{s.StartTime} - {s.EndTime}",
-        //        PatientName = (s.Appointment == null) ? "-" : s.Appointment.PatientName,
-        //        PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.PatientPhone,
-        //        IsBooked = s.IsBooked,
-        //        Status = (s.IsBooked) ? "Booked" : "Available",
-        //        AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
-        //        SlotId = s.Id,
-        //        AvailabilityId = s.AvailabilityId
+            {
+                TimeRange = $"{s.StartTime} - {s.EndTime}",
+                PatientName = (s.Appointment == null) ? "-" : $"{s.Appointment.Patient.FirstName} {s.Appointment.Patient.LastName}",
+                PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.Patient.PhoneNumber,
+                IsBooked = s.IsBooked,
+                Status = (s.IsBooked) ? "Booked" : "Available",
+                AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
+                SlotId = s.Id,
+                AvailabilityId = s.AvailabilityId
 
-        //    });
+            });
 
-        //    return View(Slot);
-        //}
+            return View(Slot);
+        }
 
 
         //////////////////////////// Notification for patient about the cancelation ///////////////////
-        //public IActionResult CancelSlotPost(int slotId)
-        //{
-        //    AvailabilitySlots slot = SlotRepository.Find(s => s.Id == slotId, s => s.Appointment);
-        //    /***************************************** Notification for patient about the cancelation ********************************************/
-        //    /***************************************** how dealing with digital payment ********************************************/
-        //    if(slot != null)
-        //        SlotRepository.HardDelete(slot); //delete slot with appoiment 
+        public IActionResult CancelSlotPost(int slotId)
+        {
+            AvailabilitySlots slot = SlotRepository.Find(s => s.Id == slotId, s => s.Appointment);
+            /***************************************** Notification for patient about the cancelation ********************************************/
+            /***************************************** how dealing with digital payment ********************************************/
+            if (slot != null)
+                SlotRepository.HardDelete(slot); //delete slot with appoiment 
 
-        //    return RedirectToAction(nameof(ViewSlots), new { availabilityId  =slot.AvailabilityId });
-        //}
+            return RedirectToAction(nameof(ViewSlots), new { availabilityId = slot.AvailabilityId });
+        }
         public IActionResult RescheduleAppointment(int slotId)
         {
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
@@ -477,10 +482,10 @@ namespace HealthCareApp.Controllers.Doctor
             }
 
             addAvailability.id = id;
-            addAvailability.DrClincs = ClinicRepository.FindAll
+            addAvailability.DrClincs = ClinicRepository.FindAllWithSelect
             (
-                c => c.DoctorId == id)
-                .Select(c => new Item<int,string> { Id = c.Id, Name = $"{c.Name} ({c.ClinicRegion})" }
+                c => c.DoctorId == id,
+                c => new Item<int,string> { Id = c.Id, Name =$"{c.Region.City.CityNameEn} ({c.Region.RegionNameEn})" }
             ).ToList();
             return addAvailability;
 
@@ -546,10 +551,10 @@ namespace HealthCareApp.Controllers.Doctor
             }
 
             addAvailability.id = id;
-            addAvailability.DrClincs = ClinicRepository.FindAll
+            addAvailability.DrClincs = ClinicRepository.FindAllWithSelect
             (
-                c => c.DoctorId == id)
-                .Select(c => new Item<int, string> { Id = c.Id, Name = $"{c.Name} ({c.ClinicRegion})" }
+                c => c.DoctorId == id,
+                c => new Item<int, string> { Id = c.Id, Name = $"{c.Region.City.CityNameEn} ({c.Region.RegionNameEn})" }
             ).ToList();
             return View(addAvailability);
 

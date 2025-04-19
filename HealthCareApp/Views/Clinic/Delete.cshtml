@@ -1,4 +1,4 @@
-﻿@model HealthCareApp.Models.Clinic
+﻿@model ClinicInfoVM
 
 @{
     ViewData["Title"] = "Delete";
@@ -42,7 +42,7 @@
     </dl>
     
     <form asp-action="Delete"> 
-         <input type="submit" value="Delete" class="btn btn-danger"/> | 
-         <a asp-action="Index">Back to List</a> 
-    </form> 
+         <input type="submit" value="Delete" class="btn btn-danger"/> |
+        <a asp-action="GetDoctorClinics" asp-route-doctorId="@Model.doctorId">Back to List</a>
+    </form>
 </div>

@@ -33,8 +33,14 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult GetDoctorReviews(string doctorId = "80ac78e2-def2-4e42-a1db-a3b58939f63b")
+        public ActionResult GetDoctorReviews(string doctorId = "b6c512b0-ed2d-42e1-b781-f304e7c36062")
         {
+            // Doctor view
+            if (doctorId == null)
+            {
+                doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
+
             var dr = doctorService.GetById(doctorId);
             IEnumerable<Review> reviews = reviewService.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
 

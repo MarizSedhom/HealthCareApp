@@ -36,9 +36,12 @@
                      </button> 
                      <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between"> 
                          <ul class="navbar-nav flex-grow-1"> 
-                             <li class="nav-item"> 
-                                 <a class="nav-link text-dark" asp-area="" asp-controller="Appointment" asp-action="Index">Appointments</a> 
-                             </li> 
+                            <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Doctor" asp-action="GetAllDoctorsInfo">Patient Home Page</a>
+                             </li>
+                            <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Appointment" asp-action="PatientUpcomingAppointments">Patient Appointments</a>
+                            </li>
                              <li class="nav-item"> 
 
                                  <a class="nav-link text-dark" asp-area="" asp-controller="Appointment" asp-action="DisplayUpcomingAppoinments">Upcoming Appointments</a> 
@@ -57,15 +60,21 @@
                              <li class="nav-item"> 
                                  <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> 
 
-                             </li> 
+                             </li>
+                            <li class="nav-item">
+
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MedicalRecord" asp-action="Index">Medical Records</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="DoctorAvailability" asp-action="GetAvailabilitiesForDr">Doctor Availability</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="DoctorAvailability" asp-action="DisplayDaysSlots">Display doctor Availabilities for Patient</a>
+
+                            </li>
                          </ul> 
                          <partial name="_LoginPartial" /> 
                      </div> 
                  </div> 
-             </nav> 
-
-
-
+             </nav>
 
          </header>
     }

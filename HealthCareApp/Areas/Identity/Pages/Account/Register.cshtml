@@ -81,6 +81,7 @@
                     <textarea asp-for="Input.MedicalHistory" class="form-control" rows="3"></textarea>
                     <span asp-validation-for="Input.MedicalHistory" class="text-danger"></span>
                 </div>
+
             </div>
 
             <!-- Doctor-specific Fields -->
@@ -102,7 +103,6 @@
                     <input asp-for="Input.ExperienceYears" class="form-control" />
                     <span asp-validation-for="Input.ExperienceYears" class="text-danger"></span>
                 </div>
-                <div class="form-group mb-3">
                 <div class="form-group mb-3">
                     <label asp-for="Input.SpecializationId"></label>
                     <select asp-for="Input.SpecializationId" asp-items="Model.Specializations" class="form-control">
