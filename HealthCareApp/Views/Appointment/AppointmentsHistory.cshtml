@@ -1,0 +1,143 @@
+﻿@model IEnumerable<HealthCareApp.ViewModel.Appointment.AppointmentsHistoryVM>
+
+@{
+    ViewData["Title"] = "AppointmentsHistory";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4 text-primary">Appointments History</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Status)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Date)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.StartTime)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.DoctorName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Mode)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Clinic)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.PaymentStatus)
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge @GetStatusBadgeClass(item.Status.ToString())">
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </span>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Date)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StartTime)
+                                </td>
+                                <td>
+                                    <strong>@Html.DisplayFor(modelItem => item.DoctorName)</strong>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Mode)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Clinic)
+                                </td>
+                                <td>
+                                    <span class="badge @GetPaymentBadgeClass(item.PaymentStatus.ToString())">
+                                        @Html.DisplayFor(modelItem => item.PaymentStatus)
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        switch (status?.ToLower())
+        {
+            case "completed":
+                return "bg-success";
+            case "cancelled":
+                return "bg-danger";
+            case "pending":
+                return "bg-warning text-dark";
+            case "rescheduled":
+                return "bg-info";
+            default:
+                return "bg-secondary";
+        }
+    }
+
+    string GetPaymentBadgeClass(string paymentStatus)
+    {
+        switch (paymentStatus?.ToLower())
+        {
+            case "paid":
+                return "bg-success";
+            case "unpaid":
+                return "bg-danger";
+            case "pending":
+                return "bg-warning text-dark";
+            case "refunded":
+                return "bg-info";
+            default:
+                return "bg-secondary";
+        }
+    }
+}
+
+<style>
+    .table {
+        font-size: 0.9rem;
+    }
+
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.35em 0.65em;
+        font-weight: 500;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+</style>

@@ -17,12 +17,9 @@
 
 <body>
 
-    @if (SignInManager.IsSignedIn(User))
+    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Doctor") )
     {
-        if(User.IsInRole("Doctor"))
-        {
-            @Html.Partial("_DoctorNavBar")
-        }
+        @Html.Partial("_DoctorNavBar")
     }
     else
     {
