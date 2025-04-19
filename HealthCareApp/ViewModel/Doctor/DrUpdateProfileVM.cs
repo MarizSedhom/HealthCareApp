@@ -23,7 +23,7 @@ namespace HealthCareApp.ViewModel.Doctor
 
         [DisplayName("Gender")]
         public Gender gender { get; set; }
-        public string Title { get; set; }
+        public Title Title { get; set; }
         public string Description { get; set; }
 
         [DataType(DataType.Currency,ErrorMessage ="Fees must be Number")]  
@@ -48,5 +48,7 @@ namespace HealthCareApp.ViewModel.Doctor
         [RegularExpression(@"^[0-9]{12}$", ErrorMessage = "Must be exactly 12 digits")]
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
+
+        //public IEnumerable<Title>titles { get; set; }
     }
 }
