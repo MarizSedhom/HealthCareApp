@@ -1,7 +1,18 @@
 ﻿@model IEnumerable<HealthCareApp.ViewModel.Doctor.GetAvailabilityForDrVM>
 
 @{
-    ViewData["Title"] = "GetAvailabilitiesForDr";
+    ViewData["Title"] = "My Availabilities";
+    string activeTab = Context.Request.Query["tab"].FirstOrDefault() ?? "all";
+
+    var currentDate = DateTime.Now;
+
+    var filteredAvailabilities = activeTab == "all"
+        ? Model
+        : Model.Where(item =>
+            activeTab == "virtual"
+                ? item.type.ToString().Equals("Online", StringComparison.OrdinalIgnoreCase)
+                : item.type.ToString().Equals("Offline", StringComparison.OrdinalIgnoreCase)
+          ).ToList();
 }
 
 <style>
@@ -15,246 +26,407 @@
         --bg-color-2: #f0f8ff;
         --bg-color-3: #f5fff0;
         --bg-color-4: #fff0f5;
+        --virtual-blue: #4e7dc5;
+        --danger-red: #dc3545;
     }
 
-    body {
-        background-color: var(--light-gray);
+    .availability-container {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, var(--light-gray), var(--bg-color-2));
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        line-height: 1.6;
     }
 
-    h1 {
-        color: var(--dark-blue);
-        text-align: center;
-        margin: 25px 0;
-        font-weight: 600;
-        font-size: 1.8rem;
-    }
-
-    .table-container {
+    .header-container {
         background: var(--white);
-        border-radius: 10px;
+        border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        padding: 25px;
-        margin: 20px auto;
-        max-width: 98%;
-        overflow-x: auto;
+        padding: 24px;
+        margin-bottom: 24px;
     }
 
-    .add-availability-btn {
+    .tabs-container {
+        width:400px;
+        display: flex;
+        gap: 8px;
+        background: var(--bg-color-2);
+        border-radius: 8px;
+        padding: 4px;
+        max-width: 400px;
+        margin-bottom: 24px;
+    }
+
+    .tab-button {
+        flex: 1;
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        color: var(--dark-blue);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        text-decoration: none;
+    }
+
+        .tab-button.active {
+            background: var(--dark-blue);
+            color: var(--white);
+        }
+
+    .availability-grid {
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
+         justify-content:center; 
+         gap: 20px;
+         padding:2rem;
+        /* display:flex; */
+        /* flex-wrap:wrap; */
+        /* justify-content:center; */
+        /* gap:1rem; */
+    }
+
+    .availability-card {
+        background: var(--white);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(197, 211, 232, 0.3);
+        padding:1rem;
+    }
+
+        .availability-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+    .card-header-bar {
+        height: 8px;
+        background: var(--dark-blue);
+    }
+
+        .card-header-bar.virtual {
+            background: var(--virtual-blue);
+        }
+
+    .card-content {
+        padding: 16px;
+    }
+
+    .card-footer {
+        padding: 16px;
+        padding-top: 0;
+        background-color: var(--bg-color-2);
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .badge-today {
+        background: #ffefc1;
+        color: #8c6d1f;
+        font-size: 0.75rem;
+    }
+
+    .badge-in-person {
+        background: var(--bg-color-2);
+        color: var(--dark-blue);
+    }
+
+    .badge-virtual {
+        background: rgba(78, 125, 197, 0.1);
+        color: var(--virtual-blue);
+    }
+
+    .utilization-bar {
+        height: 4px;
+        background: var(--bg-color-2);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .utilization-progress {
+        height: 100%;
+    }
+
+    .utilization-high {
+        background: #e76f51;
+    }
+
+    .utilization-medium {
+        background: #f8b04c;
+    }
+
+    .utilization-low {
+        background: var(--virtual-blue);
+    }
+
+    .action-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        background: var(--highlight-blue);
-        color: var(--white);
-        padding: 10px 20px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        margin-bottom: 20px;
-        border: none;
-        width: auto;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-        .add-availability-btn:hover {
-            background: #a0b7da;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-    table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        margin-top: 15px;
-    }
-
-    thead {
-        background: var(--doctor-gradient);
-        color: var(--white);
-    }
-
-    th {
-        padding: 14px 16px;
-        text-align: center;
-        font-weight: 500;
-        letter-spacing: 0.5px;
-        border-bottom: 2px solid var(--dark-blue);
-    }
-
-    td {
-        padding: 12px 16px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        vertical-align: middle;
-        transition: all 0.2s ease;
-    }
-
-    tr {
-        position: relative;
-        transition: all 0.3s ease;
-    }
-
-        tr:nth-child(even) {
-            background: linear-gradient(135deg, rgba(197, 211, 232, 0.3), rgba(255, 255, 255, 0.9));
-        }
-
-        tr:nth-child(odd) {
-            background: linear-gradient(135deg, rgba(197, 211, 232, 0.1), rgba(255, 255, 255, 0.95));
-        }
-
-        tr:hover {
-            transform: translateY(-1px);
-            z-index: 1;
-            background: linear-gradient(135deg, rgba(197, 211, 232, 0.4), rgba(255, 255, 255, 0.85));
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-        }
-
-            tr:hover td {
-                border-color: rgba(74, 144, 226, 0.2);
-            }
-
-    .action-links {
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-        .action-links a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 80px;
-            color: var(--highlight-blue);
-            text-decoration: none;
-            margin: 0;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-            padding: 6px 10px;
-            border-radius: 4px;
-            background-color: rgba(74, 144, 226, 0.1);
-            border: 1px solid rgba(74, 144, 226, 0.2);
-            text-align: center;
-        }
-
-            .action-links a:hover {
-                background-color: var(--highlight-blue);
-                color: white;
-                text-decoration: none;
-            }
-
-            /* Cancel button as X icon */
-            .action-links a[href*="DeleteAvailability"] {
-                min-width: auto;
-                width: 26px;
-                height: 35.5px;
-                padding: 0;
-                color: #dc3545;
-                background-color: rgba(220, 53, 69, 0.1);
-                border-color: rgba(220, 53, 69, 0.2);
-                position: relative;
-            }
-
-                .action-links a[href*="DeleteAvailability"]:hover {
-                    background-color: #dc3545;
-                    color: white;
-                }
-
-                .action-links a[href*="DeleteAvailability"]::after {
-                    content: "×";
-                    font-size: 1.2rem;
-                    line-height: 1;
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                }
-
-                .action-links a[href*="DeleteAvailability"] span {
-                    display: none;
-                }
-
-    .availability-type {
-        display: flex;
-        justify-content: center;
-        padding: 4px 12px;
-        border-radius: 12px;
+        padding: 6px 12px;
+        border-radius: 4px;
         font-size: 0.85rem;
         font-weight: 500;
-        width: fit-content;
-        margin: 0 auto;
+        transition: all 0.2s ease;
+        border: 1px solid var(--bg-color-2);
+        background: var(--white);
+        color: var(--dark-blue);
+        text-decoration: none;
     }
 
+        .action-button:hover {
+            background: var(--bg-color-2);
+        }
 
-    .count-badge {
+    .cancel-button {
+        width: auto;
+        height: 30px;
+        /* border-radius: 40%; */
         display: flex;
         align-items: center;
         justify-content: center;
-        min-width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        background-color: var(--highlight-blue);
-        color: white;
-        font-size: 0.85rem;
-        font-weight: 500;
-        margin: 0 auto;
+        background: rgba(220, 53, 69, 0.1);
+        color: var(--danger-red);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+        text-decoration: none;
     }
 
-    .text-center {
+        .cancel-button:hover {
+            background: var(--danger-red);
+            color: var(--white);
+        }
+
+    .empty-state {
         text-align: center;
+        padding: 40px 20px;
+    }
+
+    .empty-state-icon {
+        background: var(--bg-color-2);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+
+    .add-availability-btn {
+        background: linear-gradient(to right, var(--dark-blue), #3a4d6d);
+        color: var(--white);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 15px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+        .add-availability-btn:hover {
+            background: linear-gradient(to right, #3a4d6d, var(--dark-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            color: var(--white);
+        }
+
+    .healthcare-header {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        margin-bottom: 24px;
+        background: var(--doctor-gradient);
+    }
+
+    .real-time-clock {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        border-radius: 8px;
+        padding: 8px 16px;
     }
 </style>
 
-<div class="table-container" style="background-color: #96a5ba;">
-    <div>
-        <a asp-action="AddAvailability" asp-route-id="@ViewBag.DoctorId" class="add-availability-btn">
+
+<div class="availability-container">
+    <div class="container py-8 px-4 md:px-8 max-w-7xl mx-auto">
+    <header class="healthcare-header mt-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center text-white">
+            <div>
+                <div class="d-flex justify-content-between">
+                    <h1 class="text-3xl font-bold tracking-tight" ">Availability</h1>
+
+                    <div class="real-time-clock" style="font-size:25px;">
+                        <span id="currentTime" class="d-flex align-items-center">@currentDate.ToString("hh:mm tt")</span>
+                    </div>
+                </div>
+                <div class="mt-2 flex items-center space-x-4">
+                    <p class="text-blue-100/80" id="currentDate">@currentDate.ToString("dddd, MMMM dd, yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </header>
+        <a asp-action="AddAvailability" asp-route-id="@ViewBag.DoctorId" class="add-availability-btn mb-3">
             <i class="fas fa-plus"></i> Add New Availability
         </a>
-    </div>
-    <h1  class="mb-4">My Availabilities</h1>
+        <div class="header-container" style="background-color: #96a5ba;">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div class="text-white">
+                    <h4 class="text-3xl font-bold text-[#223249] tracking-tight">Your Availabilities</h4>
+                    <h6 class="text-muted mt-1">Manage your schedule and availability slots</h6>
+                </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.Date)</th>
-                <th>@Html.DisplayNameFor(model => model.dayOfWeek)</th>
-                <th>@Html.DisplayNameFor(model => model.TimeRange)</th>
-                <th>@Html.DisplayNameFor(model => model.Duration)</th>
-                <th>@Html.DisplayNameFor(model => model.type)</th>
-                <th>@Html.DisplayNameFor(model => model.ClinicName)</th>
-                <th>@Html.DisplayNameFor(model => model.AvailableSlotsCnt)</th>
-                <th>@Html.DisplayNameFor(model => model.AppointmentCnt)</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
+            </div>
+
+            <hr />
+            <div class="d-flex justify-content-between">
+                <div>
+
+                </div>
+           
+                <div class="tabs-container">
+                    <a href="?tab=all" class="tab-button @(activeTab == "all" ? "active" : "")">All</a>
+                    <a href="?tab=in-person" class="tab-button @(activeTab == "in-person" ? "active" : "")">In-Person</a>
+                    <a href="?tab=virtual" class="tab-button @(activeTab == "virtual" ? "active" : "")">Virtual</a>
+                </div>
+            </div>
+            
+
+            @if (filteredAvailabilities.Any())
             {
-                <tr>
-                    <td class="text-center">@Html.DisplayFor(modelItem => item.Date)</td>
-                    <td class="text-center">@Html.DisplayFor(modelItem => item.dayOfWeek)</td>
-                    <td class="text-center">@Html.DisplayFor(modelItem => item.TimeRange)</td>
-                    <td class="text-center">@Html.DisplayFor(modelItem => item.Duration) min</td>
-                    <td>
-                        <span class="availability-type" data-type="@item.type">
-                            @Html.DisplayFor(modelItem => item.type)
-                        </span>
-                    </td>
-                    <td class="text-center">@Html.DisplayFor(modelItem => item.ClinicName)</td>
-                    <td class="text-center"><span class="count-badge">@Html.DisplayFor(model => item.AvailableSlotsCnt)</span></td>
-                    <td class="text-center"><span class="count-badge">@Html.DisplayFor(model => item.AppointmentCnt)</span></td>
-                    <td>
-                        <div class="action-links">
-                            @Html.ActionLink("View Slots", "ViewSlots", new { drId = @ViewBag.DoctorId, availabilityId = item.Id })
-                            @Html.ActionLink("Reschedule", "RescheduleAvailability", new { availabilityId = item.Id })
-                            @Html.ActionLink("", "DeleteAvailability", new { availabilityId = item.Id })
-                        </div>
-                    </td>
-                </tr>
+                <div class="">
+                    <div class="availability-grid ">
+                        @foreach (var availability in filteredAvailabilities)
+                        {
+
+                            var isVirtual = availability.type.ToString().Equals("Online", StringComparison.OrdinalIgnoreCase);
+                            var totalSlots = availability.AvailableSlotsCnt + availability.AppointmentCnt;
+                            var utilizationPercentage = totalSlots > 0
+                            ? (availability.AppointmentCnt / (double)totalSlots) * 100
+                            : 0;
+                            var formattedDate = availability.Date.ToString("MMM dd, yyyy");
+                            var isToday = formattedDate == DateTime.Today.ToString("MMM dd, yyyy");
+
+                            <div class="availability-card card ">
+
+                                <div class="card-header-bar @(isVirtual ? "virtual" : "")"></div>
+
+
+
+
+                                <div class="card-content">
+
+
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <h3 class="font-semibold text-lg text-[#223249] mb-1 d-inline">@formattedDate</h3>
+                                                @if (isToday)
+                                                {
+                                                    <span class="badge badge-today ml-2">Today</span>
+                                                }
+                                            </div>
+
+                                            <div class="flex items-center text-[#26364d]/70 text-sm">
+                                                <i class="fas fa-calendar-day mr-1"></i>
+                                                <span>@availability.dayOfWeek</span>
+                                            </div>
+                                        </div>
+                                        <span class="badge @(isVirtual ? "badge-virtual" : "badge-in-person")">
+                                            @availability.type
+                                        </span>
+                                    </div>
+
+                                    <div class="space-y-3 mb-4">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-clock text-[#26364d]/70 mr-2"></i>
+                                            <div>
+                                                <p class="text-sm font-medium">@availability.TimeRange</p>
+                                                <p class="text-xs text-[#26364d]/60">@availability.Duration min sessions</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center">
+                                            <i class="fas fa-map-marker-alt text-[#26364d]/70 mr-2"></i>
+                                            <p class="text-sm">@availability.ClinicName</p>
+                                        </div>
+
+                                        <div class="flex items-center">
+                                            <i class="fas fa-users text-[#26364d]/70 mr-2"></i>
+                                            <div class="w-full">
+                                                <div class="flex justify-between mb-1">
+                                                    <span class="text-xs text-[#26364d]/70">Slots filled</span>
+                                                    <span class="text-xs font-medium">
+                                                        @availability.AppointmentCnt/@totalSlots
+                                                    </span>
+                                                </div>
+                                                <div class="utilization-bar">
+                                                    <div class="utilization-progress @GetUtilizationClass(utilizationPercentage)"
+                                                         style="width: @utilizationPercentage%;"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer" >
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+                                        <a asp-action="ViewSlots" asp-route-drId="@ViewBag.DoctorId" asp-route-availabilityId="@availability.Id"
+                                           class="action-button">
+                                            <i class="fas fa-eye mr-1 me-2"></i> View Slots
+                                        </a>
+                                        <a asp-action="RescheduleAvailability" asp-route-availabilityId="@availability.Id"
+                                           class="action-button">
+                                            <i class="fas fa-sync-alt mr-1 me-2"></i> Reschedule
+
+                                        </a>
+                                    </div>
+                                    <a asp-action="DeleteAvailability" asp-route-availabilityId="@availability.Id"
+                                       class="cancel-button mt-2" title="Cancel">
+                                        <i class="fas fa-times me-2"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-calendar text-[#223249] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-medium text-[#223249] mb-2">No availabilities found</h3>
+                    <p class="text-[#26364d]/70 max-w-md mb-6 mx-auto">
+                        You don't have any @(activeTab != "all" ? activeTab : "") availabilities scheduled yet.
+                    </p>
+                    <a asp-action="AddAvailability" asp-route-id="@ViewBag.DoctorId" class="add-availability-btn">
+                        <i class="fas fa-plus mr-1"></i> Add New Availability
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
 </div>
+
+@functions {
+    string GetUtilizationClass(double percentage)
+    {
+        if (percentage > 75) return "utilization-high";
+        if (percentage > 50) return "utilization-medium";
+        return "utilization-low";
+    }
+}

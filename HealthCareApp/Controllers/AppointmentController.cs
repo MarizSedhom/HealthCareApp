@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Stripe.Checkout;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
@@ -202,8 +203,10 @@ namespace HealthCareApp.Controllers
 
 
         // doctor 
-        public ActionResult DisplayUpcomingAppoinments(string doctorId = "hggvftgf55555555")
+        public ActionResult DisplayUpcomingAppoinments()
         {
+            string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             var upcomingAppointments = appointmentService.FindAllWithSelect(app => app.AvailableSlot.Availability.DoctorId == doctorId && app.Status == Status.Pending
             ,app => new UpcomingAppointmentsVM
             {

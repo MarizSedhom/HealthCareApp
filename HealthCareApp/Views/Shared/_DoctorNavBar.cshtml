@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | MedConnect</title>
+    <link rel="stylesheet" href="~/css/DoctorNavBar.css" />
+
+</head>
+<style>
+    .logo i {
+        display: inline-block !important;
+    }
+</style>
+<body>
+    <nav class="doctor-navbar mb-5">
+        <div class="nav-left">
+            <div class="logo">
+                <i class="fas fa-heartbeat logPulse" style="display: inline-block"></i>
+                <h1>MedConnect</h1>
+            </div>
+            <div class="nav-links">
+                <div class="d-flex gap-3">
+                    <a asp-controller="Appointment"
+                       asp-action="DisplayUpcomingAppoinments"
+                       class="nav-link active"
+                       data-bg="var(--bg-color-2)">Appointments</a>
+                    <a asp-controller="DoctorAvailability"
+                       asp-action="GetAvailabilitiesForDr"
+                       class="nav-link"
+                       data-bg="var(--bg-color-2)">Availability</a>
+                    <a asp-controller="Review"
+                       asp-action="GetDoctorReviews"
+                       class="nav-link"
+                       data-bg="var(--bg-color-2)">My Reviews</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <div class="notification">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </div>
+
+            <div id="doctorProfile" class="doctor-profile">
+                <div class="profile-img">
+                    <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Doctor Profile">
+                </div>
+                <span class="profile-name">Dr. Smith</span>
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+            </div>
+
+            <div class="profile-dropdown" id="profileDropdown">
+                <a href="#"><i class="fas fa-user"></i> My Profile</a>
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark"><i class="fas fa-sign-out-alt"></i>Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+
+        // Profile dropdown functionality
+        const doctorProfile = document.getElementById('doctorProfile');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        doctorProfile.addEventListener('click', function (e) {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!doctorProfile.contains(e.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Notification functionality
+        document.querySelector('.notification').addEventListener('click', function () {
+            alert('Notification panel would appear here');
+        });
+
+        // Profile dropdown actions
+        // document.querySelectorAll('.profile-dropdown a').forEach(item => {
+        //     item.addEventListener('click', function (e) {
+        //         e.preventDefault();
+        //         const action = this.textContent.trim();
+        //         alert(`${action} action would be performed here`);
+        //         profileDropdown.classList.remove('show');
+        //     });
+        // });
+        // Navigation functionality
+        const navLinks = document.querySelectorAll('a');
+        navLinks.forEach(link => {
+
+            console.log(navLinks)
+
+            link.addEventListener('click', function (e) {
+                            // e.preventDefault();
+                navLinks.forEach(item => item.classList.remove('active'));
+            console.log(navLinks)
+
+                this.classList.add('active');
+
+                // const activeBgColor = this.getAttribute('data-bg');
+                // this.style.backgroundColor = activeBgColor || 'transparent';
+            });
+        });
+    </script>
+</body>
+</html> 

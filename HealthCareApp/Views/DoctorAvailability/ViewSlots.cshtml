@@ -1,9 +1,7 @@
 ﻿@model IEnumerable<HealthCareApp.ViewModel.Doctor.ViewSlotVM>
 
 @{
-    ViewData["Title"] = "ViewSlots";
-    int CurrentIndex = 0;
-    int idx = 0;
+    ViewData["Title"] = "View Slots";
 }
 
 <style>
@@ -18,38 +16,44 @@
         --bg-color-3: #f5fff0;
         --bg-color-4: #fff0f5;
         --danger-red: #dc3545;
-  
+        --success-green: #2e7d32;
+        --secondary-gray: #6c757d;
     }
 
     body {
         background-color: var(--light-gray);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        line-height: 1.6;
     }
 
-    h1 {
-        color: var(--dark-blue);
-        text-align: center;
-        margin: 25px 0;
-        font-weight: 600;
-        font-size: 1.8rem;
+    .card-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
     }
 
-    .table-container {
+    .card {
         background: var(--white);
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        padding: 25px;
-        margin: 20px auto;
-        max-width: 98%;
-        overflow-x: auto;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(197, 211, 232, 0.3);
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .card-title {
+        color: var(--dark-blue);
+        font-size: 1.5rem;
+        font-weight: 600;
+        text-align: center;
     }
 
     table {
         width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        margin-top: 15px;
+        border-collapse: collapse;
     }
 
     thead {
@@ -58,153 +62,177 @@
     }
 
     th {
-        padding: 14px 16px;
+        padding: 1rem;
         text-align: center;
         font-weight: 500;
-        letter-spacing: 0.5px;
-        border-bottom: 2px solid var(--dark-blue);
     }
+
+    tbody tr {
+        transition: all 0.2s ease;
+    }
+
+        tbody tr:nth-child(even) {
+            background-color: rgba(197, 211, 232, 0.1);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(197, 211, 232, 0.3);
+        }
 
     td {
-        padding: 12px 16px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        vertical-align: middle;
-        transition: all 0.2s ease;
+        padding: 1rem;
         text-align: center;
+        vertical-align: middle;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    tr {
-        position: relative;
-        transition: all 0.3s ease;
+    tbody tr {
+        transition: all 0.2s ease;
+        cursor: pointer; /* Changes cursor to pointer on hover */
     }
 
-        tr:nth-child(even) {
-            background: linear-gradient(135deg, rgba(197, 211, 232, 0.3), rgba(255, 255, 255, 0.9));
+        tbody tr:nth-child(even) {
+            background-color: rgba(197, 211, 232, 0.1);
         }
 
-        tr:nth-child(odd) {
-            background: linear-gradient(135deg, rgba(197, 211, 232, 0.1), rgba(255, 255, 255, 0.95));
+        tbody tr:hover {
+            background-color: rgba(197, 211, 232, 0.3);
+            transform: translateY(-2px); /* Slight lift effect */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
         }
 
-        tr:hover {
-            transform: translateY(-1px);
-            z-index: 1;
-            background: linear-gradient(135deg, rgba(197, 211, 232, 0.4), rgba(255, 255, 255, 0.85));
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-        }
+    .badge {
+        display: inline-block;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 600;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 10rem;
+    }
 
-    /* X Icon Cancel Button */
-    .cancel-btn {
+    .badge-outline {
+        background-color: transparent;
+        border: 1px solid var(--dark-blue);
+        color: var(--dark-blue);
+    }
+
+    .badge-destructive {
+        background-color: var(--danger-red);
+        color: white;
+    }
+
+    .badge-secondary {
+        background-color: var(--secondary-gray);
+        color: white;
+    }
+
+    .btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 30px;
-        height: 30px;
-        background-color: var(--danger-red);
-        color: white;
-        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .btn-outline {
+        background-color: var(--bg-color-2);
+        color: var(--dark-blue);
+        border: 1px solid var(--bg-color-2);
+    }
+
+        .btn-outline:hover {
+            background-color: rgba(197, 211, 232, 0.3);
+        }
+
+    .btn-destructive {
+        width: auto;
+        height: 2rem;
         border-radius: 50%;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
+        background-color: rgba(220, 53, 69, 0.1);
+        color: var(--danger-red);
+        border: 1px solid rgba(220, 53, 69, 0.2);
     }
 
-        .cancel-btn:hover {
-            background-color: #c82333;
-            transform: translateY(-2px) scale(1.1);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        .btn-destructive:hover {
+            background-color: var(--danger-red);
+            color: white;
         }
 
-        .cancel-btn::after {
-            content: "×";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-    .back-to-list {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: var(--highlight-blue);
-        text-decoration: none;
-        font-weight: 500;
-        padding: 8px 16px;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(74, 144, 226, 0.2);
-        background-color: rgba(74, 144, 226, 0.1);
-        margin-top: 20px;
+    .text-center {
+        text-align: center;
     }
 
-        .back-to-list:hover {
-            color: var(--white);
-            background-color: var(--highlight-blue);
-            text-decoration: none;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .back-to-list i {
-            font-size: 0.9em;
-        }
-
-    .status-available {
-        color: #2e7d32;
-        font-weight: 500;
+    .mt-6 {
+        margin-top: 1.5rem;
     }
 
-    .status-booked {
-        color: #c2185b;
-        font-weight: 500;
-    }
-
-    .status-cancelled {
-        color: #6c757d;
-        font-weight: 500;
+    .gap-2 {
+        gap: 0.5rem;
     }
 </style>
 
-<div class="table-container" style="background-color: #96a5ba;">
-    <h1>View Slots</h1>
+<div class="card-container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">View Slots</h2>
+        </div>
+        <div class="card-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time Range</th>
+                        <th>Status</th>
+                        <th>Patient Name</th>
+                        <th>Patient Number</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var slot in Model)
+                    {
+                        <tr>
+                            <td>@slot.TimeRange</td>
+                            <td>
+                                @if (slot.Status == "Available")
+                                {
+                                    <span class="badge badge-outline">Available</span>
+                                }
+                                else if (slot.Status == "Booked")
+                                {
+                                    <span class="badge badge-destructive">Booked</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Cancelled</span>
+                                }
+                            </td>
+                            <td>@(slot.PatientName ?? "N/A")</td>
+                            <td>@(slot.PatientNumber ?? "N/A")</td>
+                            <td>
+                                @if (slot.Status != "Cancelled")
+                                {
+                                    <a asp-action="CancelSlot" asp-route-slotId="@slot.SlotId"
+                                       class="btn btn-destructive" title="Cancel Slot">
+                                        × Cancel
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.TimeRange)</th>
-                <th>@Html.DisplayNameFor(model => model.Status)</th>
-                <th>@Html.DisplayNameFor(model => model.PatientName)</th>
-                <th>@Html.DisplayNameFor(model => model.PatientNumber)</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => item.TimeRange)</td>
-                    <td class="@($"status-{item.Status.ToString().ToLower()}")">
-                        @Html.DisplayFor(modelItem => item.Status)
-                    </td>
-                    <td>@Html.DisplayFor(modelItem => item.PatientName)</td>
-                    <td>@Html.DisplayFor(modelItem => item.PatientNumber)</td>
-                    <td>
-                        @if (item.Status.ToString() != "Cancelled")
-                        {
-                            <a asp-action="CancelSlot" asp-route-slotId="@item.SlotId" class="cancel-btn" title="Cancel Slot"></a>
-                        }
-                    </td>
-                </tr>
-                idx++;
-            }
-        </tbody>
-    </table>
-
-    <div class="text-center">
-        <a asp-action="GetAvailabilitiesForDr" asp-route-id="@(ViewBag.drId)" class="back-to-list">
-            <i class="fas fa-arrow-left"></i> Back to List
-        </a>
+            <div class="text-center mt-4 mb-4">
+                <a asp-action="GetAvailabilitiesForDr" asp-route-id="@ViewBag.drId"
+                   class="btn btn-outline gap-2">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
     </div>
 </div>

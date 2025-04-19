@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HealthCareApp.Controllers.Doctor
@@ -98,11 +99,12 @@ namespace HealthCareApp.Controllers.Doctor
             return View(GetDrWithAvailabilities(drNames));
         }
         [HttpGet]
-        public IActionResult GetAvailabilitiesForDr(string id)
+        public IActionResult GetAvailabilitiesForDr()
         {
+            string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             //??isDeleted in AVibility?
             //??diplay avaibiliy of today and future? not past ?or doctor need data for past
-            var drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == id
+            var drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == doctorId
             , v => new GetAvailabilityForDrVM
             {
                 AvailableSlotsCnt = v.AvailableSlots.Count(v=>!v.IsBooked),
@@ -110,7 +112,7 @@ namespace HealthCareApp.Controllers.Doctor
                 ClinicName = $"{v.Clinic.Name} ({v.Clinic.ClinicRegion}) ",
                 Date = v.Date,
                 dayOfWeek = v.dayOfWeek,
-                DoctorId = id,
+                DoctorId = doctorId,
                 Duration = v.Duration,
                 StartTime = v.StartTime,
                 EndTime = v.EndTime,
@@ -119,7 +121,7 @@ namespace HealthCareApp.Controllers.Doctor
                 type = v.type,     
             });
 
-            ViewBag.DoctorId = id;
+            ViewBag.DoctorId = doctorId;
             return View(drAvailabilities);
         }
         /////////////////////////////////////////////////////////
@@ -424,10 +426,12 @@ namespace HealthCareApp.Controllers.Doctor
         //}
 
         [HttpGet]
-        public IActionResult AddAvailability(string id)
+        public IActionResult AddAvailability()
         {
             //DateTime.Today.AddDays(i)
-            return View(SetAddAvailabilityVM(id));
+            string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return View(SetAddAvailabilityVM(DoctorId));
         }
         private AddAvailabilityVM SetAddAvailabilityVM(string id)
         {
