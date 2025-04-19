@@ -205,6 +205,8 @@ body {
         text-align: center;
     }
 
+
+
 .profile-dropdown form {
     display: block;
     padding: 12px 20px;
@@ -295,3 +297,4 @@ body {
         transform: scale(1);
     }
 }
+
