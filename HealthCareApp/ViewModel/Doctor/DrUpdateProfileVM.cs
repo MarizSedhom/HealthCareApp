@@ -44,10 +44,10 @@ namespace HealthCareApp.ViewModel.Doctor
         public IEnumerable<string>? SubSpecializations { get; set; }  //admin only can change that
 
 
-        [Display(Name = "Phone Number")]
-        [RegularExpression(@"^[0-9]{12}$", ErrorMessage = "Must be exactly 12 digits")]
-        [DataType(DataType.PhoneNumber)]
-        public string PhoneNumber { get; set; }
+        //[Display(Name = "Phone Number")]
+        //[RegularExpression(@"^[0-9]{12}$", ErrorMessage = "Must be exactly 12 digits")]
+        //[DataType(DataType.PhoneNumber)]
+        //public string PhoneNumber { get; set; }
 
         //public IEnumerable<Title>titles { get; set; }
     }

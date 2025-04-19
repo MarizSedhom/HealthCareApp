@@ -41,10 +41,7 @@ namespace HealthCareApp.Controllers.Doctor
 
         public IActionResult UpdateDoctorByAdmin(string doctorId)
         {
-
-
             
-
             return View();
 
         }
@@ -84,7 +81,7 @@ namespace HealthCareApp.Controllers.Doctor
                 Models.Doctor doctor = DoctorRepository.GetById(profileVM.DrId);
                 doctor.FirstName = profileVM.FirstName;
                 doctor.LastName = profileVM.LastName;
-                doctor.PhoneNumber = profileVM.PhoneNumber;
+               // doctor.PhoneNumber = profileVM.PhoneNumber;
                 doctor.gender = profileVM.gender;
                 doctor.Fees = profileVM.Fees;
                 doctor.Description = profileVM.Description;
@@ -173,8 +170,7 @@ namespace HealthCareApp.Controllers.Doctor
                 Title = d.Title,
                 SubSpecializations = d.SubSpecializations.Select(s => s.Name),
                 WaitingTimeInMinutes = d.WaitingTimeInMinutes,
-                DrId = d.Id,
-                PhoneNumber = d.PhoneNumber
+                DrId = d.Id
             });
             if (profileVM.ImgName != null)
                 profileVM.CurrentPicturePath = FilePaths.DrPathRelative + profileVM.ImgName;
