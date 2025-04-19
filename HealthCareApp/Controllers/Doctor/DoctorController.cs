@@ -4,6 +4,8 @@ using HealthCareApp.Service;
 using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
+
 using System.Linq;
 using System.Security.Claims;
 
@@ -181,12 +183,24 @@ namespace HealthCareApp.Controllers.Doctor
             return profileVM;
         }
 
-        public IActionResult GetAllDoctorsInfo()
+        public IActionResult GetAllDoctorsInfo(string title, string gender, string availability, string price)
         {
-            var allDoctors = DoctorRepository.FindAllWithSelect
-            (
-                null,
-                d => new DoctorInfoVM
+            var allDoctors = DoctorRepository.FindAllWithSelect(
+                d =>
+                    (string.IsNullOrEmpty(title) || d.Title.ToString() == title) &&
+                    (string.IsNullOrEmpty(gender) || d.gender.ToString() == gender) &&
+                    (string.IsNullOrEmpty(price) ||
+                        (price == "lt100" && d.Fees < 100) ||
+                        (price == "100to200" && d.Fees >= 100 && d.Fees <= 200) ||
+                        (price == "200to300" && d.Fees > 200 && d.Fees <= 300) ||
+                        (price == "gt300" && d.Fees > 300)
+                    ) &&
+                    (string.IsNullOrEmpty(availability) ||
+                        (availability == "today" && d.availabilities.Any(a => a.Date == DateOnly.FromDateTime(DateTime.Today))) ||
+                        (availability == "tomorrow" && d.availabilities.Any(a => a.Date== DateOnly.FromDateTime(DateTime.Today).AddDays(1)))
+                    ),
+
+                        d => new DoctorInfoVM
                 {
                     DoctorId = d.Id,
                     Title = d.Title.ToString(),
