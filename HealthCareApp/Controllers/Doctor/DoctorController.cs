@@ -4,6 +4,8 @@ using HealthCareApp.Service;
 using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+
 using Stripe;
 
 using System.Linq;
@@ -183,7 +185,7 @@ namespace HealthCareApp.Controllers.Doctor
             return profileVM;
         }
 
-        public IActionResult GetAllDoctorsInfo(string title, string gender, string availability, string price)
+        public IActionResult GetAllDoctorsInfo(string title, string gender, string availability, string price, string sortOrder)
         {
             var allDoctors = DoctorRepository.FindAllWithSelect(
                 d =>
@@ -225,6 +227,18 @@ namespace HealthCareApp.Controllers.Doctor
                     }).ToList()
                 }
             );
+
+            // Apply sorting
+            allDoctors = sortOrder switch
+            {
+                "rate_desc" => allDoctors.OrderByDescending(d => d.Rate).ToList(),
+                "rate_asc" => allDoctors.OrderBy(d => d.Rate).ToList(),
+                "price_desc" => allDoctors.OrderByDescending(d => d.Fees).ToList(),
+                "price_asc" => allDoctors.OrderBy(d => d.Fees).ToList(),
+                "waiting_asc" => allDoctors.OrderBy(d => d.WaitingTimeInMinutes).ToList(),
+                "experience_desc" => allDoctors.OrderByDescending(d => d.ExperienceYears).ToList(),
+                _ => allDoctors
+            };
 
             return View(allDoctors);
         }
