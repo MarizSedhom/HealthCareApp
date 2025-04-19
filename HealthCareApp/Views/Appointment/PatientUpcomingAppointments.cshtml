@@ -1,0 +1,66 @@
+﻿@model IEnumerable<HealthCareApp.ViewModel.Appointment.PatientUpcomingAppointmentsVM>
+
+@{
+    ViewData["Title"] = "PatientUpcomingAppointments";
+}
+
+<h1 class="text-center">Upcoming Appointments</h1>
+
+
+
+<style>
+    .badge-hover:hover {
+        opacity: 0.85;
+        transform: scale(1.05);
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+</style>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    @foreach (var appointment in Model.OrderBy(app => app.Date).ThenBy(app => app.StartTime))
+    {
+        var isToday = appointment.Date == DateOnly.FromDateTime(DateTime.Now);
+        var isTomorrow = appointment.Date == DateOnly.FromDateTime(DateTime.Now).AddDays(1);
+        var dateLabel = isToday ? "Today" : isTomorrow ? "Tomorrow" : appointment.Day.ToString();
+
+        <div class="col">
+            <div class="card shadow-sm rounded-4 border-0 h-100">
+                <div class="card-body">
+
+                    <!-- Title: Doctor Name -->
+                    <h5 class="card-title mb-1 fw-semibold">@appointment.DoctorTitle @appointment.DoctorName</h5>
+
+                    <!-- Subtitle: Date -->
+                    <h6 class="card-subtitle text-muted mb-3">
+                        @dateLabel, @appointment.Date.ToString("MMM dd, yyyy")
+                    </h6>
+
+                    <!-- Mode Badge -->
+                    <div class="d-flex justify-content-end mb-2">
+                        <span class="badge bg-warning text-dark badge-hover">@appointment.Mode</span>
+                    </div>
+
+                    <!-- Details -->
+                    <p><strong>Time: </strong> @appointment.StartTime.ToString("hh\\:mm tt") - @appointment.EndTime.ToString("hh\\:mm tt")</p>
+                    <p><strong>Specialization: </strong> @appointment.Specialization</p>
+                    <p><strong>Clinic: </strong> @appointment.Clinic</p>
+                    <p><strong>Fees: </strong> @appointment.Fees</p>
+
+                    <p>
+                        <strong>Payment Status: </strong>
+                        @if (appointment.PaymentStatus == PaymentStatus.Paid)
+                        {
+                            <span class="badge bg-success badge-hover">@appointment.PaymentStatus</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary badge-hover">@appointment.PaymentStatus</span>
+                        }
+                    </p>
+                </div>
+                <a asp-action="CancelAppointment" asp-route-id="@appointment.Id" class="btn btn-danger">Cancel</a>
+            </div>
+        </div>
+    }
+</div>

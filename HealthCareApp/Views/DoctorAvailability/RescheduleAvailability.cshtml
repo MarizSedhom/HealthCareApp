@@ -1,43 +1,183 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "RescheduleAppointmentsForDay";
     GetAvailabilityForDrVM drAvailability = (GetAvailabilityForDrVM)ViewBag.AvailabilityInfo;
 }
 @model Item<DateOnly,string>
 
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+        --bg-color-1: #f8f9fa;
+        --bg-color-2: #f0f8ff;
+        --bg-color-3: #f5fff0;
+        --bg-color-4: #fff0f5;
+    }
 
-@if (drAvailability.AppointmentCnt > 0)
-{
-    <h1>There are @(drAvailability.AppointmentCnt) Appointment</h1>
+    .reschedule-container {
+        background: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(34, 50, 73, 0.2);
+        overflow: hidden;
+        border: none;
+    }
 
-}
-<h1>Are you sure you want to reschedule this day</h1>
+    .reschedule-header {
+        background: var(--doctor-gradient);
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
 
-@Html.Partial("_AvailabilityInfoPartial", drAvailability)
+    .appointment-count-badge {
+        background-color: var(--highlight-blue);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        display: inline-block;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
 
-<div class="d-flex justify-content-center align-items-center mt-5" style="height:20vh;">
-    <form asp-action="RescheduleAvailability" class="p-4 border rounded shadow bg-white" style="min-width: 900px;">
-        <h3 class="text-center mb-3 text-primary">Reschedule Day</h3>
+    .confirmation-text {
+        color: var(--dark-blue);
+        font-weight: 600;
+        text-align: center;
+        margin: 1.5rem 0;
+        font-size: 1.3rem;
+        padding: 0 2rem;
+    }
 
-        <div class="mb-3">
-            <label asp-for="Id" class="form-label">Select New Day</label>
-            <select asp-for="Id" asp-items='new SelectList(ViewBag.ScheduleDays, "Id", "Name")' class="form-select">
-                <option value="">-- Select Day --</option>
-            </select>
-            <span asp-validation-for="Id" class="text-danger"></span>
+    .form-label {
+        color: var(--dark-blue);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-select {
+        border: 2px solid #C5D3E8;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s;
+    }
+
+        .form-select:focus {
+            border-color: var(--dark-blue);
+            box-shadow: 0 0 0 0.25rem rgba(34, 50, 73, 0.25);
+        }
+
+    .btn-reschedule {
+        background: var(--dark-blue);
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+        .btn-reschedule:hover {
+            background: #a0b7da;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(34, 50, 73, 0.3);
+        }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 2rem;
+        color: var(--dark-blue);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+
+        .back-link:hover {
+            background-color: rgba(197, 211, 232, 0.3);
+            transform: translateX(-5px);
+            text-decoration: none;
+        }
+
+    .availability-card {
+        background: var(--light-gray);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 5px solid var(--dark-blue);
+    }
+</style>
+
+<div class="container py-5">
+    <div class="reschedule-container">
+        <div class="reschedule-header">
+            <h1>Reschedule Appointments</h1>
         </div>
-        <input hidden name="previousAvailabilityId" value="@ViewBag.availabilityId" />
-        <div class="d-grid">
-            <input type="submit" class="btn btn-success" value="Reschedule" />
+
+        <div class="px-4 py-3">
+            @if (drAvailability.AppointmentCnt > 0)
+            {
+                <div class="text-center">
+                    <span class="appointment-count-badge">
+                        @drAvailability.AppointmentCnt Appointment@(drAvailability.AppointmentCnt > 1 ? "s" : "") Found
+                    </span>
+                </div>
+            }
+
+            <p class="confirmation-text">
+                Are you sure you want to reschedule all appointments for this day?
+            </p>
+
+            <div class="availability-card">
+                @Html.Partial("_AvailabilityInfoPartial", drAvailability)
+            </div>
+
+            <div class="px-4 py-3">
+                <form asp-action="RescheduleAvailability" class="needs-validation" novalidate>
+                    <div class="mb-4">
+                        <label asp-for="Id" class="form-label">Select New Day</label>
+                        <select asp-for="Id" asp-items='new SelectList(ViewBag.ScheduleDays, "Id", "Name")' class="form-select text-center" required>
+                            <option value="" class="text-center">Select A Day</option>
+                        </select>
+                        <span asp-validation-for="Id" class="text-danger"></span>
+                    </div>
+                    <input hidden name="previousAvailabilityId" value="@ViewBag.availabilityId" />
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-reschedule">
+                            <i class="fas fa-calendar-alt me-2"></i> Confirm Reschedule
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="text-center py-3">
+                <a asp-action="GetAvailabilitiesForDr" asp-route-id="@(drAvailability.DoctorId)" class="back-link">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Availability List
+                </a>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
 
-<a asp-action="GetAvailabilitiesForDr" asp-route-id="@(drAvailability.DoctorId)">Back to List</a>
-
 @section Scripts {
-
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        // Add Font Awesome if not already included
+        if (!document.querySelector('link[href*="font-awesome"]')) {
+            const fa = document.createElement('link');
+            fa.rel = 'stylesheet';
+            fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+            document.head.appendChild(fa);
+        }
+    </script>
 }

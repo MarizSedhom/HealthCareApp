@@ -1,135 +1,371 @@
 ﻿@model HealthCareApp.ViewModel.Doctor.AddAvailabilityVM
 
 @{
-    var mode = Model;
-
-    ViewData["Title"] = "AddAvailability";
+    ViewData["Title"] = "Add Availability";
     List<DateTime> weekdates = new List<DateTime>();
-    weekdates.Add( DateTime.Today);
+    weekdates.Add(DateTime.Today);
     for (int i = 1; i < 7; i++)
         weekdates.Add(weekdates[0].AddDays(i));
-
 }
 
-<h1>AddAvailability</h1>
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+    }
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="AddAvailability" asp-route-id ="@Model.id" id="Form1" >
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <table class="table">
-                <thead>
-                    <th>Day</th>
-                    <th>Date</th>
+    body {
+        background-color: var(--light-gray);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Session Duration(min)</th>
-                    <th>Clinic</th>
-                    <th>Mode</th>
-                    <th>Available</th>
-                </thead>
-                <tbody>
-                    @for(int i =0;i<Model.DrAvailability.Count;i++){
-                        bool x = Model.DrAvailability[i].IsAvailable;
-                        <tr>
-                            <input asp-for=@(Model.DrAvailability[i].id) hidden class="form-control-sm Dr-Id" disabled data-DrId="@Model.DrAvailability[i].id" />
-                            <td><input asp-for="@Model.DrAvailability[i].dayOfWeek" readonly  class="form-control-sm" disabled  /></td>
-                            <td><input asp-for="@Model.DrAvailability[i].Date" readonly class="form-control-sm" disabled /></td>
+    .min-h-screen {
+        min-height: 100vh;
+    }
 
-                            <td><input asp-for="@Model.DrAvailability[i].StartTime" class="form-control" disabled value=@(Model.DrAvailability[i].IsAvailable ?Model.DrAvailability[i].StartTime.ToString("HH:mm"):"")  /></td>
-                            <td><input asp-for="@Model.DrAvailability[i].EndTime" class="form-control" disabled value=@(Model.DrAvailability[i].IsAvailable ?Model.DrAvailability[i].EndTime.ToString("HH:mm"):"") /></td>
-                            <td><input asp-for="@Model.DrAvailability[i].Duration" class="form-control" disabled value=@(Model.DrAvailability[i].IsAvailable ?Model.DrAvailability[i].Duration:"") min="0" /></td>
-                            <td>
-                                <select asp-for="@Model.DrAvailability[i].ClinicId" asp-items="@(new SelectList(Model.DrClincs,"Id","Name"))" class="form-select-sm" value=@(Model.DrAvailability[i].IsAvailable ?Model.DrAvailability[i].ClinicId:"") disabled>
-                                    <option value="">Select Clinic</option>
-                                </select>
-                            </td>
-                            <td>
-                                <select asp-for="@Model.DrAvailability[i].mode" asp-items="@(Html.GetEnumSelectList<HealthCareApp.Models.Type>())" class="form-select-sm" disabled value=@(Model.DrAvailability[i].IsAvailable ?Model.DrAvailability[i].mode:"")>
-                                    <option value="">Select Mode</option>
-                                </select>
-                            </td>
-                            <td><input  asp-for="@Model.DrAvailability[i].IsAvailable" class="ms-5 form-check availability-checkbox" data-index="@i" /></td>
+    .bg-gradient-to-b {
+        background: linear-gradient(to bottom, #f5f5f5, #e8eff8);
+    }
 
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    .container-card {
+        max-width: 95%;
+        margin: 0 auto;
+        border: 1px solid rgba(197, 211, 232, 0.3);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-radius: 0.375rem;
+    }
+
+    .header-gradient {
+        background: linear-gradient(to right, #C5D3E8, #223249);
+        height: 0.5rem;
+        border-radius: 0.375rem 0.375rem 0 0;
+    }
+
+    /* Table Styles */
+    .availability-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: auto;
+    }
+
+        .availability-table thead th {
+         
+            color: white;
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+        }
+
+        .availability-table thead{
+             background: linear-gradient(to right, #C5D3E8, #223249);
+        }
+        .availability-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+
+            .availability-table tbody tr:nth-child(odd) {
+                background-color: white;
+            }
+
+            .availability-table tbody tr:hover {
+                background-color: rgba(232, 239, 248, 0.5);
+            }
+
+        .availability-table td {
+            padding: 0.5rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+    /* Form Controls */
+    .table-input {
+        width: 100%;
+        min-width: 100px;
+        padding: 0.375rem 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+
+    .table-select {
+        width: 100%;
+        min-width: 120px;
+        padding: 0.375rem 0.5rem;
+    }
+
+    .duration-input {
+        width: 80px;
+    }
+
+    /* Checkbox Styles */
+    .custom-checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        appearance: none;
+        border: 2px solid var(--highlight-blue);
+        border-radius: 4px;
+        outline: none;
+        transition: all 0.2s ease;
+        position: relative;
+        margin: 0 auto;
+    }
+
+        .custom-checkbox:checked {
+            background-color: var(--highlight-blue);
+            border-color: var(--highlight-blue);
+        }
+
+            .custom-checkbox:checked::after {
+                content: "✓";
+                position: absolute;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+    /* Button Styles */
+    .btn-primary {
+        background: linear-gradient(to right, #223249, #3a4d6d);
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.25rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #3a4d6d, #223249);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+    .btn-outline {
+        background: #e8eff8;
+        color: #223249;
+        border: 1px solid #C5D3E8;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-outline:hover {
+            background: #C5D3E8;
+            color: #223249;
+        }
+
+    /* Responsive adjustments */
+    @@media (max-width: 1200px) {
+        .container-card {
+            max-width: 100%;
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .availability-table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+    }
+
+
+    tbody tr {
+        transition: all 0.2s ease;
+        cursor: pointer; /* Changes cursor to pointer on hover */
+    }
+
+        tbody tr:nth-child(even) {
+            background-color: rgba(197, 211, 232, 0.3);
+            ;
+        }
+
+        tbody tr:hover {
+            background-color: #96a5ba;
+           transform: translateY(-2px); /* Slight lift effect */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
+        }
+
+        td{
+            margin:15px;
+        }
+            .availability-table tbody tr:nth-child(even) {
+                background-color: rgba(197, 211, 232, 0.04);
+            }
+</style>
+
+<div class="min-h-screen bg-gradient-to-b py-4 px-2">
+    <div class="container-card">
+        <div class="header-gradient"></div>
+
+        <div class="text-center py-4">
+            <h1 class="text-2xl md:text-3xl font-bold text-[#223249]">
+                Add Availability
+            </h1>
+        </div>
+
+        <div class="px-4">
+            <form asp-action="AddAvailability" asp-route-id="@Model.id">
+                <div class="overflow-x-auto rounded-md border border-[#C5D3E8]/30">
+                    <table class="availability-table">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Duration (min)</th>
+                                <th>Clinic</th>
+                                <th>Mode</th>
+                                <th>Available</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.DrAvailability.Count; i++)
+                            {
+                                bool isAvailable = Model.DrAvailability[i].IsAvailable;
+                                bool hasExistingId = Model.DrAvailability[i].id == null ? false : true;
+                                string disabledClass = !isAvailable ? "opacity-50" : "";
+
+                                <tr>
+                                    <input asp-for="@Model.DrAvailability[i].id" type="hidden" class="Dr-Id" disabled="@(!isAvailable)" data-DrId="@Model.DrAvailability[i].id" />
+
+                                    <td>
+                                        <input asp-for="@Model.DrAvailability[i].dayOfWeek"
+                                               readonly
+                                               class="form-control-plaintext text-center border-0 bg-transparent"
+                                               style="pointer-events: none;" />
+
+                                    </td>
+
+                                    <td>
+                                        <input value="@Model.DrAvailability[i].Date.ToShortDateString()" readonly class="form-control-plaintext text-center border-0 bg-transparent pointer-events-none text-center" />
+                                        <input asp-for="@Model.DrAvailability[i].Date" type="hidden" />
+                                    </td>
+
+                                    <td>
+                                        <input asp-for="@Model.DrAvailability[i].StartTime" type="time"
+                                               class="table-input @disabledClass" disabled="@(!isAvailable)"
+                                               value="@(isAvailable ? Model.DrAvailability[i].StartTime.ToString("HH:mm") : "")" />
+                                    </td>
+
+                                    <td>
+                                        <input asp-for="@Model.DrAvailability[i].EndTime" type="time"
+                                               class="table-input @disabledClass" disabled="@(!isAvailable)"
+                                               value="@(isAvailable ? Model.DrAvailability[i].EndTime.ToString("HH:mm") : "")" />
+                                    </td>
+
+                                    <td>
+                                        <input asp-for="@Model.DrAvailability[i].Duration" type="number" min="1"
+                                               class="table-input duration-input @disabledClass" disabled="@(!isAvailable)"
+                                               value="@(isAvailable ? Model.DrAvailability[i].Duration : "")" />
+                                    </td>
+
+                                    <td>
+                                        <select asp-for="@Model.DrAvailability[i].ClinicId" asp-items="@(new SelectList(Model.DrClincs,"Id","Name"))"
+                                                class="table-select @disabledClass" disabled="@(!isAvailable)">
+                                            <option value="">Select Clinic</option>
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <select asp-for="@Model.DrAvailability[i].mode" asp-items="@(Html.GetEnumSelectList<HealthCareApp.Models.Type>())"
+                                                class="table-select @disabledClass" disabled="@(!isAvailable)">
+                                            <option value="">Select Mode</option>
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <div class="flex items-center justify-center">
+                                            <input asp-for="@Model.DrAvailability[i].IsAvailable"
+                                                   class="custom-checkbox availability-checkbox"
+                                                   data-index="@i"
+                                                   disabled="@hasExistingId" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-center pt-4 pb-4 gap-4">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Availability
+                    </button>
+
+                    <a asp-action="GetAvailabilitiesForDr" asp-route-id="@Model.id" class="btn-outline text-decoration-none">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to List
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="GetAvailabilitiesForDr" asp-route-id="@(Model.id)">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
-            document.addEventListener("DOMContentLoaded", function () {
-            // Get all checkboxes with the class "availability-checkbox"
+        document.addEventListener("DOMContentLoaded", function () {
             const checkboxes = document.querySelectorAll(".availability-checkbox");
-            
-             const DrIds = document.querySelectorAll(".Dr-Id");
+            const DrIds = document.querySelectorAll(".Dr-Id");
 
-            for(var i =0;i<checkboxes.length;i++){
-                    let index = checkboxes[i].dataset.index;
-                    let isChecked = checkboxes[i].checked;
-                    let drId = DrIds[i].value;
-                    if(drId !=""){
-                        document.querySelector(`input[name='DrAvailability[${index}].id']`).disabled = true;
-                        document.querySelector(`input[name='DrAvailability[${index}].dayOfWeek']`).disabled = true;
-                        document.querySelector(`input[name='DrAvailability[${index}].Date']`).disabled = true;
-                        document.querySelector(`input[name='DrAvailability[${index}].StartTime']`).disabled = true;
-                        document.querySelector(`input[name='DrAvailability[${index}].EndTime']`).disabled = true;
-                        document.querySelector(`input[name='DrAvailability[${index}].Duration']`).disabled = true;
-                        document.querySelector(`select[name='DrAvailability[${index}].ClinicId']`).disabled = true;
-                        document.querySelector(`select[name='DrAvailability[${index}].mode']`).disabled = true;
-                         document.querySelector(`input[name='DrAvailability[${index}].IsAvailable']`).disabled = true;
-                         document.querySelector(`input[name='DrAvailability[${index}].IsAvailable']`).checked = true;
+            // Initialize disabled state based on checkbox and existing ID
+            for (let i = 0; i < checkboxes.length; i++) {
+                const index = checkboxes[i].dataset.index;
+                const isChecked = checkboxes[i].checked;
+                const drId = DrIds[i].value;
 
-
-                        // Get the related input and select fields using name attributes
-
-                    }
-                    else{
-                        document.querySelector(`input[name='DrAvailability[${index}].id']`).disabled = !isChecked;
-                        document.querySelector(`input[name='DrAvailability[${index}].dayOfWeek']`).disabled = !isChecked;
-                        document.querySelector(`input[name='DrAvailability[${index}].Date']`).disabled = !isChecked;
-                        document.querySelector(`input[name='DrAvailability[${index}].StartTime']`).disabled = !isChecked;
-                        document.querySelector(`input[name='DrAvailability[${index}].EndTime']`).disabled = !isChecked;
-                        document.querySelector(`input[name='DrAvailability[${index}].Duration']`).disabled = !isChecked;
-                        document.querySelector(`select[name='DrAvailability[${index}].ClinicId']`).disabled = !isChecked;
-                        document.querySelector(`select[name='DrAvailability[${index}].mode']`).disabled = !isChecked;
-                    }
+                if (drId) {
+                    // Existing availability - disable all fields and force checkbox to checked
+                    disableRowFields(index, true);
+                    checkboxes[i].checked = true;
+                    checkboxes[i].disabled = true;
+                } else {
+                    // New availability - set initial state based on checkbox
+                    disableRowFields(index, !isChecked);
+                }
             }
 
-
-
+            // Add event listeners for checkboxes
             checkboxes.forEach(function (checkbox) {
                 checkbox.addEventListener("change", function () {
-                    // Get the index from the data attribute
-                    let index = this.dataset.index;
-                    let isChecked = this.checked;
+                    const index = this.dataset.index;
+                    const isChecked = this.checked;
 
-                    // Get the related input and select fields using name attributes
-                    document.querySelector(`input[name='DrAvailability[${index}].id']`).disabled = !isChecked;
-
-                    document.querySelector(`input[name='DrAvailability[${index}].dayOfWeek']`).disabled = !isChecked;
-                    document.querySelector(`input[name='DrAvailability[${index}].Date']`).disabled = !isChecked;
-                    document.querySelector(`input[name='DrAvailability[${index}].StartTime']`).disabled = !isChecked;
-                    document.querySelector(`input[name='DrAvailability[${index}].EndTime']`).disabled = !isChecked;
-                    document.querySelector(`input[name='DrAvailability[${index}].Duration']`).disabled = !isChecked;
-                    document.querySelector(`select[name='DrAvailability[${index}].ClinicId']`).disabled = !isChecked;
-                    document.querySelector(`select[name='DrAvailability[${index}].mode']`).disabled = !isChecked;
-
+                    disableRowFields(index, !isChecked);
                 });
             });
+
+            function disableRowFields(index, shouldDisable) {
+                const rowInputs = document.querySelectorAll(`input[name='DrAvailability[${index}].StartTime'],
+                                                           input[name='DrAvailability[${index}].EndTime'],
+                                                           input[name='DrAvailability[${index}].Duration'],
+                                                           select[name='DrAvailability[${index}].ClinicId'],
+                                                           select[name='DrAvailability[${index}].mode']`);
+
+                rowInputs.forEach(input => {
+                    input.disabled = shouldDisable;
+                    if (shouldDisable) {
+                        input.classList.add('opacity-50');
+                    } else {
+                        input.classList.remove('opacity-50');
+                    }
+                });
+            }
         });
     </script>
 }

@@ -1,12 +1,11 @@
 ﻿using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using HealthCareApp.ViewModel.Appointment;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Stripe.Checkout;
-using System.Diagnostics;
+using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
@@ -24,60 +23,115 @@ namespace HealthCareApp.Controllers
         }
 
      
-        public ActionResult Index(string patientId = "2") //
+        public ActionResult PatientUpcomingAppointments()
         {
-            IEnumerable<Appointment> appointments = appointmentService.FindAll(app => app.PatientId == patientId, app => app.Patient, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor);
+            var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // check date and mark appointments as completed and payment status as paid
-            foreach(var app in appointments)
+            IEnumerable<Appointment> patientAppointments = appointmentService.FindAll(app => app.PatientId == patientId, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor, app => app.AvailableSlot.Availability.Doctor.Specialization, app => app.AvailableSlot.Availability.Clinic);
+            //// check date and mark appointments as completed and payment status as paid
+            foreach (var app in patientAppointments)
             {
                 if (DateOnly.FromDateTime(DateTime.Now) > app.AvailableSlot.Availability.Date || (DateOnly.FromDateTime(DateTime.Now) == app.AvailableSlot.Availability.Date && TimeOnly.FromDateTime(DateTime.Now) > app.AvailableSlot.EndTime))
                 {
                     app.Status = Status.Completed;
-                    app.paymentStatus = PaymentStatus.Paid;
+                    app.PaymentStatus = PaymentStatus.Paid;
 
                     appointmentService.Update(app);
                 }
             }
 
-            return View(appointments);
+            var upcomingAppVM = appointmentService.FindAllWithSelect
+            (
+                app => app.PatientId == patientId && app.Status == Status.Upcoming,
+                app => new PatientUpcomingAppointmentsVM
+                {
+                    Id = app.Id,
+                    Status = app.Status,
+                    Day = app.AvailableSlot.Availability.dayOfWeek,
+                    Date = app.AvailableSlot.Availability.Date,
+                    StartTime = app.AvailableSlot.StartTime,
+                    EndTime = app.AvailableSlot.EndTime,
+                    DoctorTitle = app.AvailableSlot.Availability.Doctor.Title.ToString(),
+                    DoctorName = $"{app.AvailableSlot.Availability.Doctor.FirstName} {app.AvailableSlot.Availability.Doctor.LastName}",
+                    Specialization = app.AvailableSlot.Availability.Doctor.Specialization.Name,
+                    Clinic = $"{app.AvailableSlot.Availability.Clinic.ClinicAddress} {app.AvailableSlot.Availability.Clinic.ClinicRegion} {app.AvailableSlot.Availability.Clinic.ClinicCity}",
+                    PaymentStatus = app.PaymentStatus,
+                    Mode = app.AvailableSlot.Availability.type,
+                    Fees = app.AvailableSlot.Availability.Doctor.Fees
+                }
+            );
+
+            return View(upcomingAppVM);
         }
 
-        
-        public ActionResult Details(int id)
+        public ActionResult ReserveAppointment(int slotId = 1) // passed from heba's part
         {
-            Appointment appointment = appointmentService.Find(app => app.Id == id, app => app.Patient, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor);
+            var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var patient = patientService.GetById(patientId);
 
-            return View(appointment);
+            var selectedSlot = slotService.FindWithSelect
+            (
+                 slot => slot.Id == slotId
+                , slot => new ReserveAppointmentVM
+                {
+                    SlotId = slotId,
+                    Day = slot.Availability.dayOfWeek,
+                    Date = slot.Availability.Date,
+                    StartTime = slot.StartTime,
+                    EndTime = slot.EndTime,
+                    DoctorImg = slot.Availability.Doctor.ProfilePicture,
+                    DoctorTitle = slot.Availability.Doctor.Title.ToString(),
+                    DoctorName = $"{slot.Availability.Doctor.FirstName} {slot.Availability.Doctor.LastName}",
+                    WaitingTime = slot.Availability.Doctor.WaitingTimeInMinutes,
+                    PatientName = $"{patient.FirstName} {patient.LastName}",
+                    PatientPhone = patient.PhoneNumber,
+                    Mode = slot.Availability.type,
+                    Specialization = slot.Availability.Doctor.Specialization.Name,
+                    DoctorDescription = slot.Availability.Doctor.Description,
+                    Clinic = $"{slot.Availability.Clinic.ClinicAddress} {slot.Availability.Clinic.ClinicRegion} {slot.Availability.Clinic.ClinicCity}",
+                    Fees = slot.Availability.Doctor.Fees
+                }
+            );
+            return View(selectedSlot);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Checkout(Appointment appointment)
+        public ActionResult Checkout(ReserveAppointmentVM appointmentVM)
         {
+            var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var patientEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            Appointment appointment = new Appointment
+            {
+                PatientId = patientId,
+                SlotId = appointmentVM.SlotId,
+                PaymentMethod = appointmentVM.PaymentMethod,
+                Amount = appointmentVM.Fees,
+            };
+
             TempData["Appointment"] = JsonConvert.SerializeObject(appointment);
 
             var domain = "http://localhost:5113/";
             var options = new SessionCreateOptions
             {
                 SuccessUrl = domain + "Appointment/SaveAppointmentWithVisa",
-                CancelUrl = domain + "Appointment/", // home
+                CancelUrl = domain + $"Appointment/ReserveAppointment/{appointmentVM.SlotId}", // home
                 LineItems = new List<SessionLineItemOptions>(),
                 Mode = "payment",
-                //CustomerEmail = appointment.Patient.Email
+                CustomerEmail = patientEmail
             };
 
             var sessionListItem = new SessionLineItemOptions
             {
                 PriceData = new SessionLineItemPriceDataOptions
                 {
-                    UnitAmount = (long)(appointment.Amount * 100),
-                    Currency = "egp",
+                    UnitAmount = (long)(appointmentVM.Fees * 100),
                     ProductData = new SessionLineItemPriceDataProductDataOptions
                     {
-                        Name = "Appointment With Doctor"
-                    }
+                        Name = $"Appointment With {appointmentVM.DoctorTitle} {appointmentVM.DoctorName}",
+                        Description = $"at {appointmentVM.Clinic} on {appointmentVM.Date} from {appointmentVM.StartTime} to {appointmentVM.EndTime}",
+                    },
+                    Currency = "egp"
                 },
                 Quantity = 1,
             };
@@ -91,17 +145,6 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult ReserveAppointment(int slotId = 5, string patientId = "2") // passed from heba's part
-        {
-            AvailabilitySlots slot = slotService.Find(slot => slot.Id == slotId, slot => slot.Availability, slot => slot.Availability.Doctor);
-
-            ViewBag.slot = slot;
-            ViewBag.patientId = patientId;
-
-            return View();
-        }
-
-       
         public ActionResult SaveAppointmentWithVisa()    
         {
             Appointment appointment = null;
@@ -117,96 +160,103 @@ namespace HealthCareApp.Controllers
                 reservedSlot.IsBooked = true;
                 slotService.Update(reservedSlot);
 
-                appointment.paymentStatus = PaymentStatus.Paid;
+                appointment.PaymentStatus = PaymentStatus.Paid;
 
                 appointmentService.Add(appointment);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(PatientUpcomingAppointments));
             }
             else
                 return View(appointment);
         }
 
         [HttpPost]
-        public ActionResult SaveAppointmentWithCash(Appointment appointment)
+        public ActionResult SaveAppointmentWithCash(ReserveAppointmentVM appointmentVM)
         {
             if (ModelState.IsValid)
             {
+                var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                Appointment appointment = new Appointment
+                {
+                    PatientId = patientId,
+                    SlotId = appointmentVM.SlotId,
+                    PaymentMethod = appointmentVM.PaymentMethod,
+                    Amount = appointmentVM.Fees,
+                };
+
                 // Mark the selected slot as booked
                 AvailabilitySlots reservedSlot = slotService.Find(slot => slot.Id == appointment.SlotId);
                 reservedSlot.IsBooked = true;
                 slotService.Update(reservedSlot);
 
                 appointmentService.Add(appointment);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(PatientUpcomingAppointments));
             }
             else
-                return View(appointment);
+                return RedirectToAction(nameof(ReserveAppointment), appointmentVM.SlotId);
         }
 
 
-        public ActionResult Edit(int id)
+        public ActionResult CancelAppointment(int id)
         {
-            Appointment appointment = appointmentService.Find(app => app.Id == id, app => app.Patient, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor);
+            var appointToBeCancelled = appointmentService.FindWithSelect
+            (
+                app => app.Id == id,
+                app => new PatientUpcomingAppointmentsVM
+                {
+                    Status = app.Status,
+                    Day = app.AvailableSlot.Availability.dayOfWeek,
+                    Date = app.AvailableSlot.Availability.Date,
+                    StartTime = app.AvailableSlot.StartTime,
+                    EndTime = app.AvailableSlot.EndTime,
+                    DoctorTitle = app.AvailableSlot.Availability.Doctor.Title.ToString(),
+                    DoctorName = $"{app.AvailableSlot.Availability.Doctor.FirstName} {app.AvailableSlot.Availability.Doctor.LastName}",
+                    Specialization = app.AvailableSlot.Availability.Doctor.Specialization.Name,
+                    Clinic = app.AvailableSlot.Availability.Clinic.ClinicAddress,
+                    PaymentStatus = app.PaymentStatus,
+                    PaymentMethod = app.PaymentMethod,
+                    Fees = app.AvailableSlot.Availability.Doctor.Fees,
+                    Mode = app.AvailableSlot.Availability.type
+                }
+            );
 
-            return View(appointment);
+            return View(appointToBeCancelled);
         }
 
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Appointment appointment)
-        {
-            if (ModelState.IsValid)
-            {
-                appointmentService.Update(appointment);
-
-                return RedirectToAction(nameof(Index));
-            }
-            else
-            {
-                return View(appointment);
-            }
-        }
-
-
-        public ActionResult Delete(int id)
-        {
-            Appointment appointToBeDeleted = appointmentService.Find(app => app.Id == id, app => app.Patient, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor);
-
-            return View(appointToBeDeleted);
-        }
-
-        
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, Appointment appointment)
+        public ActionResult CancelAppointment(int id, Appointment appointment)
         {
             try
             {
-                Appointment appoint = appointmentService.GetById(id);
+                Appointment canceledAppointment = appointmentService.GetById(id);
 
                 // Mark the reserved slot as free
-                AvailabilitySlots slot = slotService.GetById(appoint.SlotId);
+                AvailabilitySlots slot = slotService.GetById(canceledAppointment.SlotId);
                 slot.IsBooked = false;
                 slotService.Update(slot);
 
-                appointmentService.HardDelete(appoint);
+                canceledAppointment.PaymentStatus = PaymentStatus.Refunded; ///// ???? + notification object
+                appointmentService.HardDelete(canceledAppointment);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(PatientUpcomingAppointments));
             }
             catch
             {
-                return View(appointment);
+                return View();
             }
         }
 
 
         // doctor 
-        public ActionResult DisplayUpcomingAppoinments(string doctorId = "hggvftgf55555555")
+        public ActionResult DisplayUpcomingAppoinments()
         {
-            var upcomingAppointments = appointmentService.FindAllWithSelect(app => app.AvailableSlot.Availability.DoctorId == doctorId && app.Status == Status.Pending
+            string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var upcomingAppointments = appointmentService.FindAllWithSelect(app => app.AvailableSlot.Availability.DoctorId == doctorId && app.Status == Status.Upcoming
             ,app => new UpcomingAppointmentsVM
             {
+                Status = app.Status,
                 Day = app.AvailableSlot.Availability.dayOfWeek,
                 Date = app.AvailableSlot.Availability.Date,
                 Time = app.AvailableSlot.StartTime,
@@ -214,20 +264,20 @@ namespace HealthCareApp.Controllers
                 PatientName = $"{app.Patient.FirstName} {app.Patient.LastName}",
                 PatientPhone = app.Patient.PhoneNumber,
                 Mode = app.AvailableSlot.Availability.type,
-                paymentStatus = app.paymentStatus,
-                paymentMethod = app.paymentMethod
+                paymentStatus = app.PaymentStatus,
+                paymentMethod = app.PaymentMethod
 
-            },app => app.Patient, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor);
+            });
 
             return View(upcomingAppointments);
         }
 
 
-        //admin  -- [soft delete]
+        //admin 
         public ActionResult DisplayAllDoctorsAppoinments()
         {
             IEnumerable<Appointment> doctorsAppointments = appointmentService.FindAll(app => app.Id > 0, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.Patient, app => app.AvailableSlot.Availability.Doctor, app => app.AvailableSlot.Availability.Clinic);
-            var patients = appointmentService.FindAll(app => app.Id > 0).Select(app => app.PatientName);
+            var patients = appointmentService.FindAll(app => app.Id > 0, app => app.Patient).Select(app => $"{app.Patient.FirstName} {app.Patient.LastName}");
             ViewBag.patientsList = new SelectList(patients);
 
             return View(doctorsAppointments);
@@ -245,10 +295,13 @@ namespace HealthCareApp.Controllers
             }
             else
             {
-                doctorsAppointments = appointmentService.FindAll(app => app.Id > 0 && app.PatientName == patientName, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.Patient, app => app.AvailableSlot.Availability.Doctor, app => app.AvailableSlot.Availability.Clinic);
+                var nameParts = patientName.Split(' ');
+                var firstName = nameParts[0];
+                var lastName = nameParts.Length > 1 ? nameParts[1] : string.Empty;
+                doctorsAppointments = appointmentService.FindAll(app => app.Id > 0 && app.Patient.FirstName == firstName && app.Patient.LastName == lastName, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.Patient, app => app.AvailableSlot.Availability.Doctor, app => app.AvailableSlot.Availability.Clinic);
             }
 
-            var patients = appointmentService.FindAll(app => app.Id > 0).Select(app => app.PatientName);
+            var patients = appointmentService.FindAll(app => app.Id > 0, app => app.Patient).Select(app => $"{app.Patient.FirstName} {app.Patient.LastName}");
             ViewBag.patientsList = new SelectList(patients, patientName);
 
             return View(doctorsAppointments);

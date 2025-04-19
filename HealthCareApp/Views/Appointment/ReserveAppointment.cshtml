@@ -1,79 +1,111 @@
-﻿@model HealthCareApp.Models.Appointment
+﻿@model HealthCareApp.ViewModel.Appointment.ReserveAppointmentVM
+@using System.Security.Claims;
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Reserve Appointment";
+    var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-    AvailabilitySlots slot = ViewBag.slot;
-    string patientId = ViewBag.patientId;
+    string day = Model.Date == DateOnly.FromDateTime(DateTime.Now) ? "Today"
+                 : Model.Date == DateOnly.FromDateTime(DateTime.Now).AddDays(1) ? "Tomorrow"
+                 : Model.Day.ToString();
 }
 
-<h2 class="text-center mb-3">Reserve an Appointment</h2>
+<h2 class="text-center mb-4">Reserve an Appointment</h2>
 
-<div class="card w-50 mb-4">
-    <img src="@slot.Availability.Doctor.ProfilePicture" alt="Doctor Image" class="card-img-top" />
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm mb-4 rounded-4">
+            <div class="row g-0">
+                <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
+                    <img src="@Model.DoctorImg" alt="Doctor Image" class="img-fluid rounded-circle border border-2" style="height: 180px; width: 180px; object-fit: cover;" />
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="text-muted mb-1">@Model.DoctorTitle</h5>
+                        <h4 class="fw-bold">@Model.DoctorName</h4>
+                        <p class="text-muted mb-2">@Model.Specialization at <strong>@Model.Clinic</strong></p>
+                        <p class="small text-secondary">@Model.DoctorDescription</p>
 
-    <div class="card-body">
-        <h2 class="card-title"> <span style="font-size:26px; color:gray">@slot.Availability.Doctor.Title</span> @slot.Availability.Doctor.FirstName @slot.Availability.Doctor.LastName</h2>
-        <p class="card-text">@slot.Availability.Doctor.Description</p>
-        <p class="mt-3">Date: @slot.Availability.Date.Day/@slot.Availability.Date.Month @slot.StartTime</p>
+                        <hr />
+
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <p><strong>Date:</strong> <span class="badge bg-light text-dark">@day, @Model.Date.ToString("MMM dd")</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Time:</strong> @Model.StartTime - @Model.EndTime</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Mode:</strong> <span class="badge bg-warning text-dark">@Model.Mode</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Waiting Time:</strong> <span class="text-muted">@Model.WaitingTime</span> mins</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Fees:</strong> <span class="fw-bold text-success">@Model.Fees</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservation Form -->
+        <div class="card p-4 shadow-sm rounded-4">
+            <form id="appointmentForm" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <input asp-for="SlotId" type="hidden" />
+                <input type="hidden" value="@patientId" name="PatientId" />
+
+                <div class="mb-3">
+                    <label asp-for="PatientName" class="form-label fw-semibold"></label>
+                    <input asp-for="PatientName" class="form-control" disabled />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PatientPhone" class="form-label fw-semibold"></label>
+                    <input asp-for="PatientPhone" class="form-control" disabled />
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="PaymentMethod" class="form-label fw-semibold"></label>
+                    <select asp-for="PaymentMethod" asp-items="@Html.GetEnumSelectList(typeof(PaymentMethod))" class="form-select"></select>
+                    <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <input type="submit" value="Reserve" class="btn btn-info text-white px-4" />
+                    <a asp-action="PatientUpcomingAppointments" class="btn btn-secondary">Back to List</a>
+                </div>
+
+                <!-- Hidden Fields -->
+                <input asp-for="Fees" type="hidden" />
+                <input asp-for="DoctorName" type="hidden" />
+                <input asp-for="DoctorTitle" type="hidden" />
+                <input asp-for="Specialization" type="hidden" />
+                <input asp-for="Clinic" type="hidden" />
+                <input asp-for="Date" type="hidden" />
+                <input asp-for="StartTime" type="hidden" />
+                <input asp-for="EndTime" type="hidden" />
+            </form>
+        </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <form id="appointmentForm" method="post">
-             <div asp-validation-summary="All" class="text-danger"></div>
-
-             <input type="hidden" value="@patientId" name="patientId" />
-             <input type="hidden" value="@slot.Id" name="slotId" />
-             <input type="hidden" value="@slot.Availability.Doctor.Fees" name="Amount" />
-
-             <div class="form-group">
-                 <label asp-for="PatientName" class="control-label"></label>
-                 <input asp-for="PatientName" class="form-control" />
-                 <span asp-validation-for="PatientName" class="text-danger"></span>
-             </div><br />
-
-             <div class="form-group">
-                 <label asp-for="PatientPhone" class="control-label"></label>
-                 <input asp-for="PatientPhone" class="form-control" />
-                 <span asp-validation-for="PatientPhone" class="text-danger"></span>
-             </div><br />
-
-             <div class="form-group">
-                 <label asp-for="paymentMethod" class="control-label"></label>
-                <select asp-for="paymentMethod" asp-items="@Html.GetEnumSelectList(typeof(PaymentMethod))" class="form-control"></select>
-                 <span asp-validation-for="paymentMethod" class="text-danger"></span>
-             </div><br />
-
-             <div class="form-group">
-                <input type="submit" value="Reserve" class="btn btn-info me-5" />
-                 <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-             </div><br />
-         </form>
-     </div>
-</div>
-
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 
     <script>
         $(document).ready(function () {
             $('#appointmentForm').on('submit', function (e) {
-                const selectedMethod = $('#paymentMethod').val();
-                console.log("Selected Method:", selectedMethod);
-
-                if (selectedMethod == 1) { // Visa
+                const selectedMethod = $('#PaymentMethod').val();
+                if (selectedMethod == 1) {
                     $(this).attr('action', '/Appointment/Checkout');
-                } else if (selectedMethod == 0) { // Cash
+                } else if (selectedMethod == 0) {
                     $(this).attr('action', '/Appointment/SaveAppointmentWithCash');
                 }
             });
         });
     </script>
-
 }
-
-

@@ -1,60 +1,177 @@
-﻿
+﻿@model Slot_AvailbilityVM
 @{
-    ViewData["Title"] = "RescheduleAppointment";
+    ViewData["Title"] = "Reschedule Appointment";
 }
 
-<h1>Reschedule Appointment</h1>
-@model Slot_AvailbilityVM
-<form asp-action="RescheduleAppointment" class="form-control">
-    <div>
-        <label for="AvailableId" class="form-label">Select Availabe Day</label>
-        <select asp-for="AvailableId" class="form-select" asp-items=@(new SelectList( ViewBag.DrAvailabeDays , "Id","Name")) ><option value="">select Day</option></select>
-        <span asp-validation-for="AvailableId" class="text-danger"> </span>
-    </div>
-    <div>
-        <label for="NewSlotId" class="form-label">Select Slot</label>
-        <select asp-for="NewSlotId" class="form-select" ></select>
-        <span asp-validation-for="NewSlotId" class="text-danger"></span>
-    </div>
-    <div class="mt-3">
-        <input type="submit" class="btn btn-success" value="Reschedule" />
-    </div>
-    <input hidden asp-for="OldSlotId"  />
-</form>
-
-<a asp-action="ViewSlots" asp-route-availabilityId="@Model.AvailableId">Back To List of Slots</a>
-@section Scripts {
-
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+        --bg-color-1: #f8f9fa;
+        --bg-color-2: #f0f8ff;
+        --bg-color-3: #f5fff0;
+        --bg-color-4: #fff0f5;
     }
+
+    .doctor-gradient {
+        background: var(--doctor-gradient);
+    }
+
+    .form-icon {
+        width: 30px;
+        height: 35px;
+        stroke-width: 1.5;
+    }
+
+    .header-icon {
+        width: 40px;
+        height: 45px;
+        stroke-width: 1.5;
+    }
+
+    .custom-select {
+        border: 1px solid var(--dark-blue);
+        border-radius: 0.375rem;
+        padding: 0.375rem 0.75rem;
+    }
+       .custom-select:focus {
+            border-color: var(--highlight-blue);
+            box-shadow: 0 0 0 0.2rem rgba(34, 50, 73, 0.25);
+        }
+
+    .btn-primary {
+        background: linear-gradient(to right, #223249, #3a4d6d);
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.25rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #3a4d6d, #223249);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 2rem;
+        color: var(--dark-blue);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+
+        .back-link:hover {
+            background-color: rgba(197, 211, 232, 0.3);
+            transform: translateX(-5px);
+            text-decoration: none;
+        }
+</style>
+
+<div class="container" style="background: var(--bg-color-1); padding: 2rem 0;">
+    <div class="card mx-auto" style="max-width: 500px; background: var(--white);">
+        <div class="doctor-gradient" style="height: 4px;"></div>
+
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <h2 class="card-title" style="color: var(--dark-blue);">
+                    <svg class="header-icon d-inline-block align-middle" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Reschedule Appointment
+                </h2>
+            </div>
+
+            <form asp-action="RescheduleAppointment">
+                <div class="form-group mb-4">
+                    <label class="d-flex align-items-center gap-2 mb-2" style="color: var(--dark-blue);">
+                        <svg class="form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Select Available Day
+                    </label>
+                    <select asp-for="AvailableId"
+                            class="form-control custom-select"
+                            asp-items="@(new SelectList(ViewBag.DrAvailabeDays, "Id", "Name"))">
+                        <option value="">Select Day</option>
+                    </select>
+                    <span asp-validation-for="AvailableId" class="text-danger small"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="d-flex align-items-center gap-2 mb-2" style="color: var(--dark-blue);">
+                        <svg class="form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Select Slot
+                    </label>
+                    <select asp-for="NewSlotId" class="form-control custom-select">
+                        <option value="">Select a day first</option>
+                    </select>
+                    <span asp-validation-for="NewSlotId" class="text-danger small"></span>
+                </div>
+
+                <input type="hidden" asp-for="OldSlotId" />
+
+                <div class="form-group mt-4 text-center">
+                    <button type="submit" class="btn btn-primary py-2">
+                        Reschedule
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-4 text-center">
+                <a asp-action="ViewSlots" asp-route-availabilityId="@Model?.AvailableId"
+                   class="d-inline-flex align-items-center gap-2 px-3 py-2 back-link"
+                   style="text-decoration: none;">
+                    <svg class="form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Slots
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
     <script>
-        var AvailabilityDay= document.getElementById("AvailableId");
-        AvailabilityDay.addEventListener("change",function(){
-            console.log("change")
-            $.ajax({
-                url: 'GetSlots',  // The URL where the request is sent
-                type: 'POST',
-                data: { AvailableId: AvailabilityDay.value  , OldSlotId: $("#OldSlotId").val() },
-                dataType: 'json',                 
-                success: function(response) {
+        document.addEventListener("DOMContentLoaded", function () {
+            const availabilityDay = document.getElementById("AvailableId");
 
-                    var slots = $("#NewSlotId");
-                    slots.empty();  
-                    slots.append('<option value="">Select Slot</option>');
-                    $.each(response, function(index, slot) { 
-                    var option = $('<option></option>')
-                             .attr('value', slot.id)  
-                             .text(slot.name); 
-
-                    slots.append(option);
+            availabilityDay.addEventListener("change", function () {
+                $.ajax({
+                    url: 'GetSlots',
+                    type: 'POST',
+                    data: {
+                        AvailableId: availabilityDay.value,
+                        OldSlotId: $("#OldSlotId").val()
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        var slots = $("#NewSlotId");
+                        slots.empty();
+                        slots.append('<option value="">Select Slot</option>');
+                        $.each(response, function (index, slot) {
+                            var option = $('<option></option>')
+                                .attr('value', slot.id)
+                                .text(slot.name);
+                            slots.append(option);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
                 });
-                },
-                error: function(xhr, status, error) {
-                   console.log(error)
-
-                }
             });
-        })
+        });
     </script>
 }

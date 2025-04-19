@@ -35,7 +35,12 @@ namespace HealthCareApp.Controllers
             return View(_medicalRecordService.Find(med => med.Id == id, med => med.Patient, med => med.Doctor));
         }
 
+        public ActionResult Details(string doctorId, string patientId)
+        {
+            return View(_medicalRecordService.Find(med => med.DoctorId == doctorId && med.PatientId == patientId, med => med.Patient, med => med.Doctor));
+        }
         // GET: MedicalReportController/Create
+        //editing 
         public ActionResult Create(string doctorId = "E123")
         {
 
