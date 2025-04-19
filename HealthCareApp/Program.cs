@@ -37,7 +37,8 @@ namespace HealthCareApp
             // builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             //.AddEntityFrameworkStores<ApplicationDbContext>();
 
-            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<ApplicationUser>(
+                options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>() // Add this line for roles
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
