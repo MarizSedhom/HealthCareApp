@@ -15,6 +15,10 @@ namespace HealthCareApp.Controllers
         public IActionResult Index(int page = 1, int pageSize = 5)
         {
             int skip = (page - 1) * pageSize;
+            if (skip < 0)
+            {
+                skip = 0; // Prevent negative skip values
+            }
             var result = SubSpecializationRepo.FindAllForSearch(s => true, skip, pageSize, ["Specialization"]);
             var totalCount = SubSpecializationRepo.Count();
 

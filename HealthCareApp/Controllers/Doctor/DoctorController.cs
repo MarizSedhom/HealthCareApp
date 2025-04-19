@@ -22,15 +22,15 @@ namespace HealthCareApp.Controllers.Doctor
         [HttpGet]
         public IActionResult ViewApprovedDoctors()
         {
-            IEnumerable<DoctorIdxVM> doctors = DoctorRepository.FindAllWithSelect(d=>d.verificationStatus==VerificationStatus.Accepted, d => new DoctorIdxVM()
+            IEnumerable<DoctorIdxVM> doctors = DoctorRepository.FindAllWithSelect(null, d => new DoctorIdxVM()
             { 
                 DoctorId = d.Id,
                 FirstName = d.FirstName,
                 LastName = d.LastName,
                 ExperienceYears = d.ExperienceYears,
                 Specialization = d.Specialization.Name,
-                Title = d.Title,
-                //verificationStatus = d.verificationStatus
+              //  Title = d.Title,
+                verificationStatus = d.verificationStatus
 
             });
             return View(doctors);
@@ -43,14 +43,14 @@ namespace HealthCareApp.Controllers.Doctor
         }
 
         [HttpGet]
-        public IActionResult GetDoctorDetail(string DoctorId = "cda63727-9da1-4c94-99e6-5d32a952b186")
+        public IActionResult GetDoctorDetail(string DoctorId = "1")
         {
             DrUpdateProfileVM profileVM = GetDrUpdateProfileVm(DoctorId);
             return View(profileVM);
         }
 
         [HttpGet]
-        public IActionResult UpdateDoctorProfile(string DoctorId = "cda63727-9da1-4c94-99e6-5d32a952b186")
+        public IActionResult UpdateDoctorProfile(string DoctorId = "1")
         {
 
             DrUpdateProfileVM profileVM = GetDrUpdateProfileVm(DoctorId);
@@ -67,7 +67,7 @@ namespace HealthCareApp.Controllers.Doctor
                 doctor.gender = profileVM.gender;
                 doctor.Fees = profileVM.Fees;
                 doctor.Description = profileVM.Description;
-                doctor.Title = profileVM.Title;
+             //   doctor.Title = profileVM.Title;
                 doctor.Description = profileVM.Description;
                 doctor.ExperienceYears = profileVM.ExperienceYears;
                 doctor.WaitingTimeInMinutes = profileVM.WaitingTimeInMinutes;
@@ -84,7 +84,7 @@ namespace HealthCareApp.Controllers.Doctor
             return View(GetDrUpdateProfileVm(profileVM.DrId));
 
         }        
-        public IActionResult AfterDrRegisteration(string DoctorId = "cda63727-9da1-4c94-99e6-5d32a952b1861")
+        public IActionResult AfterDrRegisteration(string DoctorId = "1")
         {
             //string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             AfterDrRegisterationVM AfterDrRegisteration = DoctorRepository.FindWithSelect(d => d.Id == DoctorId,
@@ -148,7 +148,7 @@ namespace HealthCareApp.Controllers.Doctor
                 LastName = d.LastName,
                 gender = d.gender,
                 Specialization = d.Specialization.Name,
-                Title = d.Title,
+              //  Title = d.Title,
                 SubSpecializations = d.SubSpecializations.Select(s => s.Name),
                 WaitingTimeInMinutes = d.WaitingTimeInMinutes,
                 DrId = d.Id,
