@@ -33,7 +33,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult GetDoctorReviews(string doctorId = "1")
+        public ActionResult GetDoctorReviews(string doctorId = "b6c512b0-ed2d-42e1-b781-f304e7c36062")
         {
             // Doctor view
             if (doctorId == null)

@@ -29,21 +29,23 @@
                         {
 
                             @if(slot.IsBooked){
-                                <a asp-controller="" asp-control asp-action="Create" asp-route-slotId="@slot.SlotId" asp-route-patientId="patientId" class="d-block text-muted text-decoration-line-through py-1 disabled">@slot.StartTime</a>
+                                <a asp-controller=""  class="d-block text-muted text-decoration-line-through py-1 disabled">@slot.StartTime</a>
                             }
                             else{
-                                <a asp-action="Create" asp-route-slotId="@slot.SlotId" asp-route-patientId="patientId" class="d-block text-primary py-1 text-decoration-none">@slot.StartTime</a>
+                                <a asp-controller="Appointment" asp-action="ReserveAppointment" asp-route-slotId="@slot.SlotId" class="d-block text-primary py-1 text-decoration-none">@slot.StartTime</a>
 
                             }
 
                         }
                     </div>
-                <div class="card-footer p-2">
+@*                 <div class="card-footer p-2">
                     <button class="btn btn-danger w-100">BOOK</button>
-                </div>
+                </div> *@
                
             </div>
         </div>
     </div>
 </div>
 }
+
+@*                                 asp-control asp-action="Create" asp-route-slotId="@slot.SlotId" asp-route-patientId="patientId" *@
