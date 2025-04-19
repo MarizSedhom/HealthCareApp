@@ -659,8 +659,6 @@ namespace HealthCareApp.Migrations
                     b.Property<int>("SpecializationId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Title")
-                        .HasColumnType("int");
 
                     b.Property<int>("WaitingTimeInMinutes")
                         .HasColumnType("int");

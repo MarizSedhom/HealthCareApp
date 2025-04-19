@@ -192,7 +192,7 @@ namespace HealthCareApp.Controllers.Doctor
                 d => new DoctorInfoVM
                 {
                     DoctorId = d.Id,
-                    Title = d.Title,
+                    Title = d.Title.ToString(),
                     FirstName = d.FirstName,
                     LastName = d.LastName,
                     Specialization = d.Specialization.Name,
