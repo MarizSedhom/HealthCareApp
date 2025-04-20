@@ -8,6 +8,7 @@ namespace HealthCareApp.ViewModel.Clinic
         public string Name { get; set; }
         public string ClinicAddress { get; set; }
         public string ClinicPhoneNumber { get; set; }
+        public Location ClinicLocation { get; set; } = new Location();
         public string doctorId { get; set; }
         public IEnumerable<Item<int, string>>? cities { get; set; }
         public IEnumerable<Item<int, string>>? regions { get; set; }

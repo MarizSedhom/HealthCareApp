@@ -10,6 +10,7 @@ namespace HealthCareApp.ViewModel.Clinic
         public string ClinicCity { get; set; }
         public string ClinicRegion { get; set; }
         public string ClinicPhoneNumber { get; set; }
+        public Location ClinicLocation { get; set; } = new Location();
         public string? doctorId { get; set; }
         public PaginationInfo? PaginationInfo { get; set; }
 

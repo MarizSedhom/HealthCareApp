@@ -40,6 +40,7 @@ namespace HealthCareApp.Models
         [RegularExpression(@"^(\+?\d{1,3})?[- ]?\d{10}$", ErrorMessage = "Phone number must be 10 digits, with optional country code.")]
         public string ClinicPhoneNumber { get; set; }
 
+        public Location ClinicLocation { get; set; }
 
         public virtual ICollection<Availability>? Availabilities { get; set; }=new List<Availability>();
 
