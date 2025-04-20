@@ -21,13 +21,16 @@ namespace HealthCareApp.Controllers.Doctor
 
         private IGenericRepoServices<Models.Doctor> DoctorRepository { get; }
         private IGenericRepoServices<Models.Review> ReviewRepository { get; }
+        public IAvailabilityRepository AvailabilityRepository { get; }
+
         private IGenericRepoServices<SubSpecialization> SubSpecializationRepository { get; }
-        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository ,IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository)
+        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository ,IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository, IAvailabilityRepository AvailabilityRepository)
         {
             this.DoctorRepository = DectorRepository;
             this.SubSpecializationRepository = SubSpecializationRepository;
             this.fileService = fileService;
             this.ReviewRepository = ReviewRepository;
+            this.AvailabilityRepository = AvailabilityRepository;
         }
         [HttpGet]
         public IActionResult ViewApprovedDoctors()
@@ -71,19 +74,34 @@ namespace HealthCareApp.Controllers.Doctor
             {
                 return NotFound();
             }
-
-            var doctor = DoctorRepository.Find(d=> d.Id==doctorId, d=>d.Specialization, doctor=>doctor.SubSpecializations);
-           
+            var doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations, d => d.Clinics);
 
             if (doctor == null)
             {
                 return NotFound();
             }
-
             var reviews = ReviewRepository.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
             var approvedReviews = reviews.Where(r => r.IsApproved).ToList();
 
-            var viewModel = new DoctorDetailsWithReviewsVM
+            // Get doctor availabilities
+            IEnumerable<AvailabilityWithSlotVM> drAvailabilities = AvailabilityRepository.FindAllWithSelect(
+                v => v.DoctorId == doctorId,
+                v => new AvailabilityWithSlotVM()
+                {
+                    AvailabilityDate = v.Date,
+                    AvailabilityId = v.Id,
+                    AvailabilityType = v.type,
+                    ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
+                    Slots = v.AvailableSlots.Select(s => new Slot()
+                    {
+                        EndTime = s.EndTime,
+                        IsBooked = s.IsBooked,
+                        SlotId = s.Id,
+                        StartTime = s.StartTime
+                    })
+                }).OrderBy(v => v.AvailabilityDate);
+
+            var viewModel = new DrProfileForPatientVM
             {
                 Doctor = doctor,
                 Reviews = approvedReviews.Select(r => new ReviewVM
@@ -96,9 +114,9 @@ namespace HealthCareApp.Controllers.Doctor
                     Age = DateOnly.FromDateTime(DateTime.Now).Year - r.Patient.DateOfBirth.Year
                 }).ToList(),
                 AverageRating = approvedReviews.Any() ? approvedReviews.Average(r => r.Rating) : 0.0,
-                ReviewsCount = approvedReviews.Count()
+                ReviewsCount = approvedReviews.Count(),
+                Availabilities = drAvailabilities.ToList()
             };
-
             return View(viewModel);
         }
 
