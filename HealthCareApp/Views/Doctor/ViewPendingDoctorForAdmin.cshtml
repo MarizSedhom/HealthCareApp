@@ -1,0 +1,61 @@
+﻿@model IEnumerable<HealthCareApp.ViewModel.Doctor.DoctorIdxPendingVM>
+
+@{
+    ViewData["Title"] = "ViewPendingDoctorForAdmin";
+}
+
+<h1>ViewPendingDoctorForAdmin</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DrName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Specialization)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExperienceYears)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.verificationFileName)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DrName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Specialization)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExperienceYears)
+                </td>
+                <td>
+                 @*  <modelItem => item.verificationFileName) *@
+                    <a href="@(FilePaths.DrVerificationRelative+item.verificationFileName)" target="_blank">verification File</a>
+
+                </td>
+                
+                <td>
+                    @Html.ActionLink("Approve", "ApproveDoctor", new { doctorId = item.doctorId, isApproved = VerificationStatus.Accepted }) |
+                    @Html.ActionLink("Reject", "ApproveDoctor", new { doctorId = item.doctorId, isApproved = VerificationStatus.Rejected}) |
+                    @Html.ActionLink("Detail", "GetDoctorDetail", new { doctorId = item.doctorId }) |
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
