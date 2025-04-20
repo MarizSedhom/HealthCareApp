@@ -236,8 +236,6 @@ namespace HealthCareApp.Controllers
                 slotService.Update(slot);
 
                 canceledAppointment.Status = Status.Cancelled;
-                appointmentService.Update(canceledAppointment);
-
                 if(canceledAppointment.PaymentMethod == PaymentMethod.Visa)
                 {
                     canceledAppointment.PaymentStatus = PaymentStatus.Refunded; ///// ???? + notification object

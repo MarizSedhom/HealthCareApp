@@ -12,11 +12,13 @@ namespace HealthCareApp.Controllers
     {
         private readonly IGenericRepoServices<Clinic> ClinicRepo;
         private readonly IGenericRepoServices<City> CityRepository;
+        private readonly IConfiguration Configuration;
 
-        public ClinicController(IGenericRepoServices<Clinic> ClinicRepo , IGenericRepoServices<City>CityRepository)
+        public ClinicController(IGenericRepoServices<Clinic> ClinicRepo , IGenericRepoServices<City>CityRepository, IConfiguration configuration)
         {
             this.ClinicRepo = ClinicRepo;
             this.CityRepository = CityRepository;
+            Configuration = configuration;
         }
 
         [HttpGet]
@@ -69,7 +71,8 @@ namespace HealthCareApp.Controllers
                     ClinicRegion = c.Region.RegionNameEn,
                     Id = c.Id,
                     Name = c.Name,
-                
+                    ClinicLocation = c.ClinicLocation,
+
             });
             clinic.PaginationInfo = new PaginationInfo();
 
@@ -130,6 +133,11 @@ namespace HealthCareApp.Controllers
             clinic.PaginationInfo = new PaginationInfo();
             clinic.PaginationInfo.CurrentPage = page;
             ViewBag.CurrentPage = page;
+
+            clinic.ClinicLocation = new Location();
+            clinic.ClinicLocation.X = 0;
+            clinic.ClinicLocation.Y = 0;
+            clinic.ClinicLocation.KeyId = Configuration["GoogleMaps:ApiKey"];
             return View(clinic);
         }
 
@@ -144,7 +152,13 @@ namespace HealthCareApp.Controllers
                     ClinicAddress = clinicVM.ClinicAddress,
                     Name = clinicVM.Name,
                     RegionId = clinicVM.SelectedRegionId,
-                    DoctorId = clinicVM.doctorId
+                    DoctorId = clinicVM.doctorId,
+                    ClinicLocation = new Location()
+                    {
+                        X = clinicVM.ClinicLocation.X,
+                        Y = clinicVM.ClinicLocation.Y,
+                        KeyId = Configuration["GoogleMaps:ApiKey"]
+                    }
                 };
                 ClinicRepo.Add(NewClinic);
                 return RedirectToAction(nameof(GetDoctorClinics), new { page , doctorId=clinicVM.doctorId });
