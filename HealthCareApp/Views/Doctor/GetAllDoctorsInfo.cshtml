@@ -3,322 +3,333 @@
 
 @{
     ViewData["Title"] = "Doctors";
+    var sortOrder = Context.Request.Query["sortOrder"].ToString();
+    var title = Context.Request.Query["title"].ToString();
+    var gender = Context.Request.Query["gender"].ToString();
+    var price = Context.Request.Query["price"].ToString();
+    var availability = Context.Request.Query["availability"].ToString();
 }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+
 <style>
+    :root {
+        --patient-green: #34a853;
+        --patient-light-green: #ade1bb;
+        --doctor-blue: #C5D3E8;
+        --dark-blue: #223249;
+        --primary-blue: #A6AEBF;
+        --light-bg: #f8f9fa;
+        --text-dark: #223249;
+        --text-light: #757575;
+        --white: #ffffff;
+        --gray: #f5f5f5;
+        --dark-gray: #757575;
+        --border-color: #ddd;
+        --patient-gradient: linear-gradient(135deg, #D0E8C5, var(--patient-green));
+        --button-gradient: linear-gradient(135deg, var(--patient-light-green), var(--patient-green));
+        --button-gradient-reverse: linear-gradient(135deg, var(--patient-green), var(--patient-light-green));
+    }
+
     body {
-        background-color: #f8f9fa;
+        background: linear-gradient(135deg, #f8f9fa 0%, var(--doctor-blue) 100%);
+        min-height: 100vh;
+        color: #223249;
     }
 
     .doctor-card {
+        background: var(--white);
         border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         transition: transform 0.3s ease;
-        margin-bottom: 24px;
-        border: none;
-        background-color: #ffffff;
+        overflow: hidden;
     }
 
-        .doctor-card:hover {
-            transform: translateY(-5px);
-        }
+    .doctor-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+
+
+    .avatar-container {
+        background: linear-gradient(135deg, #D0E8C5 0%, #74b986 80%);
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .doctor-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 4px solid var(--white);
+        object-fit: cover;
+    }
 
     .specialty-badge {
-        background-color: #e3f2fd;
-        color: #1976d2;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.85rem;
-        display: inline-block;
-        margin-bottom: 8px;
-    }
-
-    .doctor-img {
-        height: 100%;
-        object-fit: cover;
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
-    }
-
-    .rating-badge {
-        background-color: #fff8e1;
-        color: #ff9800;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-weight: bold;
+        background: rgba(52, 168, 83, 0.1);
+        color: var(--patient-green);
+        padding: 6px 12px;
+        border-radius: 20px;
         font-size: 0.9rem;
     }
 
-    .card-horizontal {
-        display: flex;
-        flex-direction: row;
-        height: 100%;
+    .rating-badge {
+        background: var(--dark-blue);
+        color: var(--white);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
     }
 
-        .card-horizontal .img-wrapper {
-            width: 30%;
-            min-width: 250px;
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
-            overflow: hidden;
-        }
+    .fa-icon {
+        width: 20px;
+        margin-right: 12px;
+        color: var(--patient-green);
+    }
 
-        .card-horizontal .card-body {
-            width: 70%;
+    .filter-section {
+        background: var(--patient-gradient);
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    .btn-primary-custom {
+        background: var(--button-gradient);
+        color: var(--white);
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .btn-primary-custom:hover {
+        background: var(--button-gradient-reverse);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        color:white;
+    }
+
+    .empty-state-card {
+        background: var(--white);
+        border: 2px dashed var(--patient-light-green);
+    }
+
+    @@media (max-width: 767.98px) {
+        .avatar-container {
             padding: 1.5rem;
         }
-
-    .description-truncate {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-bottom: 1rem;
-        color: #495057;
+        
+        .doctor-avatar {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .sort-section form {
+            width: 100%;
+        }
     }
 
-    .doctor-detail-item {
-        margin-bottom: 0.75rem;
-        display: flex;
-        align-items: center;
-        font-size: 0.95rem;
-        color: #333;
-    }
-
-    .doctor-detail-icon {
-        margin-right: 0.5rem;
-        width: 20px;
-        text-align: center;
-        color: #6c757d;
-    }
-
-    .header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        margin-bottom: 1.5rem;
-    }
-
-    .doctors-count {
-        font-size: 1.1rem;
-        color: #6c757d;
-        margin-bottom: 1.5rem;
-    }
-
-    /* Sidebar filter enhancements */
-    form {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: #495057;
-    }
-
-    .form-select {
-        border-radius: 8px;
-    }
-
-    .btn-outline-primary {
-        margin-top: 10px;
-        font-weight: 600;
-    }
-
-    @@media (max-width: 768px) {
-        .card-horizontal
-
-    {
-        flex-direction: column;
-    }
-
-    .card-horizontal .img-wrapper {
-        width: 100%;
-        border-top-right-radius: 12px;
-        border-bottom-left-radius: 0;
-    }
-
-    .card-horizontal .card-body {
-        width: 100%;
-    }
-
-    }
-    .filter{
-        background: #D0E8C5;
-        padding:2rem;
-        margin-bottom: 2rem;
-        border-radius:10px;
-    }
+    /* .fas, .fa-icon, .specialty-badge i { */
+    /*     color: var(--patient-green); */
+    /* } */
 </style>
 
-<div class="container py-4">
-    <h2 class="text-center mb-4">All Doctors</h2>
-    <div class="row">
-        <!-- Sidebar Filters -->
-        <div class="col-md-3 filter">
-            <form method="get" asp-action="GetAllDoctorsInfo">
-                <h5 class="mb-3">Filter by</h5>
+<div class="container">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold mb-3">Find Your Doctor</h1>
+        <p class="lead">Browse through our network of qualified healthcare professionals</p>
+    </div>
 
-                <!-- Title Filter -->
-                <div class="mb-3">
-                    <label class="form-label">Title</label>
-                    <select name="title" class="form-select">
-                        <option value="">All</option>
-                        <option value="Professor">Professor</option>
-                        <option value="Lecturer">Lecturer</option>
-                        <option value="Consultant">Consultant</option>
-                        <option value="Specialist">Specialist</option>
-                    </select>
-                </div>
-
-                <!-- Gender Filter -->
-                <div class="mb-3">
-                    <label class="form-label">Gender</label>
-                    <select name="gender" class="form-select">
-                        <option value="">All</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-
-                <!-- Availability -->
-                <div class="mb-3">
-                    <label class="form-label">Availability</label>
-                    <select name="availability" class="form-select">
-                        <option value="">All</option>
-                        <option value="today">Today</option>
-                        <option value="tomorrow">Tomorrow</option>
-                    </select>
-                </div>
-
-                <!-- Price -->
-                <div class="mb-3">
-                    <label class="form-label">Price</label>
-                    <select name="price" class="form-select">
-                        <option value="">All</option>
-                        <option value="lt100">Less than 100</option>
-                        <option value="100to200">100 - 200</option>
-                        <option value="200to300">200 - 300</option>
-                        <option value="gt300">More than 300</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-outline-primary w-100">Apply Filters</button>
-            </form>
-        </div>
-
-        <!-- Doctors Cards -->
-        <div class="col-md-9">
-
-    <div class="row">
-                <div class="row">
-        <div class="col-md-2">
-                <span class="doctors-count">@Model.Count Doctors</span>
-        </div>
-        <div class="col-md-10">
-            <!--Add sorting filter here -->
-                    <form method="get" asp-action="GetAllDoctorsInfo" class="d-flex justify-content-end align-items-center mb-3">
-                            <input type="hidden" name="title" value="@Context.Request.Query["title"]" />
-                            <input type="hidden" name="gender" value="@Context.Request.Query["gender"]" />
-                            <input type="hidden" name="availability" value="@Context.Request.Query["availability"]" />
-                            <input type="hidden" name="price" value="@Context.Request.Query["price"]" />
-
-                        <label for="sortOrder" class="me-2 fw-semibold">Sort by:</label>
-                        <select name="sortOrder" id="sortOrder" class="form-select w-auto me-2">
-                            <option value="">Default</option>
-                            <option value="rate_desc">Highest Rate</option>
-                            <option value="rate_asc">Lowest Rate</option>
-                            <option value="price_desc">Highest Price</option>
-                            <option value="price_asc">Lowest Price</option>
-                            <option value="waiting_asc">Less Waiting Time</option>
-                            <option value="experience_desc">Years of Experience</option>
+    <div class="row g-4">
+        <!-- Filters -->
+        <div class="col-lg-3">
+            <div class="filter-section text-white">
+                <h3 class="h5 mb-4">Filter Options</h3>
+                <form method="get" asp-action="GetAllDoctorsInfo">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <select name="title" class="form-select">
+                            <option value="">All Titles</option>
+                            <option value="Professor" selected="@(title == "Professor")">Professor</option>
+                            <option value="Consultant" selected="@(title == "Consultant")">Consultant</option>
+                            <option value="Lecturer" selected="@(title == "Lecturer")">Lecturer</option>
+                            <option value="Specialist" selected="@(title == "Specialist")">Specialist</option>
                         </select>
-                        <button type="submit" class="btn btn-outline-primary mt-0">Sort</button>
-                    </form>
-        </div>
-        </div>
-        @foreach (var doctor in Model)
-        {
-            <div class="col-12 mb-4">
-                <div class="card doctor-card card-horizontal">
-                    <div class="img-wrapper">
-                                <img src="~/uploads/image/Doctor/@doctor.ProfilePicture" class="doctor-img w-100 h-100" alt="@doctor.FirstName @doctor.LastName">
                     </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h3 class="h5 mb-1">@doctor.Title @doctor.FirstName @doctor.LastName</h3>
-                                <p class="text-muted mb-0">@doctor.Specialization</p>
+
+                    <div class="mb-3">
+                        <label class="form-label">Gender</label>
+                        <select name="gender" class="form-select">
+                            <option value="">All</option>
+                            <option value="Male" selected="@(gender == "Male")">Male</option>
+                            <option value="Female" selected="@(gender == "Female")">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Availability</label>
+                        <select name="availability" class="form-select">
+                            <option value="">All</option>
+                            <option value="today" selected="@(availability == "today")">Today</option>
+                            <option value="tomorrow" selected="@(availability == "tomorrow")">Tomorrow</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Price Range</label>
+                        <select name="price" class="form-select">
+                            <option value="">All</option>
+                            <option value="lt100" selected="@(price == "lt100")">&lt; 100 EGP</option>
+                            <option value="100to200" selected="@(price == "100to200")">100-200 EGP</option>
+                            <option value="200to300" selected="@(price == "200to300")">200-300 EGP</option>
+                            <option value="gt300" selected="@(price == "gt300")">&gt; 300 EGP</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom w-100">
+                        <i class="fas fa-filter me-2"></i>Apply Filters
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Doctors List -->
+        <div class="col-lg-9">
+            <div class="sort-section mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-medium">@Model.Count Doctors Found</span>
+                    <form method="get" asp-action="GetAllDoctorsInfo" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="title" value="@title" />
+                        <input type="hidden" name="gender" value="@gender" />
+                        <input type="hidden" name="price" value="@price" />
+                        <input type="hidden" name="availability" value="@availability" />
+                        
+                        <select name="sortOrder" class="form-select w-auto">
+                            <option value="">Default</option>
+                            <option value="rate_desc" selected="@(sortOrder == "rate_desc")">Highest Rated</option>
+                            <option value="rate_asc" selected="@(sortOrder == "rate_asc")">Lowest Rate</option>
+                            <option value="price-low" selected="@(sortOrder == "price-low")">Lowest Price</option>
+                            <option value="price-high" selected="@(sortOrder == "price-high")">Highest Price</option>
+                            <option value="waiting_asc" selected="@(sortOrder == "waiting_asc")">Less Waiting Time</option>
+                            <option value="experience" selected="@(sortOrder == "experience")">Most Experienced</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary-custom">Sort</button>
+                    </form>
+                </div>
+            </div>
+
+            @if (Model != null && Model.Any())
+            {
+                foreach (var doctor in Model)
+                {
+                    <div class="doctor-card mb-4">
+                        <div class="row g-0">
+                            <div class="col-md-4 avatar-container">
+                                <img src="~/uploads/image/Doctor/@doctor.ProfilePicture"
+                                     class="doctor-avatar"
+                                     alt="@doctor.FirstName @doctor.LastName"/>
                             </div>
-                            <span class="rating-badge">★ @doctor.Rate.ToString("0.0")</span>
+                            
+                            <div class="col-md-8 p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h3 class="h4 mb-1">@doctor.Title @doctor.FirstName @doctor.LastName</h3>
+                                        <div class="specialty-badge" style="font-size:20px;">
+                                            <i class="fas fa-medal fa-icon"></i>
+                                            @doctor.Specialization
+                                        </div>
+                                    </div>
+                                    <div class="rating-badge">
+                                        <i class="fas fa-star"></i> @doctor.Rate.ToString("0.0")
+                                    </div>
+                                </div>
+
+                                <p class="mb-4">@doctor.Description</p>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-clock fa-icon m-2"></i>
+                                            @doctor.WaitingTimeInMinutes mins wait time
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-money-bill-wave fa-icon m-2"></i>
+                                            @doctor.Fees.ToString("N0") EGP
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-user-tie fa-icon m-2"></i>
+                                            @doctor.ExperienceYears Years
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-map-marker-alt fa-icon m-2"></i>
+                                            @(doctor.Clinics?.FirstOrDefault()?.ClinicRegion ?? "N/A")
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-end">
+                                    <a class="btn btn-primary-custom" 
+                                       asp-action="ViewDoctorDetails" 
+                                       asp-route-doctorId="@doctor.DoctorId">
+                                        <i class="fas fa-user-md me-2"></i>View Profile
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-
-                        @if (doctor.SubSpecializations?.Any() == true)
-                        {
-                            <div class="specialty-badge mb-2">
-                                <i class="bi bi-award-fill me-1"></i>
-                                @string.Join(", ", doctor.SubSpecializations.Take(2))
-                                @if (doctor.SubSpecializations.Count > 2)
-                                {
-                                    <text>...</text>
-                                }
-                            </div>
-                        }
-
-                        <p class="card-text description-truncate">@doctor.Description</p>
-
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <div class="doctor-detail-item">
-                                    <div class="doctor-detail-icon text-primary">
-                                        @if (doctor.Clinics?.Any() == true)
-                                        {
-                                            @foreach (var c in doctor.Clinics)
-                                            {
-                                                <div class="d-flex align-items-center mb-1">
-                                                    <i class="bi bi-geo-alt-fill me-2"></i>
-                                                    <span style="white-space: nowrap;">@c.ClinicRegion - @c.ClinicAddress</span>
-                                                </div>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="doctor-detail-item">
-                                    <div class="doctor-detail-icon text-success">
-                                        <i class="bi bi-cash-coin"></i>
-                                    </div>
-                                    <div>Fees: @doctor.Fees.ToString("N0") EGP</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="doctor-detail-item">
-                                    <div class="doctor-detail-icon text-info">
-                                        <i class="bi bi-clock-history"></i>
-                                    </div>
-                                    <div>Waiting Time: @doctor.WaitingTimeInMinutes Minutes</div>
-                                </div>
-                                <div class="doctor-detail-item">
-                                    <div class="doctor-detail-icon text-secondary">
-                                        <i class="bi bi-person-badge"></i>
-                                    </div>
-                                    <div>Experience: @doctor.ExperienceYears Years</div>
-                                </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state-card doctor-card">
+                    <div class="row g-0">
+                        <div class="col-md-4 avatar-container">
+                            <div class="d-flex justify-content-center align-items-center h-100">
+                                <i class="fas fa-user-md fa-4x" style="color: var(--patient-green)"></i>
                             </div>
                         </div>
-
-                        <div class="mt-3 text-end">
-                                    <a class="btn btn-primary" asp-action="ViewDoctorDetails" asp-route-doctorId="@doctor.DoctorId">View Profile</a>
+                        <div class="col-md-8 p-4 d-flex flex-column justify-content-center">
+                            <h3 class="h4 mb-3">
+                                <i class="fas fa-search fa-icon m-1"></i>No Doctors Found
+                            </h3>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-chevron-circle-right fa-icon"></i>
+                                    Broaden your filters
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-chevron-circle-right fa-icon"></i>
+                                    Check different availability
+                                </li>
+                                <li>
+                                    <i class="fas fa-chevron-circle-right fa-icon"></i>
+                                    Search nearby locations
+                                </li>
+                            </ul>
+                            <div class="mt-3">
+                                <a href="@Url.Action("GetAllDoctorsInfo")" class="btn btn-primary-custom">
+                                    <i class="fas fa-sync-alt me-2"></i>Reset Filters
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
-            </div>
+            }
         </div>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.doctor-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
+    });
+</script>
