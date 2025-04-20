@@ -1,4 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.EntityFrameworkCore
+@{
+    @inject UserManager<ApplicationUser> UserManager
+    var user = await UserManager.GetUserAsync(User);
+    var firstName = user?.FirstName;
+    var lastName = user?.LastName;
+    var doctor = await UserManager.Users.OfType<Doctor>()
+            .FirstOrDefaultAsync(d => d.Id == user.Id);
+
+    var profilePicture = doctor?.ProfilePicture;
+    var doctorTitle = doctor?.Title;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -20,7 +33,7 @@
                 <h1>MedConnect</h1>
             </div>
             <div class="nav-links">
-                <div class="d-flex gap-3">
+                <div class="d-flex gap-3 link-container">
                     <a asp-controller="Appointment"
                        asp-action="DisplayUpcomingAppoinments"
                        class="nav-link active"
@@ -39,20 +52,24 @@
 
         <div class="nav-right">
             <div class="notification">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge">3</span>
+                @await Component.InvokeAsync("Notification")
+                
             </div>
 
             <div id="doctorProfile" class="doctor-profile">
                 <div class="profile-img">
-                    <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Doctor Profile">
+                    <img src="~/uploads/image/Doctor/@profilePicture" alt="Doctor Profile">
                 </div>
-                <span class="profile-name">Dr. Smith</span>
+                <span class="profile-name"> @doctorTitle @firstName </span>
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
 
             <div class="profile-dropdown" id="profileDropdown">
-                <a href="#"><i class="fas fa-user"></i> My Profile</a>
+                <a asp-controller="Doctor" asp-action="GetDoctorDetail"><i class="fas fa-user"></i> My Profile</a>
+                <a asp-controller="Clinic"
+                   asp-action="GetDoctorClinics"
+                   class=""> <i class="fas fa-clinic-medical"></i>My Clinics</a>
+
                 <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                     <button type="submit" class="nav-link btn btn-link text-dark"><i class="fas fa-sign-out-alt"></i>Logout</button>
                 </form>
@@ -63,29 +80,37 @@
     <script>
 
         // Profile dropdown functionality
+                // Profile dropdown functionality
         const doctorProfile = document.getElementById('doctorProfile');
         const profileDropdown = document.getElementById('profileDropdown');
 
-        doctorProfile.addEventListener('click', function (e) {
+        doctorProfile.addEventListener('click', function(e) {
             e.stopPropagation();
             profileDropdown.classList.toggle('show');
         });
 
-        document.addEventListener('click', function (e) {
-            if (!doctorProfile.contains(e.target)) {
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!doctorProfile.contains(e.target) && !profileDropdown.contains(e.target)) {
                 profileDropdown.classList.remove('show');
             }
         });
 
-        // Notification functionality
-        document.querySelector('.notification').addEventListener('click', function () {
-            alert('Notification panel would appear here');
+        // Handle clinic link click
+        document.querySelector('[asp-action="GetDoctorClinics"]').addEventListener('click', function(e) {
+            profileDropdown.classList.remove('show');
+            // Link will follow through to controller action
         });
+
+        // // Notification functionality
+        // document.querySelector('.notification').addEventListener('click', function () {
+        //     alert('Notification panel would appear here');
+        // });
 
       
       
         // Navigation functionality
-        const navLinks = document.querySelectorAll('a');
+        const navLinks = document.querySelectorAll('.link-container a');
         navLinks.forEach(link => {
 
             console.log(navLinks)

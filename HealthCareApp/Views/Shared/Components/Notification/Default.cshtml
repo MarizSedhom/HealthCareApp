@@ -1,0 +1,9 @@
+﻿@model int
+
+<div class="notification" onclick="window.location.href='@Url.Action("Index", "Notification")'">
+    <i class="fas fa-bell"></i>
+    @if (Model > 0)
+    {
+        <span class="notification-badge">@Model</span>
+    }
+</div>

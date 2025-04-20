@@ -40,6 +40,25 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
+        [HttpGet]
+        public IActionResult ManageClinics(string doctorId = null)
+        {
+            if (doctorId == null)
+                doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var result = ClinicRepo.FindAllWithSelect(s => true, c => new ClinicInfoVM()
+            {
+                ClinicAddress = c.ClinicAddress,
+                ClinicCity = c.Region.City.CityNameEn,
+                ClinicPhoneNumber = c.ClinicPhoneNumber,
+                ClinicRegion = c.Region.RegionNameEn,
+                Id = c.Id,
+                Name = c.Name,
+            });
+
+            return View(result);
+
+        }
 
 
         public IActionResult DetailsByID(int id)

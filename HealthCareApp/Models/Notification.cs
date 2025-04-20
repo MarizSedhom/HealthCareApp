@@ -1,5 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
-
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthCareApp.Models
@@ -20,9 +20,11 @@ namespace HealthCareApp.Models
     }
     public enum NotificationType
     {
+        [Display(Name ="Appoinment Reminder")]
         AppointmentReminder,
         Payment,
         Review,
+        [Display(Name ="Appointment Reschedule")]
         AppointmentReschedule
     }
 }
