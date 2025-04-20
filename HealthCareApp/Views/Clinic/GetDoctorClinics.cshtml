@@ -10,8 +10,12 @@
     <a asp-action="Create" class="btn btn-success">Create New</a>
 </p>
 <hr class="w-75" />
-<input type="text" name="name" id="searchInp" placeholder="DetailsByName" class="w-50 p-1 " />
-<input type="button" value="Search" class="btn btn-primary ms-3 mb-1" id="searchBtn" onclick="fun()" />
+
+<form action="DetailsByName">
+    <input type="text" name="name" id="searchInp" placeholder="search by Name" class="w-50 p-1 " />
+    <input type="submit" value="Search" class="btn btn-primary ms-3 mb-1" />
+
+</form>
 
 <div id="searchResults"></div>
 
