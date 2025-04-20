@@ -17,9 +17,17 @@
 
 <body>
 
-    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Doctor") )
+    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Doctor"))
     {
         @Html.Partial("_DoctorNavBar")
+        @* if() *@
+        @* { *@
+            
+        @* } *@
+        @* else if (User.IsInRole("Patient")) *@
+        @* { *@
+        @*     @Html.Partial("_PatientNavbar") *@
+        @* } *@
     }
     else
     {
