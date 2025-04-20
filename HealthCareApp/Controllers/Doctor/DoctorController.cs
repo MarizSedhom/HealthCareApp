@@ -11,63 +11,105 @@ namespace HealthCareApp.Controllers.Doctor
 {
     public class DoctorController : Controller
     {
+        private readonly IGenericRepoServices<Specialization> specializationRepository;
         private readonly IFileService fileService;
 
         private IGenericRepoServices<Models.Doctor> DoctorRepository { get; }
         private IGenericRepoServices<SubSpecialization> SubSpecializationRepository { get; }
-        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository ,IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService)
+        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository, IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService)
         {
             this.DoctorRepository = DectorRepository;
+            specializationRepository = SpecializationRepository;
             this.SubSpecializationRepository = SubSpecializationRepository;
             this.fileService = fileService;
         }
+
+        //doctor pending page
         [HttpGet]
-        public IActionResult ViewApprovedDoctors()
+        public IActionResult ViewPendingDoctorForAdmin()
         {
-            IEnumerable<DoctorIdxVM> doctors = DoctorRepository.FindAllWithSelect(d=>d.verificationStatus==VerificationStatus.Accepted, d => new DoctorIdxVM()
-            { 
+            IEnumerable<Models.Doctor> doctors = DoctorRepository.FindAll(d => d.verificationStatus == VerificationStatus.Pinding,d=>d.Specialization).OrderBy(d=>d.CreatedAt);
+            IEnumerable<DoctorIdxPendingVM> doctorsVM = doctors.Select(d => new DoctorIdxPendingVM()
+            {
+                doctorId = d.Id,
+                DrName = $"{d.FirstName} {d.LastName}",
+                Specialization = d.Specialization.Name,
+                Title = d.Title.Value,
+                ExperienceYears = d.ExperienceYears,
+                CreatedAt = d.CreatedAt,
+                verificationFileName = d.verificationFileName
+            }).ToList();
+            return View(doctorsVM);
+        }
+
+        //doctor pending page
+        [HttpGet]
+        public IActionResult ApproveDoctor(string doctorId,VerificationStatus isApproved)
+        {
+            Models.Doctor doctor = DoctorRepository.GetById(doctorId);
+            doctor.verificationStatus = isApproved;
+            DoctorRepository.SaveChanges();
+            return RedirectToAction(nameof(ViewPendingDoctorForAdmin));
+        }
+
+        [HttpGet]
+        public IActionResult ViewApprovedDoctorsAdmin()
+        {
+            IEnumerable<Models.Doctor> doctors = DoctorRepository.FindAll(d => d.verificationStatus == VerificationStatus.Accepted,d=>d.Specialization);
+            IEnumerable<DoctorIdxVM> doctorsVm = doctors.Select(  d => new DoctorIdxVM()
+            {
                 DoctorId = d.Id,
-                FirstName = d.FirstName,
-                LastName = d.LastName,
+                drName = $"{d.FirstName} {d.LastName}",
                 ExperienceYears = d.ExperienceYears,
                 Specialization = d.Specialization.Name,
                 Title = d.Title.ToString(),
                 //verificationStatus = d.verificationStatus
-
             });
-            return View(doctors);
+            return View(doctorsVm);
         }
 
         [HttpGet]
-
-        public IActionResult UpdateDoctorByAdmin(string doctorId)
+        public IActionResult ViewDoctorDetailsForAdmin()
         {
-            
-            return View();
 
-        }
-
-
-        [HttpPost]
-        public IActionResult UpdateDoctorByAdmin(string doctorId,Object o)
-        {
-            return View();
-
-        }
-
-        [HttpGet]
-        public IActionResult ViewDoctorDetails()
-        {
             return View();
         }
 
         [HttpGet]
-        public IActionResult GetDoctorDetail(string DoctorId = "cc585985-b938-4551-b341-b96ed484d836")
+        public IActionResult UpdateDoctorAdmin(string doctorId= "96537cdd-bddf-4f55-b6ef-ab07e2d49f11")
         {
-            DrUpdateProfileVM profileVM = GetDrUpdateProfileVm(DoctorId);
+            Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
+            AdminUpdateDrVM doctorVM = new AdminUpdateDrVM(doctor);
+            Specialization specs = specializationRepository.Find(s => s.Id == doctor.SpecializationId, s => s.SubSpecialization);
+            doctorVM.Specializations = specializationRepository.FindAllWithSelect(null, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
+            doctorVM.SubSpecializationsList= specs.SubSpecialization.Select(s => new Item<int, string>
+            {
+                Id = s.Id,
+                Name = s.Name,
+            });
+            return View(doctorVM);
+
+        }
+
+        //[HttpPost]
+        //public IActionResult UpdateDoctorByAdmin(string doctorId,Object o)
+        //{
+        //    return View();
+
+        //}
+
+
+        //for doctor to read thier profile
+        [HttpGet]
+        public IActionResult GetDoctorDetail(string doctorId = null)  
+        {
+            if(doctorId == null)
+                doctorId= User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            DrUpdateProfileVM profileVM = GetDrUpdateProfileVm(doctorId);
             return View(profileVM);
         }
 
+        //for doctor to change thier profile
         [HttpGet]
         public IActionResult UpdateDoctorProfile()
         {
@@ -102,7 +144,8 @@ namespace HealthCareApp.Controllers.Doctor
 
             return View(GetDrUpdateProfileVm(profileVM.DrId));
 
-        }        
+        }      
+        
         public IActionResult AfterDrRegisteration()
         {
             string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -120,10 +163,12 @@ namespace HealthCareApp.Controllers.Doctor
             return View(AfterDrRegisteration);
         }
         [HttpPost]
-        public async Task< IActionResult> AfterDrRegisteration(string DoctorId, AfterDrRegisterationVM afterRegisteration)
+        public async Task< IActionResult> AfterDrRegisteration( AfterDrRegisterationVM afterRegisteration, string? DoctorId = null)
         {
+            if (DoctorId == null) {
+                 DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
 
-            //# string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             Models.Doctor doctor = DoctorRepository.Find(d => d.Id == DoctorId);
             if (ModelState.IsValid) {
 
@@ -176,7 +221,7 @@ namespace HealthCareApp.Controllers.Doctor
             if (profileVM.ImgName != null)
                 profileVM.CurrentPicturePath = FilePaths.DrPathRelative + profileVM.ImgName;
             else
-                profileVM.CurrentPicturePath = null;
+                profileVM.CurrentPicturePath = null; // #default image
 
             return profileVM;
         }

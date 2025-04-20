@@ -75,6 +75,24 @@ namespace HealthCareApp.RepositoryServices
             else
                 return query.Where(criteria).Select(selector).ToList();
         }
+        public IEnumerable<TResult> FindAllWithSelectIgnoreFilter<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            query = query.IgnoreQueryFilters();
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            if (criteria == null)
+                return query.Select(selector).ToList();
+            else
+                return query.Where(criteria).Select(selector).ToList();
+        }
+
 
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes)
         {

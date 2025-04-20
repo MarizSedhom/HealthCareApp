@@ -18,7 +18,7 @@ namespace HealthCareApp.Controllers.Doctor
         public IAvailabilityRepository AvailabilityRepository { get; }
         public IGenericRepoServices<Clinic> ClinicRepository { get; }
         public IGenericRepoServices<AvailabilitySlots> SlotRepository { get; }
-        int AvailabilityDays = 14;
+        int AvailabilityDays = 7;
         private readonly IGenericRepoServices<Models.Doctor> doctorRepository;
 
         public DoctorAvailabilityController( IAvailabilityRepository availabilityRepository, IGenericRepoServices<Clinic> ClinicRepository, IGenericRepoServices<AvailabilitySlots> SlotRepository,IGenericRepoServices<Notification>NotificationRepository , IGenericRepoServices<HealthCareApp.Models.Doctor> doctorRepository) {
@@ -29,7 +29,7 @@ namespace HealthCareApp.Controllers.Doctor
             this.doctorRepository = doctorRepository;
         }
 
-        public IActionResult DisplayDaysSlots(string DrId="1")
+        public IActionResult DisplayDaysSlots(string DrId= "96537cdd-bddf-4f55-b6ef-ab07e2d49f11")
         {
 
             IEnumerable<AvailabilityWithSlotVM> drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == DrId, v => new AvailabilityWithSlotVM()
@@ -161,10 +161,10 @@ namespace HealthCareApp.Controllers.Doctor
         ////////////////////////////////////CancelDay for Notification/////////////////////////////////////////////
         public IActionResult CancelDay(int oldAvailabilityId)
         {
-            Availability oldAvailability =  AvailabilityRepository.GetAvailabilitySlotsAppointment(oldAvailabilityId);
+            Availability oldAvailability = AvailabilityRepository.GetAvailabilitySlotsAppointment(oldAvailabilityId);
             string drId = oldAvailability.DoctorId;
 
-            foreach ( var slot in oldAvailability.AvailableSlots)
+            foreach (var slot in oldAvailability.AvailableSlots)
             {
                 if (slot.IsBooked)
                 {
@@ -173,13 +173,7 @@ namespace HealthCareApp.Controllers.Doctor
                 }
             }
 
-            //SlotRepository.HardDeleteRange(oldAvailability.AvailableSlots);
-
-            //foreach(var slot in oldAvailability.AvailableSlots)
-            //{
-            //    slot.Appointment.
-            //}
-
+            SlotRepository.HardDeleteRange(oldAvailability.AvailableSlots);
             AvailabilityRepository.HardDelete(oldAvailability);
             return RedirectToAction(nameof(GetAvailabilitiesForDr), new { id = drId });
 
@@ -372,7 +366,7 @@ namespace HealthCareApp.Controllers.Doctor
             ViewBag.DrAvailabeDays = DrAvailabeDays;
             Slot_AvailbilityVM slot_AvailbilityVM = new Slot_AvailbilityVM()
             {
-                OldSlotId = slotId
+                OldSlotId = slotId, AvailableId = oldSlot.AvailabilityId
             };
             return View(slot_AvailbilityVM);
         }

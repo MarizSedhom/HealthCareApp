@@ -26,7 +26,7 @@ namespace HealthCareApp.Controllers
         {
             var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            IEnumerable<Appointment> patientAppointments = appointmentService.FindAll(app => app.PatientId == patientId, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor, app => app.AvailableSlot.Availability.Doctor.Specialization, app => app.AvailableSlot.Availability.Clinic);
+            IEnumerable<Appointment> patientAppointments = appointmentService.FindAll(app => app.PatientId == patientId && !app.IsDeleted, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor, app => app.AvailableSlot.Availability.Doctor.Specialization, app => app.AvailableSlot.Availability.Clinic);
             //// check date and mark appointments as completed and payment status as paid
             foreach (var app in patientAppointments)
             {
@@ -63,7 +63,7 @@ namespace HealthCareApp.Controllers
             return View(upcomingAppVM);
         }
 
-        public ActionResult ReserveAppointment(int slotId = 1) // passed from heba's part
+        public ActionResult ReserveAppointment(int slotId) // passed from heba's part
         {
             var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var patient = patientService.GetById(patientId);
@@ -235,8 +235,13 @@ namespace HealthCareApp.Controllers
                 slot.IsBooked = false;
                 slotService.Update(slot);
 
-                canceledAppointment.PaymentStatus = PaymentStatus.Refunded; ///// ???? + notification object
-                appointmentService.HardDelete(canceledAppointment);
+                canceledAppointment.Status = Status.Cancelled;
+
+                if(canceledAppointment.PaymentMethod == PaymentMethod.Visa)
+                {
+                    canceledAppointment.PaymentStatus = PaymentStatus.Refunded; ///// ???? + notification object
+                }
+                appointmentService.SoftDelete(canceledAppointment);
 
                 return RedirectToAction(nameof(PatientUpcomingAppointments));
             }
@@ -271,6 +276,23 @@ namespace HealthCareApp.Controllers
             return View(upcomingAppointments);
         }
 
+        public ActionResult AppointmentsHistory()
+        {
+            var appointmentsHistory = appointmentService.FindAllWithSelectIgnoreFilter
+            (   null,
+                app => new AppointmentsHistoryVM
+                {
+                    Status = app.Status,
+                    Date = $"{app.AvailableSlot.Availability.Date:dddd, MMMM dd, yyyy}",
+                    StartTime = app.AvailableSlot.StartTime,
+                    DoctorName = $"{app.AvailableSlot.Availability.Doctor.Title} {app.AvailableSlot.Availability.Doctor.FirstName} {app.AvailableSlot.Availability.Doctor.LastName}",
+                    Mode = app.AvailableSlot.Availability.type,
+                    Clinic = $"{app.AvailableSlot.Availability.Clinic.ClinicAddress} {app.AvailableSlot.Availability.Clinic.Region.RegionNameEn} {app.AvailableSlot.Availability.Clinic.Region.City.CityNameEn}",
+                    PaymentStatus = app.PaymentStatus
+                }
+            );
+            return View(appointmentsHistory);
+        }
 
         //admin 
         public ActionResult DisplayAllDoctorsAppoinments()
