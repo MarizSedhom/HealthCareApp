@@ -3,6 +3,8 @@ using HealthCareApp.RepositoryServices;
 using HealthCareApp.Service;
 using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
+using HealthCareApp.ViewModel.Review;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
@@ -18,12 +20,14 @@ namespace HealthCareApp.Controllers.Doctor
         private readonly IFileService fileService;
 
         private IGenericRepoServices<Models.Doctor> DoctorRepository { get; }
+        private IGenericRepoServices<Models.Review> ReviewRepository { get; }
         private IGenericRepoServices<SubSpecialization> SubSpecializationRepository { get; }
-        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository ,IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService)
+        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository ,IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository)
         {
             this.DoctorRepository = DectorRepository;
             this.SubSpecializationRepository = SubSpecializationRepository;
             this.fileService = fileService;
+            this.ReviewRepository = ReviewRepository;
         }
         [HttpGet]
         public IActionResult ViewApprovedDoctors()
@@ -60,10 +64,43 @@ namespace HealthCareApp.Controllers.Doctor
         }
 
         [HttpGet]
-        public IActionResult ViewDoctorDetails()
+        // DoctorController.cs
+        public IActionResult ViewDoctorDetails(string doctorId)
         {
-            return View();
+            if (string.IsNullOrEmpty(doctorId))
+            {
+                return NotFound();
+            }
+
+            var doctor = DoctorRepository.GetById(doctorId);
+
+            if (doctor == null)
+            {
+                return NotFound();
+            }
+
+            var reviews = ReviewRepository.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
+            var approvedReviews = reviews.Where(r => r.IsApproved).ToList();
+
+            var viewModel = new DoctorDetailsWithReviewsVM
+            {
+                Doctor = doctor,
+                Reviews = approvedReviews.Select(r => new ReviewVM
+                {
+                    Id = r.Id,
+                    Rating = r.Rating,
+                    ReviewText = r.ReviewText,
+                    ReviewDate = r.ReviewDate,
+                    PatientName = $"{r.Patient.FirstName} {r.Patient.LastName}",
+                    Age = DateOnly.FromDateTime(DateTime.Now).Year - r.Patient.DateOfBirth.Year
+                }).ToList(),
+                AverageRating = approvedReviews.Any() ? approvedReviews.Average(r => r.Rating) : 0.0,
+                ReviewsCount = approvedReviews.Count()
+            };
+
+            return View(viewModel);
         }
+
 
         [HttpGet]
         public IActionResult GetDoctorDetail(string DoctorId = null)
