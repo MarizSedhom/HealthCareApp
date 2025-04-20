@@ -190,6 +190,7 @@
                             $.each(response, function (index, region) {
                                 RegionDropdown.append(
                                     $('<option></option>').val(region.id).text(region.name)
+                                );
                             });
                         },
                         error: function (xhr, status, error) {
