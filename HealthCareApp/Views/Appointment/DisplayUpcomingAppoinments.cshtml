@@ -16,191 +16,191 @@
 
 <style>
     :root {
-        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
-        --white: #ffffff;
-        --light-gray: #f5f5f5;
-        --dark-blue: #223249;
-        --highlight-blue: #26364d;
-        --virtual-blue: #4e7dc5;
-        --danger-red: #dc3545;
-        --success-green: #28a745;
-        --bg-color-2: #f0f8ff;
+    --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+    --white: #ffffff;
+    --light-gray: #f5f5f5;
+    --dark-blue: #223249;
+    --highlight-blue: #26364d;
+    --virtual-blue: #4e7dc5;
+    --danger-red: #dc3545;
+    --success-green: #28a745;
+    --bg-color-2: #f0f8ff;
     }
 
     .bg-healthcare-dark-blue {
-        background: #223249;
+    background: #223249;
     }
 
     .healthcare-container {
-        min-height: 100vh;
-        background: linear-gradient(to bottom, var(--light-gray), var(--bg-color-2));
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, var(--light-gray), var(--bg-color-2));
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .healthcare-header {
-        background: var(--white);
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        padding: 24px;
-        margin-bottom: 24px;
-        background: var(--doctor-gradient);
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    margin-bottom: 24px;
+    background: var(--doctor-gradient);
     }
 
     .filter-tabs {
-        width: 400px;
-        height: 48px;
-        display: flex;
-        gap: 8px;
-        background: #f0f8ff;
-        border-radius: 8px;
-        padding: 4px;
-        max-width: 400px;
-        margin-bottom: 24px;
+    width: 400px;
+    height: 48px;
+    display: flex;
+    gap: 8px;
+    background: #f0f8ff;
+    border-radius: 8px;
+    padding: 4px;
+    max-width: 400px;
+    margin-bottom: 24px;
     }
 
     .filter-tab {
-        flex: 1;
-        padding: 8px 16px;
-        border-radius: 6px;
-        border: none;
-        background: transparent;
-        color: var(--dark-blue);
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-align: center;
-        text-decoration: none;
+    flex: 1;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--dark-blue);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
     }
 
-        .filter-tab.active {
-            background: var(--dark-blue);
-            color: var(--white);
-        }
+    .filter-tab.active {
+    background: var(--dark-blue);
+    color: var(--white);
+    }
 
     .appointment-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-        gap: 20px;
-        padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+    padding: 2rem;
     }
 
     .appointment-card {
-        background: var(--white);
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(197, 211, 232, 0.3);
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(197, 211, 232, 0.3);
     }
 
-        .appointment-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        }
+    .appointment-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
 
     .card-header-bar {
-        height: 8px;
-        background: var(--dark-blue);
+    height: 8px;
+    background: var(--dark-blue);
     }
 
-        .card-header-bar.virtual {
-            background: var(--virtual-blue);
-        }
+    .card-header-bar.virtual {
+    background: var(--virtual-blue);
+    }
 
     .status-indicator {
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
     }
 
-        .status-indicator.paid {
-            background: rgba(40, 167, 69, 0.1);
-            color: #28a745;
-        }
+    .status-indicator.paid {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    }
 
-        .status-indicator.pending {
-            background: rgba(255, 193, 7, 0.1);
-            color: #ffc107;
-        }
+    .status-indicator.pending {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    }
 
-        .status-indicator.unpaid {
-            background: rgba(220, 53, 69, 0.1);
-            color: #dc3545;
-        }
+    .status-indicator.unpaid {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    }
 
     .payment-method {
-        background: rgba(78, 125, 197, 0.1);
-        color: var(--virtual-blue);
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.85rem;
+    background: rgba(78, 125, 197, 0.1);
+    color: var(--virtual-blue);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
     }
 
     .action-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 6px 12px;
-        border-radius: 4px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        border: 1px solid #f0f8ff;
-        background: var(--dark-blue);
-        color: var(--white);
-        width:auto;
-        text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid #f0f8ff;
+    background: var(--dark-blue);
+    color: var(--white);
+    width:auto;
+    text-decoration: none;
     }
 
-        .action-button:hover {
-            background: #C5D3E8;
-            color:var(--dark-blue);
-        }
+    .action-button:hover {
+    background: #C5D3E8;
+    color:var(--dark-blue);
+    }
 
     .cancel-button {
-        background: rgba(220, 53, 69, 0.1);
-        color: var(--danger-red);
-        border: 1px solid rgba(220, 53, 69, 0.2);
-        border-radius:50%;
+    background: rgba(220, 53, 69, 0.1);
+    color: var(--danger-red);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    border-radius:50%;
     }
 
-        .cancel-button:hover {
-            background: var(--danger-red);
-            color: var(--white);
-        }
+    .cancel-button:hover {
+    background: var(--danger-red);
+    color: var(--white);
+    }
 
     .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-        grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    grid-column: 1 / -1;
     }
 
     .empty-state-icon {
-        background: var(--bg-color-2);
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 16px;
+    background: var(--bg-color-2);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
     }
 
     .real-time-clock {
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(5px);
-        border-radius: 8px;
-        padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    border-radius: 8px;
+    padding: 8px 16px;
     }
 
     .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 1rem;
-        font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 500;
     }
 
     /* .badge-today { */
@@ -210,46 +210,46 @@
     /* } */
 
 
-	.badge.offline {
-        background: var(--bg-color-2);
-        color: var(--dark-blue);
+    .badge.offline {
+    background: var(--bg-color-2);
+    color: var(--dark-blue);
     }
 
-	.badge.online {
-        background: rgba(78, 125, 197, 0.1);
-        color: var(--virtual-blue);
+    .badge.online {
+    background: rgba(78, 125, 197, 0.1);
+    color: var(--virtual-blue);
     }
 
     .healthcare-border {
-        border-color: #C5D3E8 !important;
-        border-radius: 1rem;
+    border-color: #C5D3E8 !important;
+    border-radius: 1rem;
     }
 
     .today-badge {
-        background: #ffefc1;
-        color: #8c6d1f;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-        font-weight: 500;
+    background: #ffefc1;
+    color: #8c6d1f;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
     }
 
     .card-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #223249;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #223249;
     }
 
     .card-subtitle {
-        font-size: 0.875rem;
-        color: #6c757d !important;
-        margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #6c757d !important;
+    margin-bottom: 0.5rem;
     }
 
     .card-footer {
-        padding: 16px;
-        padding-top: 0;
-        background-color: var(--bg-color-2);
+    padding: 16px;
+    padding-top: 0;
+    background-color: var(--bg-color-2);
     }
 </style>
 
@@ -330,7 +330,11 @@
                                                         <h4 class="card-title mt-0">@item.Date.ToString("M/d/yyyy")</h4>
                                                     </div>
                                                     <div >
-                                                        <span class="badge today-badge">Today</span>
+                                                        @if(isToday)
+                                                        {
+                                                            <span class="badge today-badge">Today</span>
+                                                            
+                                                        }
                                                     </div>
 
                                                 </div>
@@ -362,9 +366,9 @@
                                 </div>
 
                                 <div class="card-footer">
-                                    <div class="d-flex justify-content-center gap-2 mt-3">
+                                    <div class="d-flex justify-content-center gap-2 mt-3 ">
                                         <a href="@Url.Action("DisplayPatientInfoForDoctor", "Patient", new { patientId = item.PatientId })"
-                                           class="action-button">
+										   class="action-button w-100">
                                             <i class="fas fa-user-circle mr-2"></i>
                                             Patient Info
                                         </a>

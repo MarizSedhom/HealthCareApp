@@ -1,132 +1,225 @@
 ﻿@model HealthCareApp.ViewModel.Doctor.DrUpdateProfileVM
 
 @{
-    ViewData["Title"] = "Update Profile";
-    var GenderList = Enum.GetValues(typeof(Gender))
-    .Cast<Gender>()
-    .Select(s => new
-    {
-        Id = (int)s,
-        Name = s.ToString()
-    });
+    ViewData["Title"] = "Doctor Profile";
+    var GenderList = Enum.GetValues(typeof(Gender)).Cast<Gender>();
 }
 
-<!-- Profile Picture Section -->
-<div class="row mt-3 justify-content-center">
-    <div class="col-md-6 text-center">
-        <div class="form-group mb-3">
-            <div class="profile-picture-container">
-                <label for="ProfilePicture" style="display: inline-block;">
-                   @if (!string.IsNullOrEmpty(Model.CurrentPicturePath))
-                   {
-                        <img src="@Model.CurrentPicturePath" alt="Profile Picture"
-                             class="img-thumbnail rounded-circle profile-picture-preview"
-                             style="width: 150px; height: 150px; object-fit: cover;" />
-                   }
-                   else
-                   {
-                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center profile-picture-preview"
-                             style="width: 150px; height: 150px;">
-                            <i class="fas fa-user-md fa-3x text-secondary"></i>
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+        --bg-color-1: #f8f9fa;
+        --bg-color-2: #f0f8ff;
+        --bg-color-3: #f5fff0;
+        --bg-color-4: #fff0f5;
+    }
+
+    .doctor-profile-header {
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        border-radius:10px;
+    }
+
+    .bg-light-blue {
+        background-color: #C5D3E8;
+    }
+
+    .btn-dark-blue {
+        background-color: var(--dark-blue);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .btn-dark-blue:hover {
+            background-color: var(--highlight-blue);
+            transform: translateY(-2px);
+        }
+
+    .card {
+        transition: transform 0.2s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+    .rounded-3 {
+        border-radius: 1rem !important;
+    }
+
+    .text-dark-blue{
+        color:var(--dark-blue);
+    }
+
+    .bg-dark-blue{
+        background-color:var(--dark-blue);
+    }
+
+    .btn-dark-blue {
+        background-color: var(--dark-blue);
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-dark-blue:hover {
+            background-image: linear-gradient(to right, var(--dark-blue), #3a4d6d);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+     
+
+        .btn-dark-blue:hover::before {
+            left: 0;
+        }
+
+        .btn-dark-blue span {
+            position: relative;
+            z-index: 1;
+        }
+</style>
+
+<div class="container-fluid p-0">
+    <!-- Profile Header -->
+    <div class="doctor-profile-header" style="background: var(--doctor-gradient);">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <!-- Profile Picture -->
+                <div class="col-auto position-relative">
+                    <div class="profile-picture-container">
+                        @if (!string.IsNullOrEmpty(Model.CurrentPicturePath))
+                        {
+                            <img src="@Model.CurrentPicturePath" alt="Profile Picture"
+                                 class="img-thumbnail rounded-circle border-4 border-white shadow-lg"
+                                 style="width: 180px; height: 180px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center border-white border-4 shadow-lg"
+                                 style="width: 180px; height: 180px;">
+                                <i class="fas fa-user-md fa-4x text-dark-blue"></i>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Doctor Info -->
+                <div class="col text-white">
+                    <h1 class="display-5 fw-bold mb-3">@($"{Model.Title}. {Model.FirstName} {Model.LastName}")</h1>
+                    <div class="d-flex gap-4">
+                        <div class="badge bg-white text-dark-blue fs-6 px-4 py-2 rounded-pill">
+                            <i class="fas fa-stethoscope me-2"></i>@Model.Specialization
                         </div>
-                   }
-                </label>
-                <div class="mt-2">
-                    <h3 class="mb-0">@($"{Model.Title}. {Model.FirstName} {Model.LastName}")</h3>
-
+                        <div class="badge bg-white text-dark-blue fs-6 px-4 py-2 rounded-pill">
+                            <i class="fas fa-clock me-2"></i>@Model.ExperienceYears yrs experience
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row g-4">
+            <!-- Left Column -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-header bg-dark-blue text-white py-3 rounded-top">
+                        <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Personal Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row g-3">
+                            <dt class="col-sm-4 text-dark-blue">Date of Birth</dt>
+                            <dd class="col-sm-8">@Model.DateOfBirth</dd>
 
-<div class="container mt-4">
-    <div class="card border rounded">
-        <div class="card-header bg-light text-dark fw-bold">
-            Doctor Profile Information
+                            <dt class="col-sm-4 text-dark-blue">Gender</dt>
+                            <dd class="col-sm-8">@Model.gender</dd>
+
+                            <dt class="col-sm-4 text-dark-blue">Consultation Fee</dt>
+                            <dd class="col-sm-8">LE @Model.Fees</dd>
+
+                            <dt class="col-sm-4 text-dark-blue">Wait Time</dt>
+                            <dd class="col-sm-8">@Model.WaitingTimeInMinutes mins</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 rounded-3 mt-4">
+                    <div class="card-header bg-dark-blue text-white py-3 rounded-top">
+                        <h5 class="mb-0"><i class="fas fa-clinic-medical me-2"></i>Clinics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var clinic in Model.Clinics)
+                            {
+                                <span class="badge bg-light-blue text-dark-blue py-2 px-3 rounded-pill">
+                                    <i class="fas fa-hospital me-2"></i>@clinic
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-header bg-dark-blue text-white py-3 rounded-top">
+                        <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Specializations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h6 class="text-dark-blue mb-3">Primary Specialization</h6>
+                            <div class="badge bg-light-blue text-dark-blue py-2 px-3 rounded-pill fs-6">
+                                @Model.Specialization
+                            </div>
+                        </div>
+
+                        <h6 class="text-dark-blue mb-3">Sub-Specializations</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var sub in Model.SubSpecializations)
+                            {
+                                <span class="badge bg-light text-dark-blue py-2 px-3 rounded-pill border border-dark-blue">
+                                    @sub
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 rounded-3 mt-4">
+                    <div class="card-header bg-dark-blue text-white py-3 rounded-top">
+                        <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Professional Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6 class="text-dark-blue">Description</h6>
+                            <p class="text-muted">@Model.Description</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <!-- Left Column -->
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Name</label>
-                        <div>@(Model.FirstName+" "+@Model.LastName)</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Date of Birth</label>
-                        <div>@Model.DateOfBirth</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Gender</label>
-                        <div>@Model.gender</div>
-                    </div>
-@*                     <div class="mb-3">
-                        <label class="form-label fw-bold">Phone Number</label>
-                        <div>@Model.PhoneNumber</div>
-                    </div> *@
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Title</label>
-                        <div>@Model.Title</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Description</label>
-                        <div>@Model.Description</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Fees</label>
-                        <div>LE @Model.Fees</div>
-                    </div>
-                </div>
 
-                <!-- Right Column -->
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Waiting Time</label>
-                        <div>@Model.WaitingTimeInMinutes minutes</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Experience Years</label>
-                        <div>@Model.ExperienceYears</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Specialization</label>
-                        <div>@Model.Specialization</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Sub Specializations</label>
-                        <ul class="list-group list-group-flush">
-                            @foreach (var item in Model.SubSpecializations)
-                            {
-                                <li class="list-group-item">@item</li>
-                            }
-                        </ul>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Clinics</label>
-                        <ul class="list-group list-group-flush">
-                            @foreach (var item in Model.Clinics)
-                            {
-                                <li class="list-group-item">@item</li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-center mt-4">
-                <a asp-action="UpdateDoctorProfile" asp-route-DoctorId="@Model.DrId" class="btn btn-outline-primary">
-                    <i class="fas fa-save me-2"></i>Update
-                </a>
-            </div>
+        <!-- Update Button -->
+        <div class="text-center mt-5">
+            <a asp-action="UpdateDoctorProfile" asp-route-DoctorId="@Model.DrId"
+               class="btn btn-lg btn-dark-blue px-5 py-3 rounded-pill shadow-sm text-white">
+                <i class="fas fa-edit me-2"></i>Update Profile
+            </a>
         </div>
     </div>
 </div>
+
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
 }
