@@ -8,6 +8,7 @@
             .FirstOrDefaultAsync(d => d.Id == user.Id);
 
     var profilePicture = doctor?.ProfilePicture;
+    var doctorTitle = doctor?.Title;
 }
 
 <!DOCTYPE html>
@@ -59,7 +60,7 @@
                 <div class="profile-img">
                     <img src="~/uploads/image/Doctor/@profilePicture" alt="Doctor Profile">
                 </div>
-                <span class="profile-name"> @firstName </span>
+                <span class="profile-name"> @doctorTitle @firstName </span>
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
 
