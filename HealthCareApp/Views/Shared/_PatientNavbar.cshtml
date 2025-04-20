@@ -30,16 +30,26 @@
                 <div class="d-flex gap-3">
                     <a asp-controller="Appointment"
                        asp-action="AppointmentsHistory"
-                       class="nav-link active"
-                       data-bg="var(--bg-color-2)">Appointments</a>
-                    <a asp-controller="DoctorAvailability"
-                       asp-action="GetAvailabilitiesForDr"
-                       class="nav-link"
-                       data-bg="var(--bg-color-2)">Availability</a>
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Appointment" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "AppointmentsHistory" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">My Appointments</a>
                     <a asp-controller="Doctor"
                        asp-action="GetAllDoctorsInfo"
-                       class="nav-link"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "GetAllDoctorsInfo" ? "active" : "")"
                        data-bg="var(--bg-color-2)">All Doctors</a>
+                   @*  <a asp-controller="Appointment"
+                       asp-action="AppointmentsHistory"
+                       class="nav-link active"
+                       data-bg="var(--bg-color-2)">Appointments</a> *@
+                  @*   <a asp-controller="DoctorAvailability"
+                       asp-action="GetAvailabilitiesForDr"
+                       class="nav-link"
+                       data-bg="var(--bg-color-2)">Availability</a> *@
+                   @*  <a asp-controller="Doctor"
+                       asp-action="GetAllDoctorsInfo"
+                       class="nav-link"
+                       data-bg="var(--bg-color-2)">All Doctors</a> *@
                 </div>
             </div>
         </div>
@@ -48,9 +58,9 @@
             @await Component.InvokeAsync("Notification")
 
             <div id="doctorProfile" class="doctor-profile">
-                <div class="profile-img">
+                @* <div class="profile-img">
                     <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Doctor Profile">
-                </div>
+                </div> *@
                 <span class="profile-name">@firstName </span>
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
@@ -96,22 +106,22 @@
         //     });
         // });
         // Navigation functionality
-        const navLinks = document.querySelectorAll('a');
-        navLinks.forEach(link => {
+        // const navLinks = document.querySelectorAll('a');
+        // navLinks.forEach(link => {
 
-            console.log(navLinks)
+        //     console.log(navLinks)
 
-            link.addEventListener('click', function (e) {
-                            // e.preventDefault();
-                navLinks.forEach(item => item.classList.remove('active'));
-            console.log(navLinks)
+        //     link.addEventListener('click', function (e) {
+        //                     // e.preventDefault();
+        //         navLinks.forEach(item => item.classList.remove('active'));
+        //     console.log(navLinks)
 
-                this.classList.add('active');
+        //         this.classList.add('active');
 
-                // const activeBgColor = this.getAttribute('data-bg');
-                // this.style.backgroundColor = activeBgColor || 'transparent';
-            });
-        });
+        //         // const activeBgColor = this.getAttribute('data-bg');
+        //         // this.style.backgroundColor = activeBgColor || 'transparent';
+        //     });
+        // });
     </script>
 </body>
 </html> 
