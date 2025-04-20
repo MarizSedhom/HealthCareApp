@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\uploads\image\Doctor\" />
     <Folder Include="wwwroot\uploads\DoctorVerificationFile\" />
+    <Folder Include="wwwroot\uploads\image\Doctor\" />
   </ItemGroup>
 
 </Project>

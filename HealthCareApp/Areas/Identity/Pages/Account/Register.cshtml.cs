@@ -128,6 +128,11 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
 
             // Patient-specific fields
             [RegularExpression(@"^\d{11}$", ErrorMessage = "Mobile Number must be exactly 11 digits.")]
+            [Display(Name = "Phone Number")]
+            public string PhoneNumber { get; set; }
+
+
+            [RegularExpression(@"^\d{11}$", ErrorMessage = "Mobile Number must be exactly 11 digits.")]
             [Display(Name = "Emergency Contact")]
             public string EmergencyContact { get; set; }
 
@@ -193,6 +198,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                         DateOfBirth = Input.DateOfBirth,
                         gender = Input.Gender,
                         CreatedAt = DateTime.Now,
+                        PhoneNumber = Input.PhoneNumber,
                         EmergencyContact = Input.EmergencyContact,
                         MedicalHistory = Input.MedicalHistory
                     };

@@ -4,134 +4,365 @@
     ViewData["Title"] = "Notifications";
 }
 
-<!-- jQuery for toggle and AJAX -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <style>
-    body {
-        background-color: #f9f9fc;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    :root {
+        --primary-blue: #C5D3E8;
+        --doctor-blue: #669bb4;
+        --dark-blue: #223249;
+        --white: #ffffff;
+        --neutral-100: #f3f4f6;
+        --neutral-500: #6b7280;
     }
 
-    h1 {
-        margin-top: 30px;
-        margin-bottom: 30px;
-        color: #333;
-        text-align: center;
-        font-weight: 600;
+    .notification-container {
+        min-height: 100vh;
+        padding: 2rem;
+        /* background: linear-gradient(135deg, var(--primary-blue) 0%, #D0E8C5 100%); */
     }
 
-    .table thead {
-        background-color: #007bff;
-        color: white;
+    .notification-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        backdrop-filter: blur(10px);
     }
 
-    
-    .table td, .table th {
-        vertical-align: middle;
-        text-align: center;
+    .bell-header {
+        padding: 2rem;
+        background: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    .action-links a,
-    .action-links button {
-        margin: 0 5px;
-        text-decoration: none;
-        color: #007bff;
-        font-weight: 500;
-        background: none;
-        border: none;
-        cursor: pointer;
+    .bell-icon {
+        animation: bellVibration 2s infinite ease-in-out;
+        transform-origin: top center;
     }
 
-        .action-links a:hover,
-        .action-links button:hover {
-            text-decoration: underline;
+    @@keyframes bellVibration {
+        0%, 100% {
+            transform: rotate(0deg);
         }
 
-    .notification-table {
-        margin: auto;
-        max-width: 1000px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        overflow: hidden;
+        25% {
+            transform: rotate(15deg);
+        }
+
+        50% {
+            transform: rotate(-15deg);
+        }
+
+        75% {
+            transform: rotate(10deg);
+        }
     }
+
+    .notification-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .notification-table td {
+            padding: 1.5rem;
+            background-color: var(--white);
+            color: var(--dark-blue);
+            transition: all 0.3s ease;
+        }
+
+    .notification-row.unread td {
+        background: #e5e7eb;
+        border-left: 4px solid var(--neutral-500);
+    }
+
+    .notification-row.unread .message-container {
+        font-weight: 600;
+        color: var(--dark-blue);
+    }
+
+    .notification-row:hover td {
+        background: linear-gradient(135deg, rgba(197,211,232,0.15) 0%, rgba(255,255,255,0.4) 100%);
+        transform: translateX(4px);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+    }
+
+    .action-button {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        border: none;
+        font-size: 0.875rem;
+    }
+
+    .details-button {
+        background: var(--dark-blue);
+        color: var(--white);
+    }
+
+        .details-button:hover {
+            background: linear-gradient(130deg, #C5D3E8 0%, #D0E8C5 50%);
+            color: var(--dark-blue);
+        }
+
+    .delete-button {
+        background: transparent;
+        border: 1px solid #dc3545;
+        color: #dc3545;
+    }
+
+        .delete-button:hover {
+            background: #dc3545;
+            color: var(--white);
+        }
 
     .details-row {
         display: none;
-        background-color: #f2f2f2;
     }
 
-    .details-cell {
-        padding: 20px;
-        text-align: left;
+        .details-row td {
+            background: linear-gradient(130deg, #C5D3E8 0%, #D0E8C5 50%) !important;
+            padding: 1rem 1.5rem;
+        }
+
+    .metadata-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--dark-blue);
     }
 
-    th {
-        background-color: #e6f0ff !important;
+    .metadata-badge {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    table.table tr.unread,
-    .table-bordered tr.unread,
-    .notification-table table tr.unread {
-        background-color: #e6f0ff !important;
-        font-weight: 700 !important;
+    /* Add empty state styles */
+    .empty-state {
+        padding: 3rem;
+        text-align: center;
+        color: var(--neutral-500);
     }
 
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+        }
+
+    /* Previous styles remain unchanged */
+    .notification-header-bar td {
+        background: var(--dark-blue);
+        height: 3px;
+        padding: 0;
+        border-radius: 2px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Add pointer cursor for clickable rows */
+    .notification-row {
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+        .notification-row:hover {
+            transform: translateX(4px);
+        }
+
+    /* Prevent buttons from getting hover transform */
+    .action-button {
+        cursor: pointer;
+        transform: none !important;
+    }
+
+    .metadata-item i {
+        width: 20px;
+        text-align: center;
+        color: var(--dark-blue);
+    }
 </style>
 
-<h1>@ViewBag.UserFirstName's Notifications</h1>
+<div class="notification-container">
+    <div class="notification-card">
+        <div class="bell-header">
+            <div class="d-flex justify-content-center gap-4 align-items-center">
+                <i class="bell-icon fas fa-bell fa-2x text-white"></i>
+                <h1 class="text-2xl font-semibold text-white mb-0">@ViewBag.UserFirstName's Notifications</h1>
+            </div>
+        </div>
 
-<div class="notification-table">
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.Message)</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                string rowClass = item.IsRead ? "" : "unread";
-                <tr class="notification-row @rowClass" data-id="@item.Id">
-                    <td>@Html.DisplayFor(modelItem => item.Message)</td>
-                    <td class="action-links">
-                        <button class="toggle-details" data-id="@item.Id">Details</button> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    </td>
-                </tr>
-                <tr class="details-row" id="details-@item.Id">
-                    <td colspan="5" class="details-cell">
-                        <strong>Message:</strong> @item.Message<br />
-                        <strong>Type:</strong> @item.notificationType<br />
-                        <strong>Created:</strong> @item.CreatedDate.ToString("f")
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        <table class="notification-table">
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        string rowClass = item.IsRead ? "" : "unread";
+
+                        <!-- Notification Header Bar -->
+                        <tr class="notification-header-bar">
+                            <td colspan="2"></td>
+                        </tr>
+
+                        <!-- Main Notification Row -->
+                        <tr class="notification-row @rowClass" data-id="@item.Id">
+                            <td colspan="2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="message-container">
+										<h5>@item.Message</h5>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button class="action-button details-button toggle-details" data-id="@item.Id">
+                                            <i class="fas fa-eye"></i>
+                                            Details
+                                        </button>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="action-button delete-button">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Hidden Details Row -->
+                        <tr class="details-row" id="details-@item.Id">
+
+                            <td colspan="2">
+
+                                <div class="d-flex justify-content-between align-items-center px-4 py-2">
+                                    <div class="metadata-item">
+                                            @switch (item.notificationType)
+                                            {
+                                                case NotificationType.AppointmentReminder:
+                                                    <i class="fas fa-calendar-check"></i>
+                                                    break;
+                                                case NotificationType.Payment:
+                                                    <i class="fas fa-money-bill-wave"></i>
+                                                    break;
+                                                case NotificationType.Review:
+                                                    <i class="fas fa-comment-medical"></i>
+                                                    break;
+                                                case NotificationType.AppointmentReschedule:
+                                                    <i class="fas fa-calendar-alt"></i>
+                                                    break;
+                                                default:
+                                                    <i class="fas fa-bell"></i>
+                                                    break;
+                                            }
+                                            <span class="metadata-badge">@Html.DisplayFor( modelItem =>  item.notificationType)</span>
+                                        </div>
+              
+                                    <div class="metadata-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>@item.CreatedDate.ToString("f")</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                    }
+                }
+                else
+                {
+                    <!-- Empty State -->
+                    <tr>
+                        <td colspan="2">
+                            <div class="empty-state">
+                                <i class="fas fa-bell-slash"></i>
+                                <h3 class="text-xl font-semibold mb-2">No Notifications</h3>
+                                <p class="text-neutral-500">You're all caught up! Check back later for updates.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<script>
-    $(document).ready(function () {
-        $(".toggle-details").click(function () {
-            const id = $(this).data("id");
-            const $detailsRow = $("#details-" + id);
-            const $mainRow = $(".notification-row[data-id='" + id + "']");
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".toggle-details").click(function () {
+                const id = $(this).data("id");
+                const $detailsRow = $("#details-" + id);
+                const $mainRow = $(this).closest(".notification-row");
 
-            $detailsRow.toggle();
+                // Toggle details visibility
+                $detailsRow.slideToggle(300);
 
-            // If unread, mark as read
-            if ($mainRow.hasClass("unread")) {
-                $.ajax({
-                    url: '/Notification/MarkAsRead/' + id,
-                    type: 'POST',
-                    success: function () {
-                        $mainRow.removeClass("unread");
-                        $mainRow.find(".read-status input").prop("checked", true);
-                    }
-                });
-            }
+                // Toggle eye icon
+                $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+
+                // Mark as read if unread
+                if ($mainRow.hasClass("unread")) {
+                    $.ajax({
+                        url: '/Notification/MarkAsRead/' + id,
+                        type: 'POST',
+                        success: function () {
+                            $mainRow.removeClass("unread");
+                            $mainRow.find('td').css({
+                                'background': 'var(--white)',
+                                'border-left': 'none'
+                            });
+                        }
+                    });
+                }
+            });
         });
-    });
-</script>
+
+        $(document).ready(function () {
+            // Click handler for the entire notification row
+            $(".notification-row").click(function (e) {
+                // Ignore clicks on buttons
+                if ($(e.target).closest('.action-button').length) return;
+
+                const id = $(this).data("id");
+                const $detailsRow = $("#details-" + id);
+                const $mainRow = $(this).closest(".notification-row");
+                const $detailsButton = $(this).find(".toggle-details");
+
+                // Toggle details visibility
+                $detailsRow.slideToggle(300);
+
+                // Toggle eye icon
+                $detailsButton.find('i').toggleClass('fa-eye fa-eye-slash');
+
+                // Mark as read if unread
+                if ($mainRow.hasClass("unread")) {
+                    $.ajax({
+                        url: '/Notification/MarkAsRead/' + id,
+                        type: 'POST',
+                        success: function () {
+                            $mainRow.removeClass("unread");
+                            $mainRow.find('td').css({
+                                'background': 'var(--white)',
+                                'border-left': 'none'
+                            });
+                        }
+                    });
+                }
+            });
+
+            // Keep existing button handler
+            $(".toggle-details").click(function (e) {
+                e.stopPropagation(); // Prevent row click from triggering
+            });
+        });
+    </script>
+
+  
+}
+
+
+

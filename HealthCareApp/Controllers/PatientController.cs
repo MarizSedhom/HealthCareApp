@@ -109,9 +109,9 @@ namespace HealthCareApp.Controllers
         public ActionResult DisplayPatientInfoForDoctor(string patientId)
         {
             var patientInfo = PatientRepo.FindWithSelect(p => p.Id == patientId,
-                p => new PatientVM
+                p => new PatientInfoForDoctorVM
                 {
-                    FullName = $"{p.FirstName} {p.LastName}",
+                    PatientFullName = $"{p.FirstName} {p.LastName}",
                     Age = DateTime.Now.Year - p.DateOfBirth.Year,
                     MedicalHistory = p.MedicalHistory
                 });

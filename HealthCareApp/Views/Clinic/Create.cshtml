@@ -1,35 +1,179 @@
-﻿@model ClinicCreateVM
+﻿@using HealthCareApp.ViewModel.Clinic
+@model ClinicCreateVM
 
 @{
     ViewData["Title"] = "Create";
-
 }
 
-<h3>Add Clinic</h3>
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --dark-blue: #223249;
+        --light-blue: #C5D3E8;
+        --hover-blue: rgba(197, 211, 232, 0.3);
+    }
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
+    .create-clinic-container {
+        background: linear-gradient(to bottom, #f5f5f5 0%, #e8eff8 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        padding: 2rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        background: var(--doctor-gradient);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem 0.5rem 0 0;
+        margin: -2rem -2rem 2rem -2rem;
+        text-align:center;
+    }
+
+    .form-label {
+        color: var(--dark-blue);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control-custom {
+        border: 1px solid #C5D3E8;
+        border-radius: 0.375rem;
+        padding: 0.5rem 1rem;
+        width: 100%;
+        transition: all 0.2s ease;
+    }
+
+        .form-control-custom:focus {
+            border-color: var(--dark-blue);
+            box-shadow: 0 0 0 3px rgba(34, 50, 73, 0.1);
+            outline: none;
+        }
+
+    .btn-primary-custom {
+        background: linear-gradient(to right, var(--dark-blue), #3a4d6d);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.375rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+        .btn-primary-custom:hover {
+            background: linear-gradient(to right, #3a4d6d, var(--dark-blue));
+            transform: translateY(-1px);
+        }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        color: var(--dark-blue);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+
+        .back-link:hover {
+            background-color: var(--hover-blue);
+            transform: translateX(-5px);
+            text-decoration: none;
+        }
+
+    .button-group {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+</style>
+
+<div class="create-clinic-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h3 style="margin: 0; font-size: 1.5rem;">
+                <i class="fas fa-building mr-2"></i>
+                Add New Clinic
+            </h3>
+            <p style="margin: 0.5rem 0 0; opacity: 0.9;">Enter clinic details below</p>
+        </div>
+
         <form asp-action="Create">
-            @Html.Partial("_ClinicFieldsPartial", Model)
-
             <input type="hidden" asp-for="ClinicLocation.KeyId" />
             <input type="hidden" asp-for="ClinicLocation.X" id="lng" />
             <input type="hidden" asp-for="ClinicLocation.Y" id="lat" />
             <div id="map" style="height: 500px; width: 600px;" class="bg-danger mt-3"></div>
-            <div class="form-group mt-3">
-                <input type="submit" value="Create" class="btn btn-primary" />
+           
+            <div class="form-group mb-4">
+                <label asp-for="Name" class="form-label">Clinic Name</label>
+                <input asp-for="Name" class="form-control-custom" placeholder="Enter clinic name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="ClinicAddress" class="form-label">Address</label>
+                <input asp-for="ClinicAddress" class="form-control-custom" placeholder="Enter clinic address" />
+                <span asp-validation-for="ClinicAddress" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="SelectedCityId" class="form-label">City</label>
+                <select asp-for="SelectedCityId" class="form-control-custom" asp-items="@(new SelectList(Model.cities,"Id","Name"))">
+                    <option value="">Select City</option>
+                </select>
+                <span asp-validation-for="SelectedCityId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="SelectedRegionId" class="form-label">Region</label>
+                <select asp-for="SelectedRegionId" class="form-control-custom" asp-items="@(new SelectList(Model.regions,"Id","Name"))">
+                    <option value="">Select Region</option>
+                </select>
+                <span asp-validation-for="SelectedRegionId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="ClinicPhoneNumber" class="form-label">Phone Number</label>
+                <input asp-for="ClinicPhoneNumber" class="form-control-custom" placeholder="Enter phone number" />
+                <span asp-validation-for="ClinicPhoneNumber" class="text-danger"></span>
             </div>
 
             <input asp-for="doctorId" hidden />
+
+            <div class="button-group">
+                <button type="submit" class="btn-primary-custom">
+                    <i class="fas fa-save"></i>
+                    Create Clinic
+                </button>
+            </div>
+                <a asp-action="GetDoctorClinics" asp-route-doctorId="@Model.doctorId" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to List
+                </a>
         </form>
     </div>
 </div>
-
-<div class="mt-1">
-    <a asp-action="GetDoctorClinics" asp-route-doctorId="@Model.doctorId">Back to List</a>
-</div>
-
 
 @section Scripts {
     @{
@@ -37,10 +181,8 @@
     }
     <script>
         $(document).ready(function () {
-
             $("#SelectedCityId").change(function () {
-
-                var CityId = $(this).val(); // Get selected category ID
+                var CityId = $(this).val();
                 if (CityId) {
                     $.ajax({
                         url: '/Clinic/GetRegions',
@@ -48,9 +190,8 @@
                         data: { CityId: CityId },
                         success: function (response) {
                             var RegionDropdown = $("#SelectedRegionId");
-                            RegionDropdown.empty(); // Clear existing options
+                            RegionDropdown.empty();
                             RegionDropdown.append('<option value="">Select a region</option>');
-                            // Populate the product dropdown
                             $.each(response, function (index, region) {
                                 RegionDropdown.append(
                                     $('<option></option>').val(region.id).text(region.name)
@@ -59,7 +200,7 @@
 
                         },
                         error: function (xhr, status, error) {
-                            alert("Error fetching region: " + error);
+                            alert("Error fetching regions: " + error);
                         }
                     });
                 } else {
@@ -108,6 +249,5 @@
             }
         }
     </script>
-
     <script src="https://maps.googleapis.com/maps/api/js?key=@Model.ClinicLocation.KeyId&callback=initMap" defer></script>
 }

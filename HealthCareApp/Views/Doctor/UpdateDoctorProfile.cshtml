@@ -19,6 +19,210 @@
         });
 }
 
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+        --bg-color-1: #f8f9fa;
+        --danger-red: #dc3545;
+        --danger-hover: #bb2d3b;
+    }
+
+    .cancel-button {
+        background: var(--white);
+        color: var(--danger-red);
+        border: 2px solid var(--danger-red);
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+        .cancel-button:hover {
+            background: var(--danger-red);
+            color: var(--white);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+        }
+
+        .cancel-button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .cancel-button i {
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+    .form-label {
+        margin-bottom: 0.3rem;
+    }
+
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+    }
+
+    .list-group-item {
+        padding: 0.75rem 1.25rem;
+    }
+
+    .profile-picture-preview {
+        transition: all 0.3s ease;
+    }
+
+    label[for="ProfilePicture"]:hover .profile-picture-preview {
+        transform: scale(1.03);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label[for="ProfilePicture"]:active .profile-picture-preview {
+        transform: scale(0.98);
+    }
+
+  
+    .profile-picture-container {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .profile-picture-preview {
+        border: 3px solid var(--dark-blue);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    label[for="ProfilePicture"]:hover .profile-picture-preview {
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(34, 50, 73, 0.15);
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(34, 50, 73, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .card-header {
+        background: var(--doctor-gradient) !important;
+        border-radius: 12px 12px 0 0 !important;
+        padding: 1.25rem;
+        font-weight: 600;
+    }
+
+    .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: var(--dark-blue);
+            box-shadow: 0 0 0 3px rgba(34, 50, 73, 0.1);
+        }
+
+    .form-label {
+        color: var(--dark-blue);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-group-text {
+        background-color: var(--light-gray);
+        border-color: #e2e8f0;
+        color: var(--dark-blue);
+    }
+
+    .list-group-item {
+        border-color: rgba(34, 50, 73, 0.1);
+        padding: 1rem 1.5rem;
+        transition: background-color 0.2s ease;
+    }
+
+        .list-group-item:hover {
+            background-color: var(--bg-color-1);
+        }
+
+    .btn-primary {
+        background: var(--dark-blue);
+        border: none;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, var(--dark-blue), #3a4d6d);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(34, 50, 73, 0.2);
+        }
+
+    .alert-danger {
+        background: #fee2e2;
+        border-color: #fca5a5;
+        color: #dc2626;
+        border-radius: 8px;
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .bg-light {
+        background-color: var(--bg-color-1) !important;
+    }
+
+    .manage-clinics-btn {
+        background: #C5D3E8;
+        color: var(--dark-blue);
+        border: 2px solid var(--dark-blue);
+        border-radius: 8px;
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .manage-clinics-btn:hover {
+            background: var(--dark-blue);
+            color: var(--white);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(34, 50, 73, 0.2);
+        }
+
+        .manage-clinics-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .manage-clinics-btn i {
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+</style>
 <!-- Profile Picture Section -->
 
 <form asp-action="UpdateDoctorProfile" enctype="multipart/form-data">
@@ -160,14 +364,20 @@
                     </div>
                     <div class="col-md-6">
                         <div class="card">
-                            <div class="card-header bg-light">
+                            <div class="card-header bg-light d-flex justify-content-between">
                                 <h6 class="mb-0 fw-bold">Clinics</h6>
+                                <a asp-controller="Clinic" asp-action="ManageClinics" class="manage-clinics-btn">
+                                    <i class="fas fa-clinic-medical me-2"></i>Manage Clinics
+                                </a>
                             </div>
                             <div class="card-body p-0">
                                 <ul class="list-group list-group-flush">
                                     @foreach (var item in Model.Clinics)
                                     {
-                                        <li class="list-group-item">@item</li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-hospital me-3 text-muted"></i>
+                                            @item
+                                        </li>
                                     }
                                 </ul>
                             </div>
@@ -182,9 +392,10 @@
                     <button type="submit" class="btn btn-primary px-4 py-2">
                         <i class="fas fa-save me-2"></i>Save Changes
                     </button>
-@*                     <a asp-action="Index" class="btn btn-outline-secondary ms-2 px-4 py-2">
-                        <i class="fas fa-arrow-left me-2"></i>Back to List
-                    </a> *@
+                    <br />
+                    <a asp-action="GetDoctorDetail" asp-controller="Doctor" class="cancel-button mt-2 ms-2 px-4 py-2 text-center">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
                 </div>
         </div>
     </div>
@@ -225,36 +436,22 @@
                 }
             });
         });
+
+                document.addEventListener('DOMContentLoaded', function() {
+            // Add animated border to focused inputs
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.borderColor = 'var(--dark-blue)';
+                    this.style.boxShadow = '0 0 0 3px rgba(34, 50, 73, 0.1)';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.style.borderColor = '#e2e8f0';
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
     </script>
 }
 
-<style>
-    .form-label {
-        margin-bottom: 0.3rem;
-    }
-
-    .card {
-        border-radius: 0.5rem;
-    }
-
-    .card-header {
-        border-radius: 0.5rem 0.5rem 0 0 !important;
-    }
-
-    .list-group-item {
-        padding: 0.75rem 1.25rem;
-    }
-
-    .profile-picture-preview {
-        transition: all 0.3s ease;
-    }
-
-    label[for="ProfilePicture"]:hover .profile-picture-preview {
-        transform: scale(1.03);
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    label[for="ProfilePicture"]:active .profile-picture-preview {
-        transform: scale(0.98);
-    }
-</style>
