@@ -20,9 +20,14 @@ namespace HealthCareApp.ViewModel.Notification
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var user = await _userManager.GetUserAsync((ClaimsPrincipal)User);
-            var count = notificationRepoServices
+            int count = 0;
+
+            if (user != null)
+            {
+                count = notificationRepoServices
                         .FindAll(n => n.UserId == user.Id && !n.IsDeleted && !n.IsRead)
                         .Count();
+            }
 
             return View(count);
         }
