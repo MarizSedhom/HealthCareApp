@@ -27,6 +27,7 @@ namespace HealthCareApp.Data
         public virtual DbSet<Appointment> Appointments { get; set; }
         public virtual DbSet<City> Cities { get; set; }
         public virtual DbSet<Region>Regions { get; set; }
+        public virtual DbSet<Location> Locations { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -145,7 +146,6 @@ namespace HealthCareApp.Data
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-        public DbSet<HealthCareApp.ViewModel.Appointment.AppointmentsHistoryVM> AppointmentsHistoryVM { get; set; } = default!;
 
     }
 

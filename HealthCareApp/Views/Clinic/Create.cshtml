@@ -2,7 +2,7 @@
 @model ClinicCreateVM
 
 @{
-    ViewData["Title"] = "Create New Clinic";
+    ViewData["Title"] = "Create";
 }
 
 <style>
@@ -120,6 +120,11 @@
         </div>
 
         <form asp-action="Create">
+            <input type="hidden" asp-for="ClinicLocation.KeyId" />
+            <input type="hidden" asp-for="ClinicLocation.X" id="lng" />
+            <input type="hidden" asp-for="ClinicLocation.Y" id="lat" />
+            <div id="map" style="height: 500px; width: 600px;" class="bg-danger mt-3"></div>
+           
             <div class="form-group mb-4">
                 <label asp-for="Name" class="form-label">Clinic Name</label>
                 <input asp-for="Name" class="form-control-custom" placeholder="Enter clinic name" />
@@ -192,6 +197,7 @@
                                     $('<option></option>').val(region.id).text(region.name)
                                 );
                             });
+
                         },
                         error: function (xhr, status, error) {
                             alert("Error fetching regions: " + error);
@@ -202,5 +208,46 @@
                 }
             });
         });
+
+        function initMap() {
+            var lat = @Model.ClinicLocation.Y;
+            var lng = @Model.ClinicLocation.X;
+
+            if (lat == 0 || lng == 0) {
+                lat = 30.0444;
+                lng = 31.2357;
+            }
+
+            var myCenter = new google.maps.LatLng(lat, lng);
+
+            var mapProp = {
+                center: myCenter,
+                zoom: 12,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            var map = new google.maps.Map(document.getElementById("map"), mapProp);
+
+            var marker = new google.maps.Marker({
+                position: myCenter,
+                map: map,
+                draggable: true
+            });
+
+            google.maps.event.addListener(map, "click", function (event) {
+                marker.setPosition(event.latLng);
+                updateLatLngInputs(event.latLng);
+            });
+
+            marker.addListener("dragend", function () {
+                updateLatLngInputs(marker.getPosition());
+            });
+
+            function updateLatLngInputs(location) {
+                document.getElementById("lat").value = location.lat();
+                document.getElementById("lng").value = location.lng();
+            }
+        }
     </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.ClinicLocation.KeyId&callback=initMap" defer></script>
 }
