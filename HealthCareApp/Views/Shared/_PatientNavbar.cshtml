@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@{
+    @inject UserManager<ApplicationUser> UserManager
+    var user = await UserManager.GetUserAsync(User);
+    var firstName = user?.FirstName;
+    var lastName = user?.LastName;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -38,16 +45,13 @@
         </div>
 
         <div class="nav-right">
-            <div class="notification">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge">3</span>
-            </div>
+            @await Component.InvokeAsync("Notification")
 
             <div id="doctorProfile" class="doctor-profile">
                 <div class="profile-img">
                     <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Doctor Profile">
                 </div>
-                <span class="profile-name">Dr. Smith</span>
+                <span class="profile-name">@firstName </span>
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
 
@@ -77,10 +81,10 @@
             }
         });
 
-        // Notification functionality
-        document.querySelector('.notification').addEventListener('click', function () {
-            alert('Notification panel would appear here');
-        });
+        // // Notification functionality
+        // document.querySelector('.notification').addEventListener('click', function () {
+        //     alert('Notification panel would appear here');
+        // });
 
         // Profile dropdown actions
         // document.querySelectorAll('.profile-dropdown a').forEach(item => {
