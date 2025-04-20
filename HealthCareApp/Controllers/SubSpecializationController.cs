@@ -26,7 +26,7 @@ namespace HealthCareApp.Controllers
 
         public IActionResult DetailsByID(int id, int page = 1)
         {
-            var result = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
+            var result = SubSpecializationRepo.Find(sspec => sspec.Id == id, sspec => sspec.Specialization);
             ViewBag.CurrentPage = page;
             return View(result);
         }
@@ -51,21 +51,55 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(int page)
         {
+            ViewBag.CurrentPage = page;
             SubSpecialization subSpecialization = new SubSpecialization();
             ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
             return View(subSpecialization);
         }
 
         [HttpPost]
-        public IActionResult Create(SubSpecialization subSpecialization)
+        public IActionResult Create(SubSpecialization subSpecialization, int page)
         {
             if (ModelState.IsValid)
             {
                 SubSpecializationRepo.Add(subSpecialization);
                 SubSpecializationRepo.Save();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { page });
+            }
+            else
+            {
+                ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
+                ViewBag.CurrentPage = page;
+                return View(subSpecialization);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id, int page)
+        {
+            ViewBag.CurrentPage = page;
+            var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, sspec => sspec.Specialization);
+            ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
+            ViewBag.CurrentPage = page;
+            return View(editedObj);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(SubSpecialization subSpecialization, int page)
+        {
+            var existingSubSpecialization = SubSpecializationRepo.Find(
+                sspec => sspec.Id == subSpecialization.Id, sspec => sspec.Specialization);
+
+            existingSubSpecialization.Name = subSpecialization.Name;
+            existingSubSpecialization.SpecializationId = subSpecialization.SpecializationId;
+
+            if (ModelState.IsValid)
+            {
+                SubSpecializationRepo.UpdateNoTracking(existingSubSpecialization);
+                SubSpecializationRepo.Save();
+                return RedirectToAction(nameof(Index), new { page });
             }
             else
             {
@@ -75,50 +109,35 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id, int page = 1)
+        public IActionResult Delete(int id, int page)
         {
-            var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
-            ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
             ViewBag.CurrentPage = page;
-            return View(editedObj);
-        }
-
-        [HttpPost]
-        public IActionResult Edit(SubSpecialization subSpecialization, int page = 1)
-        {
-            var existingSubSpecialization = SubSpecializationRepo.Find(
-                sspec => sspec.Id == subSpecialization.Id, ["Specialization"]);
-
-            existingSubSpecialization.Name = subSpecialization.Name;
-            existingSubSpecialization.SpecializationId = subSpecialization.SpecializationId;
-
-            if (ModelState.IsValid)
-            {
-                SubSpecializationRepo.UpdateNoTracking(existingSubSpecialization);
-                SubSpecializationRepo.Save();
-                return RedirectToAction(nameof(Index), new {page});
-            }
-            else
-            {
-                ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
-                return View(subSpecialization);
-            }
-        }
-
-            [HttpGet]
-        public IActionResult Delete(int id)
-        {
-            var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, ["Specialization"]);
+            var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, sspec => sspec.Specialization);
             return View(editedObj);
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id, int page)
         {
             var deletedSSpec = SubSpecializationRepo.GetById(id);
-            SubSpecializationRepo.Delete(deletedSSpec);
+            SubSpecializationRepo.SoftDelete(deletedSSpec);
             SubSpecializationRepo.Save();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { page });
+        }
+
+        public IActionResult GetSubSpecBySpec(int Id)
+        {
+            var result = SubSpecializationRepo.FindAll(sspec => sspec.Specialization.Id == Id);
+
+            var resultItems = result.Select(r => new {
+                id = r.Id,
+                name = r.Name
+            }).ToList();
+
+            return Json(new
+            {
+                items = resultItems
+            });
         }
     }
 }

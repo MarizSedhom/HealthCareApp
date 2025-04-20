@@ -1,8 +1,293 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<style>
+    /* Ensure text wrapping and prevent overflow in the dropdown */
+    .dropdown-menu {
+        max-width: 100%;
+        word-wrap: break-word;
+        white-space: normal;
+    }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    .dropdown-item {
+        word-wrap: break-word;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+
+        .dropdown-item:focus,
+        .dropdown-item:active {
+            background-color: transparent !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+</style>
+
+<div class="container">
+    <div class="search-card bg-white rounded-4 shadow p-4 mt-5">
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs border-bottom mb-3">
+            <li class="nav-item">
+                <a class="nav-link active fw-bold text-primary" href="#">
+                    احجز دكتور<br />
+                    <small class="text-muted">الفحص أو الإجراء</small>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-bold text-primary" href="#">
+                    مكالمة دكتور<br />
+                    <small class="text-muted">المتابعة عبر مكالمة</small>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Search Form -->
+        <form method="get" class="mb-3">
+            <div class="row g-3 align-items-stretch">
+
+                <!-- Search Button -->
+                <div class="col-12 col-md-1">
+                    <button type="submit" id="submitBtn" class="btn btn-danger w-100 h-100 fw-bold">
+                        🔍 ابحث
+                    </button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="col-12 col-md-2">
+                    <input class="form-control text-end h-100" placeholder="الدكتور او المستشفى" />
+                </div>
+
+                <!-- Area Dropdown -->
+                <div class="col-12 col-md-3">
+                    <div class="dropdown position-relative w-100 h-100">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100 text-end h-100" type="button"
+                                id="areaDropdown" aria-expanded="true">
+                            اختر المنطقة
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end p-3 text-end w-auto" aria-labelledby="areaDropdown"
+                            style="min-width: calc(120% + 0.75rem); right: 0;">
+                            <div id="areaItems" class="row row-cols-2 g-2"></div>
+                            <div class="d-flex justify-content-between mt-2">
+                                <button id="areaPrevPage" class="btn btn-sm btn-outline-primary">‹ السابق</button>
+                                <span id="areaPageIndicator" class="align-self-center">صفحة 1</span>
+                                <button id="areaNextPage" class="btn btn-sm btn-outline-primary">التالي ›</button>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Governorate Dropdown -->
+                <div class="col-12 col-md-3">
+                    <div class="dropdown position-relative w-100 h-100">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100 text-end h-100" type="button"
+                                id="govDropdown" aria-expanded="true">
+                            اختر المحافظة
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end p-3 text-end w-auto" aria-labelledby="govDropdown"
+                            style="min-width: calc(120% + 0.75rem); right: 0;">
+                            <div id="govItems" class="row row-cols-2 g-2"></div>
+                            <div class="d-flex justify-content-between mt-2">
+                                <button id="govPrevPage" class="btn btn-sm btn-outline-primary">‹ السابق</button>
+                                <span id="govPageIndicator" class="align-self-center">صفحة 1</span>
+                                <button id="govNextPage" class="btn btn-sm btn-outline-primary">التالي ›</button>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Specialty Dropdown -->
+                <div class="col-12 col-md-3">
+                    <div class="dropdown position-relative w-100 h-100">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100 text-end h-100" type="button"
+                                id="specialtyDropdown" aria-expanded="true">
+                            اختر التخصص
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end p-3 text-end w-auto" aria-labelledby="specialtyDropdown"
+                            style="min-width: calc(120% + 0.75rem); right: 0;">
+                            <div id="specItems" class="row row-cols-2 g-2"></div>
+                            <div class="d-flex justify-content-between mt-2">
+                                <button id="specPrevPage" class="btn btn-sm btn-outline-primary">‹ السابق</button>
+                                <span id="specPageIndicator" class="align-self-center">صفحة 1</span>
+                                <button id="specNextPage" class="btn btn-sm btn-outline-primary">التالي ›</button>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
 </div>
+
+<div>@Html.Partial("_Aside")</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let areaPage = 1;
+    let govPage = 1;
+    let specPage = 1;
+    let selectedCityId = null;
+
+    function loadDropdown(controller, containerId, pageIndicatorId, prevBtnId, nextBtnId, page = 1, pageSize = 10) {
+        $.ajax({
+            url: `/${controller}/Index`,
+            type: 'GET',
+            data: { page: page, pageSize: pageSize },
+            success: function (response) {
+                const items = response.items;
+                const totalPages = response.totalPages;
+                const currentPage = response.currentPage;
+
+                let itemsHtml = items.map(item => `
+                    <div class="col-6 text-end">
+                        <a href="#" class="dropdown-item text-primary" data-value="${item.id}" data-name="${item.name}">${item.name}</a>
+                    </div>
+                `).join('');
+
+                // Update dropdown items
+                $(`#${containerId}`).html(itemsHtml);
+
+                // Update the page indicator text
+                $(`#${pageIndicatorId}`).text(`صفحة ${currentPage}`);
+
+                // Update the pagination buttons' state
+                $(`#${prevBtnId}`).prop('disabled', currentPage <= 1);
+                $(`#${nextBtnId}`).prop('disabled', currentPage >= totalPages);
+            },
+            error: function () {
+                alert('حدث خطأ أثناء التحميل');
+            }
+        });
+    }
+
+    function updatePage(controller, containerId, pageIndicatorId, prevBtnId, nextBtnId, pageVar, selectedId = null) {
+        let url = selectedId ? `/${controller}/GetByParent` : `/${controller}/Index`;
+        let data = selectedId ? { parentId: selectedId, page: pageVar, pageSize: 18 } : { page: pageVar, pageSize: 18 };
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: data,
+            success: function (response) {
+                const items = response.items;
+                const totalPages = response.totalPages;
+                const currentPage = response.currentPage;
+
+                let itemsHtml = items.map(item => `
+                    <div class="col-6 text-end">
+                        <a href="#" class="dropdown-item text-primary" data-value="${item.id}" data-name="${item.name}">${item.name}</a>
+                    </div>
+                `).join('');
+
+                // Update dropdown items
+                $(`#${containerId}`).html(itemsHtml);
+                $(`#${pageIndicatorId}`).text(`صفحة ${currentPage}`);
+                $(`#${prevBtnId}`).prop('disabled', currentPage <= 1);
+                $(`#${nextBtnId}`).prop('disabled', currentPage >= totalPages);
+            },
+            error: function () {
+                alert('حدث خطأ أثناء التحميل');
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        // Load initial dropdowns
+        loadDropdown("Region", "areaItems", "areaPageIndicator", "areaPrevPage", "areaNextPage", areaPage, 18);
+        loadDropdown("City", "govItems", "govPageIndicator", "govPrevPage", "govNextPage", govPage, 18);
+        loadDropdown("Specialization", "specItems", "specPageIndicator", "specPrevPage", "specNextPage", specPage, 18);
+
+        // Pagination buttons for Area (Region)
+        $('#areaNextPage').click(() => {
+            areaPage++;
+            updatePage("Region", "areaItems", "areaPageIndicator", "areaPrevPage", "areaNextPage", areaPage, selectedCityId);
+        });
+
+        $('#areaPrevPage').click(() => {
+            areaPage--;
+            updatePage("Region", "areaItems", "areaPageIndicator", "areaPrevPage", "areaNextPage", areaPage, selectedCityId);
+        });
+
+        // Pagination buttons for Government (City)
+        $('#govNextPage').click(() => {
+            govPage++;
+            updatePage("City", "govItems", "govPageIndicator", "govPrevPage", "govNextPage", govPage);
+        });
+
+        $('#govPrevPage').click(() => {
+            govPage--;
+            updatePage("City", "govItems", "govPageIndicator", "govPrevPage", "govNextPage", govPage);
+        });
+
+        // Pagination buttons for Specialization
+        $('#specNextPage').click(() => {
+            specPage++;
+            updatePage("Specialization", "specItems", "specPageIndicator", "specPrevPage", "specNextPage", specPage);
+        });
+
+        $('#specPrevPage').click(() => {
+            specPage--;
+            updatePage("Specialization", "specItems", "specPageIndicator", "specPrevPage", "specNextPage", specPage);
+        });
+
+        // Area selection (No color effect when selected)
+        $(document).on('click', '#areaItems .dropdown-item', function () {
+            const selectedName = $(this).data('name');
+            $('#areaDropdown').text(selectedName);
+            $(this).closest('.dropdown-menu').removeClass('show');
+        });
+
+        // Governorate (City) selection + Load Regions (Areas)
+        $(document).on('click', '#govItems .dropdown-item', function () {
+            const selectedName = $(this).data('name');
+            const selectedId = $(this).data('value'); // Governorate ID
+
+            selectedCityId = selectedId;
+
+            $('#govDropdown').text(selectedName);
+            $(this).closest('.dropdown-menu').removeClass('show');
+
+            // Reset region page
+            areaPage = 1;
+
+            // Load Regions based on selected City ID
+            updatePage("Region", "areaItems", "areaPageIndicator", "areaPrevPage", "areaNextPage", areaPage, selectedCityId);
+        });
+
+        // Specialty selection (No color effect when selected)
+        $(document).on('click', '#specItems .dropdown-item', function () {
+            const selectedName = $(this).data('name');
+            $('#specialtyDropdown').text(selectedName);
+            $(this).closest('.dropdown-menu').removeClass('show');
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        $(document).on('click', '.dropdown-menu', function (event) {
+            event.stopPropagation();
+        });
+
+        // Toggle dropdown on button click
+        $(document).on('click', '.dropdown-toggle', function () {
+            const dropdown = $(this).next('.dropdown-menu');
+            const isOpen = dropdown.hasClass('show');
+
+            // Close all open dropdowns
+            $('.dropdown-menu').removeClass('show');
+
+            // Toggle the clicked one
+            if (!isOpen) {
+                dropdown.addClass('show');
+            }
+        });
+
+        // Close dropdown when clicking outside
+        $(document).on('click', function (e) {
+            if (!$(e.target).closest('.dropdown').length) {
+                $('.dropdown-menu').removeClass('show');
+            }
+        });
+    });
+</script>
+
+
+
+

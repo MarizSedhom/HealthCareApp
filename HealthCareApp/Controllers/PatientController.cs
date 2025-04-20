@@ -3,6 +3,7 @@ using HealthCareApp.RepositoryServices;
 using HealthCareApp.ViewModel.Patient;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {

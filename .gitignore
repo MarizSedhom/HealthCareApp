@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/HealthCareApp/Data/Migrations/20250419153815_addtablesCity_region.cs
+/HealthCareApp/Data/Migrations/20250419153815_addtablesCity_region.Designer.cs
+/HealthCareApp/Data/Migrations/ApplicationDbContextModelSnapshot.cs

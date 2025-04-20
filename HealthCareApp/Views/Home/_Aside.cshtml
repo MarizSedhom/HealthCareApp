@@ -1,0 +1,365 @@
+﻿<style>
+    .filter-sidebar {
+        background: #f8f9fa;
+        border-radius: 12px;
+        max-width: 300px;
+    }
+
+    .filter-section {
+        border-top: 1px solid #ddd;
+        padding: 0.5rem 0.5rem;
+    }
+
+    .filter-toggle {
+        background: none;
+        border: none;
+        font-weight: bold;
+        color: #0d6efd;
+        padding: 0.25rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-align: start;
+    }
+
+        .filter-toggle i {
+            font-size: 1.1rem;
+        }
+
+    .filter-section .form-check {
+        margin-top: 0.5rem;
+    }
+
+    .filter-sidebar .card-header {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+</style>
+
+<div class="card filter-sidebar p-2">
+    <div class="card-header bg-primary text-white text-center rounded-top">
+        <i class="bi bi-funnel-fill me-1"></i> حدد بحثك
+    </div>
+
+    <!-- Title Filter (opened by default) -->
+    <div class="filter-section">
+        <button class="filter-toggle" data-bs-toggle="collapse" data-bs-target="#titleFilter">
+            <i class="bi bi-mortarboard-fill"></i> اللقب
+        </button>
+        <div class="collapse show" id="titleFilter">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="title1">
+                <label class="form-check-label" for="title1">Cardiologist</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="title2">
+                <label class="form-check-label" for="title2">Dermatologist</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="title3">
+                <label class="form-check-label" for="title3">استشاري</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="title4">
+                <label class="form-check-label" for="title4">أخصائي</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sub Specializations (opened by default) -->
+    <div class="filter-section">
+        <button class="filter-toggle" data-bs-toggle="collapse" data-bs-target="#subSpecs">
+            <i class="bi bi-stethoscope"></i> التخصصات الفرعية
+        </button>
+        <div class="collapse show" id="subSpecs">
+            <!-- Spinner shown during loading -->
+            <div id="subSpecsLoader" class="text-center my-2" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Where checkboxes will be injected -->
+            <div id="subSpecsContainer">
+                <!-- Checkboxes will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Gender (collapsed by default) -->
+    <div class="filter-section">
+        <button class="filter-toggle" data-bs-toggle="collapse" data-bs-target="#genderFilter">
+            <i class="bi bi-gender-ambiguous"></i> Gender
+        </button>
+        <div class="collapse" id="genderFilter">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="genderMale">
+                <label class="form-check-label" for="genderMale">Male</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="genderFemale">
+                <label class="form-check-label" for="genderFemale">Female</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Times (collapsed by default) -->
+    <div class="filter-section">
+        <button class="filter-toggle" data-bs-toggle="collapse" data-bs-target="#availableTimes">
+            <i class="bi bi-calendar-event-fill"></i> المواعيد المتاحة
+        </button>
+        <div class="collapse" id="availableTimes">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="timeMorning">
+                <label class="form-check-label" for="timeMorning">صباحًا</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="timeAfternoon">
+                <label class="form-check-label" for="timeAfternoon">بعد الظهر</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="timeEvening">
+                <label class="form-check-label" for="timeEvening">مساءً</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Example: Price Range (collapsed by default) -->
+    <div class="filter-section">
+        <button class="filter-toggle" data-bs-toggle="collapse" data-bs-target="#priceFilter">
+            <i class="bi bi-cash-coin"></i> سعر الكشف
+        </button>
+        <div class="collapse" id="priceFilter">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="price" id="price0" checked>
+                <label class="form-check-label" for="price0">الكل</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="price" id="price1">
+                <label class="form-check-label" for="price1">أقل من ٥٠</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="price" id="price2">
+                <label class="form-check-label" for="price2">من ٥٠ حتى ١٠٠</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="price" id="price3">
+                <label class="form-check-label" for="price3">من ١٠٠ حتى ٢٠٠</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="price" id="price4">
+                <label class="form-check-label" for="price4">من ٢٠٠ حتى ٣٠٠</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+        /*$(document).ready(function () {
+        // Show loader before the request
+        $('#subSpecsLoader').show();
+
+        $.ajax({
+            url: '/SubSpecialization/GetSubSpecBySpec/1', // Adjust the URL as needed
+            type: 'GET',
+            beforeSend: function () {
+                $('#subSpecsLoader').show(); // Show the spinner
+                $('#subSpecsContainer').empty(); // Optionally clear previous content
+            },
+            success: function (data) {
+                let container = $('#subSpecsContainer');
+                container.empty(); // Clear previous content
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach((item) => {
+                        container.append(`
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="subSpec${item.id}" value="${item.id}" name="SubSpecialization">
+                                <label class="form-check-label" for="subSpec${item.id}">${item.name}</label>
+                            </div>
+                        `);
+                    });
+                } else {
+                    container.append('<small class="text-danger">لا توجد تخصصات فرعية</small>');
+                }
+            },
+            error: function () {
+                $('#subSpecsContainer').html('<small class="text-danger">خطأ في تحميل التخصصات الفرعية</small>');
+            },
+            complete: function () {
+                $('#subSpecsLoader').hide(); // Hide the spinner after response
+            }
+        });
+
+        // Handle changes in filter checkboxes and radio buttons using event delegation
+        $('#subSpecsContainer').on('change', '.form-check-input', function () {
+            let prop = 'SubSpecializations';
+            let val = $(this).next('label').text().trim();  // Get the value of the selected sub-specialization
+
+            // Send the AJAX request only if a checkbox is checked
+            if ($(this).prop('checked')) {
+                $.ajax({
+                    url: '/Doctor/DoctorFilteration', // Adjust URL if necessary
+                    type: 'GET',
+                    data: {
+                        prop: prop,
+                        val: val
+                    },
+                    success: function (data) {
+                        console.log(data);
+                    },
+                    error: function () {
+                        console.error('Error fetching filtered doctors');
+                    }
+                });
+            }
+        });
+
+        // Handle changes for other filters (Title, Gender, AvailableTime, Price)
+        $('#titleFilter, #genderFilter, #availableTimes, #priceFilter').on('change', '.form-check-input', function () {
+            let prop = '';
+            let val = '';
+
+            // Determine which filter triggered the change
+            if ($(this).closest('#titleFilter').length) {
+                prop = 'Title';
+                val = $(this).next('label').text().trim();
+
+            } else if ($(this).closest('#genderFilter').length) {
+                prop = 'Gender';
+                val = $(this).next('label').text().trim();  // Get the gender text (Male/Female)
+
+                // Convert gender text to enum value (e.g., Male -> Gender.Male)
+                if (val === 'Male') {
+                    val = 'Gender.Male';
+                } else if (val === 'Female') {
+                    val = 'Gender.Female';
+                }
+
+            } else if ($(this).closest('#availableTimes').length) {
+                prop = 'availabilities';
+                val = $(this).next('label').text().trim();
+
+            } else if ($(this).closest('#priceFilter').length) {
+                prop = 'Fees';
+                val = $(this).next('label').text().trim();
+            }
+
+            // Send the AJAX request only if a checkbox is checked or radio is selected
+            if ($(this).prop('checked')) {
+                $.ajax({
+                    url: '/Doctor/DoctorFilteration', // Adjust URL if necessary
+                    type: 'GET',
+                    data: {
+                        prop: prop,
+                        val: val
+                    },
+                    success: function (data) {
+                        console.log(data);
+                    },
+                    error: function () {
+                        console.error('Error fetching filtered doctors');
+                    }
+                });
+            }
+        });
+    });*/
+
+
+
+        $(document).ready(function () {
+        // Initialize filter object to store all selected filter values
+        let filters = {
+            gender: '',
+            subSpecializations: [],
+            title: '',
+            fees: ''
+        };
+
+        // Show loader before the request
+        $('#subSpecsLoader').show();
+
+        $.ajax({
+            url: '/SubSpecialization/GetSubSpecBySpec/1', // Adjust the URL as needed
+            type: 'GET',
+            beforeSend: function () {
+                $('#subSpecsLoader').show(); // Show the spinner
+                $('#subSpecsContainer').empty(); // Optionally clear previous content
+            },
+            success: function (data) {
+                let container = $('#subSpecsContainer');
+                container.empty(); // Clear previous content
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach((item) => {
+                        container.append(`
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="subSpec${item.id}" value="${item.id}" name="SubSpecialization">
+                                <label class="form-check-label" for="subSpec${item.id}">${item.name}</label>
+                            </div>
+                        `);
+                    });
+                } else {
+                    container.append('<small class="text-danger">لا توجد تخصصات فرعية</small>');
+                }
+            },
+            error: function () {
+                $('#subSpecsContainer').html('<small class="text-danger">خطأ في تحميل التخصصات الفرعية</small>');
+            },
+            complete: function () {
+                $('#subSpecsLoader').hide(); // Hide the spinner after response
+            }
+        });
+
+        // Handle changes in filter checkboxes and radio buttons using event delegation
+        $('#subSpecsContainer').on('change', '.form-check-input', function () {
+            // Update selected SubSpecializations
+            let val = $(this).next('label').text().trim();
+            if ($(this).prop('checked')) {
+                filters.subSpecializations.push(val);  // Add to the selected SubSpecializations array
+            } else {
+                // Remove from the array if unchecked
+                filters.subSpecializations = filters.subSpecializations.filter(spec => spec !== val);
+            }
+
+            // Send the AJAX request with all filters
+            sendFilterRequest();
+        });
+
+        $('#titleFilter, #genderFilter, #availableTimes, #priceFilter').on('change', '.form-check-input', function () {
+        let prop = '';
+        let val = '';
+
+        // Determine which filter triggered the change
+        if ($(this).closest('#titleFilter').length) {
+            filters.title = $(this).next('label').text().trim();  // Set Title filter value
+        } else if ($(this).closest('#genderFilter').length) {
+            val = $(this).next('label').text().trim();  // Get the gender text (Male/Female)
+            filters.gender = val; // Set Gender filter value as 'Male' or 'Female'
+        } else if ($(this).closest('#availableTimes').length) {
+            filters.availableTimes = $(this).next('label').text().trim();  // Set Availability filter value
+        } else if ($(this).closest('#priceFilter').length) {
+            filters.fees = $(this).next('label').text().trim();  // Set Fees filter value
+        }
+
+        //Send the AJAX request with all filters
+        sendFilterRequest();
+        });
+
+        // Function to send AJAX request with all selected filters
+        function sendFilterRequest() {
+            $.ajax({
+                url: '/Doctor/DoctorFilteration', // Adjust URL if necessary
+                type: 'GET',
+                data: filters,  // Send all selected filters at once
+                success: function (data) {
+                    console.log(data);
+                    // Process and display filtered data (Doctors)
+                },
+                error: function () {
+                    console.error('Error fetching filtered doctors');
+                }
+            });
+        }
+    });
+</script>
