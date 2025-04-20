@@ -72,7 +72,8 @@ namespace HealthCareApp.Controllers.Doctor
                 return NotFound();
             }
 
-            var doctor = DoctorRepository.GetById(doctorId);
+            var doctor = DoctorRepository.Find(d=> d.Id==doctorId, d=>d.Specialization, doctor=>doctor.SubSpecializations);
+           
 
             if (doctor == null)
             {
