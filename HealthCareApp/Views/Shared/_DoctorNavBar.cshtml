@@ -1,8 +1,13 @@
-﻿@{
+﻿@using Microsoft.EntityFrameworkCore
+@{
     @inject UserManager<ApplicationUser> UserManager
     var user = await UserManager.GetUserAsync(User);
     var firstName = user?.FirstName;
     var lastName = user?.LastName;
+    var doctor = await UserManager.Users.OfType<Doctor>()
+            .FirstOrDefaultAsync(d => d.Id == user.Id);
+
+    var profilePicture = doctor?.ProfilePicture;
 }
 
 <!DOCTYPE html>
@@ -52,9 +57,9 @@
 
             <div id="doctorProfile" class="doctor-profile">
                 <div class="profile-img">
-                    <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Doctor Profile">
+                    <img src="~/uploads/image/Doctor/@profilePicture" alt="Doctor Profile">
                 </div>
-                <span class="profile-name">Dr. @firstName </span>
+                <span class="profile-name"> @firstName </span>
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
 

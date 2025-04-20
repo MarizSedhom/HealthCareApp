@@ -138,6 +138,11 @@ namespace HealthCareApp.Controllers.Doctor
                 doctor.WaitingTimeInMinutes = profileVM.WaitingTimeInMinutes;
                 if (profileVM.ProfilePicture != null)
                 {
+                    string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", FilePaths.DrImagesPath);
+                    if (!Directory.Exists(fullPath))
+                    {
+                        Directory.CreateDirectory(fullPath);
+                    }
                     fileService.DeleteFile(doctor.ProfilePicture, FilePaths.DrImagesPath);
                     string imageName = await fileService.uploadFileAsync(profileVM.ProfilePicture, FilePaths.DrImagesPath);
                     doctor.ProfilePicture = imageName;
