@@ -1,4 +1,4 @@
-﻿@model HealthCareApp.ViewModel.Doctor.DoctorDetailsWithReviewsVM
+﻿@model HealthCareApp.ViewModel.Doctor.DrProfileForPatientVM
 @using System.Security.Claims
 
 <style>
@@ -217,6 +217,149 @@
         opacity: 0.8;
         margin-bottom: 1.5rem;
     }
+
+
+    .clinic-link {
+        text-decoration: none;
+        color: var(--dark-blue);
+        background-color: var(--light-gray);
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--patient-green);
+        font-weight: 500;
+    }
+
+        .clinic-link:hover {
+            background-color: rgba(208, 232, 197, 0.4);
+            transform: translateX(5px);
+            color: var(--patient-green);
+            box-shadow: 0 2px 8px rgba(52, 168, 83, 0.15);
+        }
+
+    .clinic-icon {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(52, 168, 83, 0.15);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--patient-green);
+    }
+
+    .clinic-item {
+        transition: transform 0.3s ease;
+    }
+
+    /*availability style*/
+
+    .availability-date-card {
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.availability-date-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+}
+
+.availability-date-header {
+    background-color: var(--light-gray);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.date-icon {
+    width: 45px;
+    height: 45px;
+    background-color: rgba(52, 168, 83, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--patient-green);
+    font-size: 1.2rem;
+}
+
+.availability-slots {
+    padding: 1.5rem;
+    background-color: var(--white);
+}
+
+.slot-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.time-slot {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.time-slot-available {
+    background-color: rgba(52, 168, 83, 0.1);
+    color: var(--patient-green);
+    border: 1px solid rgba(52, 168, 83, 0.2);
+    text-decoration: none;
+}
+
+.time-slot-available:hover {
+    background-color: var(--patient-green);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 168, 83, 0.3);
+}
+
+.time-slot-booked {
+    background-color: var(--light-gray);
+    color: var(--gray);
+    border: 1px solid rgba(0,0,0,0.1);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Styling for the clinic names */
+.clinic-link {
+    text-decoration: none;
+    color: var(--dark-blue);
+    background-color: var(--light-gray);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--patient-green);
+    font-weight: 500;
+}
+
+.clinic-link:hover {
+    background-color: rgba(208, 232, 197, 0.4);
+    transform: translateX(5px);
+    color: var(--patient-green);
+    box-shadow: 0 2px 8px rgba(52, 168, 83, 0.15);
+}
+
+.clinic-icon {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(52, 168, 83, 0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--patient-green);
+}
+
+.clinic-item {
+    transition: transform 0.3s ease;
+}
 </style>
 
 <div class="container py-5">
@@ -353,12 +496,131 @@
                                 </p>
                             </div>
                         </div>
+                        <div>
+
+                            @foreach (var clinic in Model?.Doctor?.Clinics ?? Enumerable.Empty<Clinic>())
+                            {
+                                <div class="clinic-item mb-2">
+                                    <a asp-controller="Clinic" asp-action="DetailsByID" asp-route-id="@clinic.Id"
+                                       class="clinic-link d-flex align-items-center p-1 rounded-3">
+                                        <div class="clinic-icon">
+                                            <i class="fas fa-hospital-alt"></i>
+                                        </div>
+                                        <span class="ms-3">@clinic.Name</span>
+                                        <i class="fas fa-chevron-right ms-auto"></i>
+                                    </a>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Doctor Availability Section -->
+    <div class="mt-5 mb-5">
+        <div class="section-title">
+            <i class="fas fa-calendar-alt text-patient-green fa-lg"></i>
+            <h2 class="h3 fw-semibold text-blue mb-0">Availability & Booking</h2>
+        </div>
 
+        @if (Model?.Availabilities != null && Model.Availabilities.Any())
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h3 class="h5 fw-semibold text-blue mb-0">Select Date & Time</h3>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge me-2" style="background-color: var(--patient-green);">
+                                        <i class="fas fa-check-circle me-1"></i> Available
+                                    </span>
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-times-circle me-1"></i> Booked
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="availability-container">
+                                @foreach (var availability in Model.Availabilities)
+                                {
+                                    <div class="availability-date-card mb-4">
+                                        <div class="availability-date-header">
+                                            <div class="d-flex align-items-center">
+                                                <div class="date-icon">
+                                                    <i class="fas fa-calendar-day"></i>
+                                                </div>
+                                                <div class="ms-3">
+                                                    <h4 class="h6 fw-semibold text-blue mb-0">
+                                                        @availability.AvailabilityDate.ToString("dddd, MMMM d, yyyy")
+                                                    </h4>
+                                                    <p class="small text-blue mb-0">
+                                                        <i class="fas fa-clinic-medical me-1 text-patient-green"></i>
+                                                        @availability.ClinicName
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <span class="badge rounded-pill" style="background-color: var(--light-green); color: var(--patient-green);">
+                                                @availability.AvailabilityType
+                                            </span>
+                                        </div>
+                                        <div class="availability-slots">
+                                            @if (availability.Slots != null && availability.Slots.Any())
+                                            {
+                                                <div class="slot-container">
+                                                    @foreach (var slot in availability.Slots)
+                                                    {
+                                                        @if (slot.IsBooked)
+                                                        {
+                                                            <div class="time-slot time-slot-booked">
+                                                                <i class="fas fa-times-circle me-2"></i>
+                                                                <span>@slot.StartTime.ToString("hh:mm tt") - @slot.EndTime.ToString("hh:mm tt")</span>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("ReserveAppointment", "Appointment", new { slotId = slot.SlotId })" class="time-slot time-slot-available">
+                                                                <i class="fas fa-clock me-2"></i>
+                                                                <span>@slot.StartTime.ToString("hh:mm tt") - @slot.EndTime.ToString("hh:mm tt")</span>
+                                                            </a>
+                                                        }
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="p-3 text-center text-blue">
+                                                    <i class="fas fa-exclamation-circle text-patient-green me-2"></i>
+                                                    No time slots available for this date
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+                <h3 class="h5 text-blue">No Availability</h3>
+                <p class="text-blue">Dr. @Model?.Doctor?.FirstName doesn't have any available appointments at the moment.</p>
+
+                <a href="#" class="btn btn-outline-success mt-3">
+                    <i class="fas fa-bell me-2"></i>
+                    Notify Me When Available
+                </a>
+            </div>
+        }
+    </div>
     <!-- Reviews Section -->
     <div class="mt-5 mb-5">
         <div class="section-title">
