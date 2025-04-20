@@ -1,0 +1,196 @@
+﻿@model HealthCareApp.ViewModel.Doctor.AdminUpdateDrVM
+
+@{
+    ViewData["Title"] = "UpdateDoctorAdmin";
+    var GenderList = Enum.GetValues(typeof(Gender))
+    .Cast<Gender>()
+    .Select(s => new
+    {
+        Id = (int)s,
+        Name = s.ToString()
+    });
+    var TitleList = Enum.GetValues(typeof(Title))
+    .Cast<Title>()
+    .Select(s => new
+    {
+        Id = (int)s,
+        Name = s.ToString()
+    });
+}
+
+<h1>UpdateDoctorAdmin</h1>
+
+<h4>AdminUpdateDrVM</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateDoctorAdmin">
+            <div class="profile-picture-container">
+                <label for="ProfilePicture" style="cursor: pointer; display: inline-block;">
+                    @if (!string.IsNullOrEmpty(Model.CurrentPicturePath))
+                    {
+                        <img src="@Model.CurrentPicturePath" alt="Profile Picture"
+                             class="img-thumbnail rounded-circle profile-picture-preview"
+                             style="width: 150px; height: 150px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center profile-picture-preview"
+                             style="width: 150px; height: 150px;">
+                            <i class="fas fa-user-md fa-3x text-secondary"></i>
+                        </div>
+                    }
+                </label>
+                <input type="file" asp-for="ProfilePicture" id="ProfilePicture" class="d-none" accept="image/*" />
+                <div class="mt-2">
+                    <span asp-validation-for="ProfilePicture" class="text-danger small"></span>
+                    <small class="form-text text-muted d-block">Click on image to change</small>
+                    <h3 class="mb-0">@($"{Model.Title}. {Model.FirstName} {Model.LastName}")</h3>
+
+                </div>
+            </div>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <div class="form-group">
+                    <label asp-for="FirstName" class="control-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="control-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DateOfBirth" class="control-label"></label>
+                    <input asp-for="DateOfBirth" class="form-control" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="gender" class="control-label"></label>
+                    <select asp-for="gender" class="form-control" asp-items="@(new SelectList(GenderList,"Id","Name"))">
+                        <option value="">select gender</option>
+                    </select>
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label"></label>
+                    <select asp-for="Title" class="form-control" asp-items="@(new SelectList(TitleList,"Id","Name"))">
+                        <option value="">select Title</option>
+                    </select>
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SelectedSpecialization" class="control-label"></label>
+                    <select asp-for="SelectedSpecialization" class="form-control" asp-items="@(new SelectList(Model.Specializations,"Id","Name"))">
+                        <option value="">select Specialization</option>
+                    </select>
+                    <span asp-validation-for="SelectedSpecialization" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SelectedSubSpecializations" class="control-label"></label>
+                    <select asp-for="SelectedSubSpecializations" class="form-control" asp-items="@(new SelectList(Model.SubSpecializationsList,"Id","Name"))">
+                    </select>
+                    <span asp-validation-for="SelectedSubSpecializations" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Fees" class="control-label"></label>
+                    <input asp-for="Fees" class="form-control" />
+                    <span asp-validation-for="Fees" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="WaitingTimeInMinutes" class="control-label"></label>
+                    <input asp-for="WaitingTimeInMinutes" class="form-control" />
+                    <span asp-validation-for="WaitingTimeInMinutes" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="WaitingTimeInMinutes" class="control-label"></label>
+                    <input asp-for="WaitingTimeInMinutes" class="form-control" />
+                    <span asp-validation-for="WaitingTimeInMinutes" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ExperienceYears" class="control-label"></label>
+                    <input asp-for="ExperienceYears" class="form-control" />
+                    <span asp-validation-for="ExperienceYears" class="text-danger"></span>
+                </div>
+                <input asp-for="doctorId" hidden/>
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profilePictureInput = document.getElementById('ProfilePicture');
+            const profilePicturePreview = document.querySelector('.profile-picture-preview');
+
+            profilePictureInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+
+                    reader.onload = function(event) {
+                        if (profilePicturePreview.tagName === 'IMG') {
+                            profilePicturePreview.src = event.target.result;
+                        } else {
+                            // Replace the placeholder div with an img element
+                            const img = document.createElement('img');
+                            img.src = event.target.result;
+                            img.className = 'img-thumbnail rounded-circle profile-picture-preview';
+                            img.style.width = '150px';
+                            img.style.height = '150px';
+                            img.style.objectFit = 'cover';
+
+                            profilePicturePreview.replaceWith(img);
+                            profilePicturePreview = img; // Update reference
+                        }
+                    };
+
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        });
+         $(document).ready(function () {
+
+            $("#SelectedSpecialization").change(function () {
+
+                var SelectedSpecialization = $(this).val();
+                if (SelectedSpecialization) {
+                    $.ajax({
+                        url: '/Clinic/GetRegions',
+                        type: 'GET',
+                        data: { SelectedSpecialization: SelectedSpecialization },
+                        success: function (response) {
+                            var SubSpecializationsDropdown = $("#SelectedSubSpecializations");
+                            SubSpecializationsDropdown.empty(); // Clear existing options
+                            SubSpecializationsDropdown.append('<option value="">Select a SubSpecialization</option>');
+                            // Populate the product dropdown
+                            $.each(response, function (index, SubSpecialization) {
+                                SubSpecializationsDropdown.append(
+                                    $('<option></option>').val(SubSpecialization.id).text(SubSpecialization.name)
+                                );
+                            });
+
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Error fetching SubSpecialization: " + error);
+                        }
+                    });
+                } else {
+                    $("#SelectedSubSpecializations").empty().append('<option value="">Select a region</option>');
+                }
+            });
+        });
+    </script>
+}

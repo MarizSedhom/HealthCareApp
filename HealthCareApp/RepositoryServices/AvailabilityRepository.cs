@@ -23,5 +23,6 @@ namespace HealthCareApp.RepositoryServices
         {
             return context.Availability.Include(v => v.Doctor).ThenInclude(d => d.Specialization).Include(v => v.Clinic).ToList();
         }
+  
     }
 }
