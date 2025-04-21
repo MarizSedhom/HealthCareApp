@@ -32,7 +32,14 @@
                        asp-action="AppointmentsHistory"
                        class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Appointment" &&
                         ViewContext.RouteData.Values["Action"].ToString() == "AppointmentsHistory" ? "active" : "")"
-                       data-bg="var(--bg-color-2)">My Appointments</a>
+                       data-bg="var(--bg-color-2)">History</a>
+
+                    <a asp-controller="Appointment"
+                       asp-action="PatientUpcomingAppointments"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Appointment" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "PatientUpcomingAppointments" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Upcoming Appointments</a>
+
                     <a asp-controller="Doctor"
                        asp-action="GetAllDoctorsInfo"
                        class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" &&
