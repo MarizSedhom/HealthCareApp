@@ -39,11 +39,18 @@ namespace HealthCareApp.ViewModel.Doctor
             public string? CurrentPicturePath { get; set; }
             public string? ImgName { get; set; }
             public string? verificationFileName { get; set; }
-            //public IFormFile? ImagFromDr { get; set; }
-            public IFormFile? verificationFilFromDr { get; set; }
+        //public IFormFile? ImagFromDr { get; set; }
+
+            [DisplayName("verification File")]
+            public IFormFile? verificationFileFromDr { get; set; }
+            public string? CurrrentverificationPath { get; set; }
             public IEnumerable<string>? Clinics { get; set; }
+
+         
+            [DisplayName("Specialization ")]
             public int SelectedSpecialization { get; set; }  //admin only can change that
             public IEnumerable<Item<int, string>> ?Specializations { get; set; } = new List<Item<int, string>>();
+            [DisplayName("Sub Specializations")]
             public IEnumerable<int> SelectedSubSpecializations { get; set; }  //admin only can change that
             public IEnumerable<Item<int, string>>? SubSpecializationsList { get; set; } = new List<Item<int, string>>();
 
@@ -74,12 +81,6 @@ namespace HealthCareApp.ViewModel.Doctor
                 SelectedSubSpecializations = doctor.SubSpecializations.Select(x => x.Id);
             }
 
-            //[Display(Name = "Phone Number")]
-            //[RegularExpression(@"^[0-9]{12}$", ErrorMessage = "Must be exactly 12 digits")]
-            //[DataType(DataType.PhoneNumber)]
-            //public string PhoneNumber { get; set; }
-
-            //public IEnumerable<Title>titles { get; set; }
 
     }
 }

@@ -57,11 +57,14 @@ namespace HealthCareApp.Controllers
                 TotalLecturers = doctorRepo.FindAll(d => d.Title == Title.Lecturer).Count(),
                 TotalConsultants = doctorRepo.FindAll(d => d.Title == Title.Consultant).Count(),
                 TotalSpecialists = doctorRepo.FindAll(d => d.Title == Title.Specialist).Count(),
+
+                MaxAppointmentsNumThisMonth = appointmentRepo.FindAll(a => a.AvailableSlot.Availability.Date.Month == DateTime.Now.Month && a.AvailableSlot.Availability.Date.Year == DateTime.Now.Year, a => a.AvailableSlot, a => a.AvailableSlot.Availability).Count(),
                 TotalUpcomingAppointments = appointmentRepo.FindAll(app => app.Status == Status.Upcoming).Count(),
                 TotalRescheduledAppointments = appointmentRepo.FindAll(app => app.Status == Status.Rescheduled).Count(),
                 TotalCancelledAppointments = appointmentRepo.FindAll(app => app.Status == Status.Cancelled).Count(),
                 TotalCompletedAppointments = appointmentRepo.FindAll(app => app.Status == Status.Completed).Count(),
                 TotalPayments = (int)(appointmentRepo.FindAll(app => app.Status == Status.Completed).Count() * appointmentRepo.FindAll(app => app.Status == Status.Completed).Sum(a=> a.Amount)),
+
                 TotalPendingReviews = reviewRepo.FindAll(r => !r.IsApproved && !r.IsDeleted).Count(),
                 TotalApprovedReviews = reviewRepo.FindAll(r => r.IsApproved && !r.IsDeleted).Count(),
                 TotalRejectedReviews = reviewRepo.FindAll(r => !r.IsApproved && r.IsDeleted).Count()

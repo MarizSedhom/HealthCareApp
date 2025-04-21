@@ -25,6 +25,8 @@ namespace HealthCareApp.Models
         Payment,
         Review,
         [Display(Name ="Appointment Reschedule")]
-        AppointmentReschedule
+        AppointmentReschedule,
+        [Display(Name = "Account Status")]
+        ApproveAccount
     }
 }

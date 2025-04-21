@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Clinic Management";
+    var ReturnUrl = ViewBag.clinics;
+    int num1 = 0;
+    int num2 = 1;
 }
 
 <!DOCTYPE html>
@@ -243,7 +246,7 @@
 
             <div style="padding: 0 1.5rem;">
                 <div style="display: flex; justify-content: flex-start; padding-bottom: 1rem;">
-                    <a asp-action="Create" class="btn-primary">
+                    <a asp-action="Create" asp-controller="Clinic" asp-route-doctorId="@ViewBag.DoctorId" asp-route-returnUrl="@ReturnUrl" class="btn-primary">
                         <i class="fas fa-plus-circle mr-4 p-2"></i>
                         Create New Clinic
                     </a>
@@ -272,16 +275,18 @@
                                     <td>@Html.DisplayFor(modelItem => item.ClinicPhoneNumber)</td>
                                     <td style="text-align: end;">
                                         <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+
                                             <a asp-controller="Clinic" asp-action="DetailsByID" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action( "GetDoctorClinics", "Clinic")" class=" btn action-button">
                                                 <i class="fas fa-info-circle mr-1 me-2"></i>
                                                     Details
                                                 </a>
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn action-button">
+                                            <a asp-action="Edit" asp-controller="Clinic" asp-route-returnUrl="@ReturnUrl" asp-route-id="@item.Id" class="btn action-button">
                                                 <i class="fas fa-edit mr-1 me-2"></i>
                                                 Edit
                                             </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class=" btn cancel-button">
+                                            <a asp-action="Delete" asp-controller="Clinic" asp-route-id="@item.Id" class=" btn cancel-button">
                                                 <i class="fas fa-trash-alt  m-2"></i>
+
                                                 Delete
                                             </a>
                                         </div>
@@ -290,8 +295,19 @@
                             }
                         </tbody>
                     </table>
+
+
                 </div>
             </div>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
+                   class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Doctor List
+                </a>
+
+            }
         </div>
     </div>
 

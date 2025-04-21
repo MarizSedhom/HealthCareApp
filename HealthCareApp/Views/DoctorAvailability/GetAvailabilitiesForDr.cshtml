@@ -13,6 +13,7 @@
                 ? item.type.ToString().Equals("Online", StringComparison.OrdinalIgnoreCase)
                 : item.type.ToString().Equals("Offline", StringComparison.OrdinalIgnoreCase)
           ).ToList();
+    int num = 0;
 }
 
 <style>
@@ -280,7 +281,7 @@
             </div>
         </div>
     </header>
-        <a asp-action="AddAvailability" asp-route-id="@ViewBag.DoctorId" class="add-availability-btn mb-3">
+        <a asp-action="AddAvailability" asp-controller="DoctorAvailability" asp-route-id="@ViewBag.DoctorId" class="add-availability-btn mb-3">
             <i class="fas fa-plus"></i> Add New Availability
         </a>
         <div class="header-container" style="background-color: #96a5ba;">
@@ -299,9 +300,9 @@
                 </div>
            
                 <div class="tabs-container">
-                    <a href="?tab=all" class="tab-button @(activeTab == "all" ? "active" : "")">All</a>
-                    <a href="?tab=in-person" class="tab-button @(activeTab == "in-person" ? "active" : "")">In-Person</a>
-                    <a href="?tab=virtual" class="tab-button @(activeTab == "virtual" ? "active" : "")">Virtual</a>
+                    <a href="?tab=all&doctorId=@ViewBag.DoctorId" class="tab-button @(activeTab == "all" ? "active" : "")">All</a>
+                    <a href="?tab=in-person&doctorId=@ViewBag.DoctorId" class="tab-button @(activeTab == "in-person" ? "active" : "")">In-Person</a>
+                    <a href="?tab=virtual&doctorId=@ViewBag.DoctorId" class="tab-button @(activeTab == "virtual" ? "active" : "")">Virtual</a>
                 </div>
             </div>
             
@@ -385,17 +386,18 @@
 
                                 <div class="card-footer" >
                                     <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
-                                        <a asp-action="ViewSlots" asp-route-drId="@ViewBag.DoctorId" asp-route-availabilityId="@availability.Id"
+                                        <a asp-action="ViewSlots" asp-controller="DoctorAvailability"
+                                            asp-route-drId="@ViewBag.DoctorId" asp-route-availabilityId="@availability.Id"
                                            class="action-button">
                                             <i class="fas fa-eye mr-1 me-2"></i> View Slots
                                         </a>
-                                        <a asp-action="RescheduleAvailability" asp-route-availabilityId="@availability.Id"
+                                        <a asp-action="RescheduleAvailability" asp-controller="DoctorAvailability" asp-route-availabilityId="@availability.Id"
                                            class="action-button">
                                             <i class="fas fa-sync-alt mr-1 me-2"></i> Reschedule
 
                                         </a>
                                     </div>
-                                    <a asp-action="DeleteAvailability" asp-route-availabilityId="@availability.Id"
+                                    <a asp-action="DeleteAvailability" asp-controller="DoctorAvailability" asp-route-availabilityId="@availability.Id"
                                        class="cancel-button mt-2" title="Cancel">
                                         <i class="fas fa-times me-2"></i> Cancel
                                     </a>
@@ -415,12 +417,21 @@
                     <p class="text-[#26364d]/70 max-w-md mb-6 mx-auto">
                         You don't have any @(activeTab != "all" ? activeTab : "") availabilities scheduled yet.
                     </p>
-                    <a asp-action="AddAvailability" asp-route-id="@ViewBag.DoctorId" class="add-availability-btn">
+                    <a asp-action="AddAvailability" asp-controller="DoctorAvailability" asp-route-id="@ViewBag.DoctorId" class="add-availability-btn">
                         <i class="fas fa-plus mr-1"></i> Add New Availability
                     </a>
                 </div>
             }
         </div>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
+               class="back-link" stu>
+                <i class="fas fa-arrow-left"></i>
+                Back to Doctor List
+            </a>
+
+        }
     </div>
 </div>
 

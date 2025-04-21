@@ -1,5 +1,6 @@
 ﻿using HealthCareApp.Models;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthCareApp.ViewModel.Doctor
 {

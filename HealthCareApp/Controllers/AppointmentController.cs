@@ -254,9 +254,10 @@ namespace HealthCareApp.Controllers
 
 
         // doctor 
-        public ActionResult DisplayUpcomingAppoinments()
+        public ActionResult DisplayUpcomingAppoinments(string doctorId)
         {
-            string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(doctorId == null) 
+                doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var upcomingAppointments = appointmentService.FindAllWithSelect(app => app.AvailableSlot.Availability.DoctorId == doctorId && app.Status == Status.Upcoming
             , app => new UpcomingAppointmentsVM
@@ -271,8 +272,10 @@ namespace HealthCareApp.Controllers
                 Mode = app.AvailableSlot.Availability.type,
                 paymentStatus = app.PaymentStatus,
                 paymentMethod = app.PaymentMethod
+          
 
             });
+            ViewBag.DoctorId = doctorId;
 
             return View(upcomingAppointments);
         }

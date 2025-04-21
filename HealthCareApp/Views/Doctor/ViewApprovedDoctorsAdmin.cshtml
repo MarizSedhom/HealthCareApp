@@ -1,0 +1,49 @@
+﻿@model IEnumerable<DoctorIdxVM>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.drName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Specialization)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExperienceYears)
+            </th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.drName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Specialization)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExperienceYears)
+                </td>
+
+                <td>
+                    @Html.ActionLink("Update", "ApproveDoctor", new { doctorId = item.DoctorId}) |
+                    @Html.ActionLink("Clinics", "GetDoctorClinics", "Clinic", new { doctorId = item.DoctorId }) |
+                    @Html.ActionLink("Availability", "GetAvailabilitiesForDr", "DoctorAvailability", new { doctorId = item.DoctorId }) |
+                    @Html.ActionLink("Upcoming Appoinments", "DisplayUpcomingAppoinments", "Appointment", new { doctorId = item.DoctorId }) |
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

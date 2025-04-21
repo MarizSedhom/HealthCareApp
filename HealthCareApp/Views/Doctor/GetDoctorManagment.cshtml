@@ -1,0 +1,128 @@
+﻿@model DrManagementVM
+@{
+    ViewBag.drInfo = @Url.Action("GetDoctorManagment", "Doctor", new { doctorId = Model.doctorId }) + "#info";
+    ViewBag.clinics = @Url.Action("GetDoctorManagment", "Doctor", new { doctorId = Model.doctorId }) + "#clinics";
+    ViewBag.schedule = @Url.Action("GetDoctorManagment", "Doctor", new { doctorId = Model.doctorId }) + "#schedule";
+    ViewBag.patients = @Url.Action("GetDoctorManagment", "Doctor", new { doctorId = Model.doctorId }) + "#patients";
+
+    int num1 =0;
+    int num2 = 1;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .tab-content {
+            padding: 20px;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .nav-tabs .nav-link.active {
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+
+        .clinic-actions {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">Doctor Management</h1>
+
+        <ul class="nav nav-tabs" id="doctorTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">Doctor Info</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="clinics-tab" data-bs-toggle="tab" data-bs-target="#clinics" type="button" role="tab">Clinics</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab">Schedule</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="patients-tab" data-bs-toggle="tab" data-bs-target="#patients" type="button" role="tab">Patients</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="doctorTabsContent">
+            <!-- Doctor Info Tab -->
+            <div class="tab-pane fade show active" id="info" role="tabpanel">
+                <h2>Doctor Information</h2>
+                <!-- Doctor info form would go here -->
+                <@Html.Partial("UpdateDoctorAdmin",Model.DoctorVM)>
+            </div>
+
+            <!-- Clinics Tab - Partial View -->
+            <div class="tab-pane fade" id="clinics" role="tabpanel">
+                <!-- Partial view for clinics would be rendered here -->
+              @* <@Html.Partial *@
+@*                 @Html.Partial("GetDoctorClinics", Model.clinicInfoVMs) *@
+                @Html.Partial("~/Views/Clinic/GetDoctorClinics.cshtml", Model.clinicInfoVMs)
+            </div>
+
+            <!-- Schedule Tab -->
+            <div class="tab-pane fade" id="schedule" role="tabpanel">
+                <h2>Doctor's Schedule</h2>
+                <!-- Schedule management would go here -->
+                @Html.Partial("~/Views/DoctorAvailability/GetAvailabilitiesForDr.cshtml", Model.Availabilities)
+            </div>
+
+            <!-- Patients Tab -->
+            <div class="tab-pane fade" id="patients" role="tabpanel">
+                <h2>Patient Management</h2>
+                <!-- Patient management would go here -->
+                <p>Patient content would be displayed here.</p>
+                @Html.Partial("~/Views/Appointment/DisplayUpcomingAppoinments.cshtml", Model.upcomingAppointmentsVM)
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tab functionality would be handled by Bootstrap's JS
+        // Additional JavaScript for clinic management would go here
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab functionality with URL hash support
+            function activateTabFromHash() {
+                const hash = window.location.hash;
+                if (hash) {
+                    const tabTrigger = document.querySelector(`[data-bs-target="${hash}"]`);
+                    if (tabTrigger) {
+                        new bootstrap.Tab(tabTrigger).show();
+                    }
+                }
+            }
+
+            // Activate tab when page loads
+            activateTabFromHash();
+
+            // Update URL hash when tabs are shown
+            document.querySelectorAll('#doctorTabs .nav-link').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function(e) {
+                    const target = e.target.getAttribute('data-bs-target');
+                    if (target) {
+                        window.location.hash = target;
+                    }
+                });
+            });
+
+            // Handle back/forward navigation
+            window.addEventListener('hashchange', activateTabFromHash);
+        });
+    </script>
+</body>
+</html>

@@ -44,5 +44,14 @@
     <form asp-action="Delete"> 
          <input type="submit" value="Delete" class="btn btn-danger"/> |
         <a asp-action="GetDoctorClinics" asp-route-doctorId="@Model.doctorId">Back to List</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
+               class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Doctor List
+            </a>
+
+        }
     </form>
 </div>

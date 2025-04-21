@@ -1,11 +1,17 @@
-﻿using HealthCareApp.Models;
+﻿using AspNetCoreGeneratedDocument;
+using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using HealthCareApp.Service;
+using HealthCareApp.ViewModel.Appointment;
 using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
+using HealthCareApp.ViewModel.Patient;
 using HealthCareApp.ViewModel.Review;
 
 using Microsoft.AspNetCore.Mvc;
+
+using Stripe;
+
 using System.Linq;
 using System.Security.Claims;
 
@@ -18,10 +24,17 @@ namespace HealthCareApp.Controllers.Doctor
 
         private IGenericRepoServices<Models.Doctor> DoctorRepository { get; }
         private IGenericRepoServices<Models.Review> ReviewRepository { get; }
+        private IGenericRepoServices<Appointment> AppointmentRepository { get; }
         public IAvailabilityRepository AvailabilityRepository { get; }
-
         private IGenericRepoServices<SubSpecialization> SubSpecializationRepository { get; }
-        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository, IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository, IAvailabilityRepository AvailabilityRepository)
+        NotificationService notificationService;
+
+
+
+
+        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository,
+        IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository,
+        IAvailabilityRepository AvailabilityRepository, NotificationService notificationService, IGenericRepoServices<Appointment> AppointmentRepository)
         {
             this.DoctorRepository = DectorRepository;
             specializationRepository = SpecializationRepository;
@@ -29,6 +42,31 @@ namespace HealthCareApp.Controllers.Doctor
             this.fileService = fileService;
             this.ReviewRepository = ReviewRepository;
             this.AvailabilityRepository = AvailabilityRepository;
+
+            this.notificationService = notificationService;
+            this.AppointmentRepository = AppointmentRepository;
+        }
+        
+        public IActionResult WelcomeDoctor()
+        {
+            var doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var welcomeDoctorVM = DoctorRepository.FindWithSelect
+             (
+                d => d.Id == doctorId,
+                d => new WelcomeDoctorVM
+                {
+                    DoctorName = $" {d.Title} {d.FirstName} {d.LastName}",
+                    TotalUpcomingAppointments = d.availabilities
+                                    .Where(a => a.Date >= DateOnly.FromDateTime(DateTime.Now))
+                                    .SelectMany(a => a.AvailableSlots
+                                    .Where(s => s.IsBooked &&(a.Date > DateOnly.FromDateTime(DateTime.Now) || s.StartTime >= TimeOnly.FromDateTime(DateTime.Now))))
+                                    .Count(),
+                    TotalReviews = d.Reviews.Where(r => r.IsApproved).Count()
+                            
+                }
+             ); 
+            return View(welcomeDoctorVM);
+
         }
 
         //doctor pending page
@@ -51,10 +89,37 @@ namespace HealthCareApp.Controllers.Doctor
 
         //doctor pending page
         [HttpGet]
-        public IActionResult ApproveDoctor(string doctorId,VerificationStatus isApproved)
+        public IActionResult ApproveDoctor(string doctorId , VerificationStatus isApproved)
         {
             Models.Doctor doctor = DoctorRepository.GetById(doctorId);
             doctor.verificationStatus = isApproved;
+            /****************Notifications*************************/
+            //notification for dr
+            if (isApproved== VerificationStatus.Accepted)
+            {
+                var notificationDr = new Notification
+                {
+                    UserId = doctorId,
+                    Message = $"Your Account as a Doctor as been Approved by admin, You can start using our services.",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.ApproveAccount,
+                };
+
+                notificationService.Notify(notificationDr);
+            }
+            else if (isApproved == VerificationStatus.Rejected)
+            {
+                var notificationDr = new Notification
+                {
+                    UserId = doctorId,
+                    Message = $"Your Account as a Doctor as been Rejected by admin, Complete your profile and provide verifications files .",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.ApproveAccount,
+                };
+
+                notificationService.Notify(notificationDr);
+            }
+
             DoctorRepository.SaveChanges();
             return RedirectToAction(nameof(ViewPendingDoctorForAdmin));
         }
@@ -75,6 +140,7 @@ namespace HealthCareApp.Controllers.Doctor
             return View(doctorsVm);
         }
 
+
         [HttpGet]
         public IActionResult ViewDoctorDetailsForAdmin()
         {
@@ -82,20 +148,104 @@ namespace HealthCareApp.Controllers.Doctor
             return View();
         }
 
-        [HttpGet]
-        public IActionResult UpdateDoctorAdmin(string doctorId= "96537cdd-bddf-4f55-b6ef-ab07e2d49f11")
+        //[HttpGet]
+        //public IActionResult UpdateDoctorAdmin(string doctorId= "236a0bce-bf14-40ad-a62e-60e8f5e93997")
+        //{
+        //    Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
+        //    AdminUpdateDrVM doctorVM = new AdminUpdateDrVM(doctor);
+        //    Specialization specs = specializationRepository.Find(s => s.Id == doctor.SpecializationId, s => s.SubSpecialization);
+        //    doctorVM.Specializations = specializationRepository.FindAllWithSelect(null, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
+        //    doctorVM.SubSpecializationsList= specs.SubSpecialization.Select(s => new Item<int, string>
+        //    {
+        //        Id = s.Id,
+        //        Name = s.Name,
+        //    });
+        //    doctorVM.CurrentPicturePath=FilePaths.DrImgPathRelative+doctorVM.ImgName;
+        //    if (doctorVM.verificationFileName != null)
+        //    {
+        //        doctorVM.CurrrentverificationPath = FilePaths.DrVerificationRelative + doctorVM.verificationFileName;
+
+        //    }
+        //    return View(doctorVM);
+
+        //}
+        private AdminUpdateDrVM UpdateDoctorAdmin(string doctorId = "236a0bce-bf14-40ad-a62e-60e8f5e93997")
         {
             Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
             AdminUpdateDrVM doctorVM = new AdminUpdateDrVM(doctor);
             Specialization specs = specializationRepository.Find(s => s.Id == doctor.SpecializationId, s => s.SubSpecialization);
             doctorVM.Specializations = specializationRepository.FindAllWithSelect(null, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
-            doctorVM.SubSpecializationsList= specs.SubSpecialization.Select(s => new Item<int, string>
+            doctorVM.SubSpecializationsList = specs.SubSpecialization.Select(s => new Item<int, string>
             {
                 Id = s.Id,
                 Name = s.Name,
             });
-            return View(doctorVM);
+            doctorVM.CurrentPicturePath = FilePaths.DrImgPathRelative + doctorVM.ImgName;
+            if (doctorVM.verificationFileName != null)
+            {
+                doctorVM.CurrrentverificationPath = FilePaths.DrVerificationRelative + doctorVM.verificationFileName;
 
+            }
+            return doctorVM;
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateDoctorAdmin(AdminUpdateDrVM doctorVM)
+        {
+            if (ModelState.IsValid)
+            {
+                Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorVM.doctorId, d => d.SubSpecializations);
+                doctor.FirstName = doctorVM.FirstName;
+                doctor.LastName = doctorVM.LastName;
+                // doctor.PhoneNumber = profileVM.PhoneNumber;
+                doctor.gender = doctorVM.gender;
+                doctor.Fees = doctorVM.Fees;
+                doctor.Description = doctorVM.Description;
+                doctor.Title = doctorVM.Title;
+                doctor.Description = doctorVM.Description;
+                doctor.ExperienceYears = doctorVM.ExperienceYears;
+                doctor.WaitingTimeInMinutes = doctorVM.WaitingTimeInMinutes;
+                doctor.SpecializationId = doctorVM.SelectedSpecialization;
+                doctor.DateOfBirth = doctorVM.DateOfBirth;
+                doctor.SubSpecializations.Clear();
+
+                IEnumerable<SubSpecialization> SubSpecializations = SubSpecializationRepository.FindAll(s => doctorVM.SelectedSubSpecializations.Contains(s.Id));
+                foreach (var sub in SubSpecializations)
+                {
+                    sub.Doctors.Add(doctor);
+                }
+
+                if (doctorVM.ProfilePicture != null)
+                {
+                    string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", FilePaths.DrImagesPath);
+                    if (!Directory.Exists(fullPath))
+                    {
+                        Directory.CreateDirectory(fullPath);
+                    }
+                    fileService.DeleteFile(doctor.ProfilePicture, FilePaths.DrImagesPath);
+                    string imageName = await fileService.uploadFileAsync(doctorVM.ProfilePicture, FilePaths.DrImagesPath);
+                    doctor.ProfilePicture = imageName;
+                }
+                if (doctorVM.verificationFileFromDr != null)
+                {
+                    string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", FilePaths.DrVerificationPath);
+                    if (!Directory.Exists(fullPath))
+                    {
+                        Directory.CreateDirectory(fullPath);
+                    }
+                    fileService.DeleteFile(doctor.verificationFileName, FilePaths.DrVerificationPath);
+                    string verificationFileName = await fileService.uploadFileAsync(doctorVM.verificationFileFromDr, FilePaths.DrVerificationPath);
+                    doctor.verificationFileName = verificationFileName;
+                }
+
+                DoctorRepository.Update(doctor);
+                return RedirectToAction(nameof(UpdateDoctorAdmin), new { doctorId = doctorVM.doctorId });
+            }
+
+            return RedirectToAction(nameof(UpdateDoctorAdmin), new { doctorId = doctorVM.doctorId });
+
+            //return View(GetDrUpdateProfileVm(profileVM.DrId));
         }
 
         [HttpGet]
@@ -280,7 +430,7 @@ namespace HealthCareApp.Controllers.Doctor
                 DrId = d.Id
             });
             if (profileVM.ImgName != null)
-                profileVM.CurrentPicturePath = FilePaths.DrPathRelative + profileVM.ImgName;
+                profileVM.CurrentPicturePath = FilePaths.DrImgPathRelative + profileVM.ImgName;
             else
                 profileVM.CurrentPicturePath = null; // #default image
 
@@ -375,6 +525,10 @@ namespace HealthCareApp.Controllers.Doctor
             };
             return View(allDoctors);
         }
+        
+      
+
+        
     }
 }
 

@@ -274,8 +274,10 @@
                                     </td>
 
                                     <td>
-                                        <select asp-for="@Model.DrAvailability[i].ClinicId" asp-items="@(new SelectList(Model.DrClincs,"patientId","Name"))"
-                                                class="table-select @disabledClass" disabled="@(!isAvailable)">
+                                        <select asp-for="@Model.DrAvailability[i].ClinicId"
+                                                asp-items="@(new SelectList(Model.DrClincs, "Id", "Name"))"
+                                                class="table-select @disabledClass"
+                                                disabled="@(!isAvailable)">
                                             <option value="">Select Clinic</option>
                                         </select>
                                     </td>
@@ -300,14 +302,14 @@
                         </tbody>
                     </table>
                 </div>
-
+                <input hidden asp-for="id" />
                 <div class="d-flex justify-content-center pt-4 pb-4 gap-4">
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-plus mr-2"></i>
                         Create Availability
                     </button>
 
-                    <a asp-action="GetAvailabilitiesForDr" asp-route-id="@Model.id" class="btn-outline text-decoration-none">
+                    <a asp-action="GetAvailabilitiesForDr" asp-route-doctorId="@Model.id" class="btn-outline text-decoration-none">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Back to List
                     </a>

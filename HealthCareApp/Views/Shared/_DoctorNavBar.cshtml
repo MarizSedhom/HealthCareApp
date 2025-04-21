@@ -36,6 +36,11 @@
             </div>
             <div class="nav-links">
                 <div class="d-flex gap-3 link-container">
+                    <a asp-controller="Doctor"
+                       asp-action="WelcomeDoctor"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "WelcomeDoctor" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Home</a>
                     <a asp-controller="Appointment"
                        asp-action="DisplayUpcomingAppoinments"
                        class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Appointment" &&

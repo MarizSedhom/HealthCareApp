@@ -3,6 +3,9 @@
 
 @{
     ViewData["Title"] = "ManageClinics";
+    ViewData["Title"] = "Create";
+    var ReturnUrl = ViewBag.clinics;
+    var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
 }
 
 

@@ -228,10 +228,19 @@
             </table>
 
             <div class="text-center mt-4 mb-4">
-                <a asp-action="GetAvailabilitiesForDr" asp-route-id="@ViewBag.drId"
+                <a asp-action="GetAvailabilitiesForDr" asp-route-doctorId="@ViewBag.drId"
                    class="btn btn-outline gap-2">
                     <i class="fas fa-arrow-left"></i> Back to List
                 </a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
+                       class="back-link">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Doctor List
+                    </a>
+
+                }
             </div>
         </div>
     </div>
