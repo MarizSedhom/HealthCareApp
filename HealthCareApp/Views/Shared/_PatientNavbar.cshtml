@@ -28,6 +28,13 @@
             </div>
             <div class="nav-links">
                 <div class="d-flex gap-3">
+
+                    <a asp-controller="Doctor"
+                       asp-action="GetAllDoctorsInfo"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "GetAllDoctorsInfo" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Home</a>
+
                     <a asp-controller="Appointment"
                        asp-action="AppointmentsHistory"
                        class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Appointment" &&
@@ -40,23 +47,12 @@
                         ViewContext.RouteData.Values["Action"].ToString() == "PatientUpcomingAppointments" ? "active" : "")"
                        data-bg="var(--bg-color-2)">Upcoming Appointments</a>
 
-                    <a asp-controller="Doctor"
-                       asp-action="GetAllDoctorsInfo"
-                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" &&
-                        ViewContext.RouteData.Values["Action"].ToString() == "GetAllDoctorsInfo" ? "active" : "")"
-                       data-bg="var(--bg-color-2)">All Doctors</a>
-                   @*  <a asp-controller="Appointment"
-                       asp-action="AppointmentsHistory"
-                       class="nav-link active"
-                       data-bg="var(--bg-color-2)">Appointments</a> *@
-                  @*   <a asp-controller="DoctorAvailability"
-                       asp-action="GetAvailabilitiesForDr"
-                       class="nav-link"
-                       data-bg="var(--bg-color-2)">Availability</a> *@
-                   @*  <a asp-controller="Doctor"
-                       asp-action="GetAllDoctorsInfo"
-                       class="nav-link"
-                       data-bg="var(--bg-color-2)">All Doctors</a> *@
+                    <a asp-controller="MedicalRecord"
+                       asp-action="GetAllRecordsForPatient"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "MedicalRecord" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "GetAllRecordsForPatient" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Medical Records</a>
+
                 </div>
             </div>
         </div>
@@ -65,9 +61,6 @@
             @await Component.InvokeAsync("Notification")
 
             <div id="doctorProfile" class="doctor-profile">
-                @* <div class="profile-img">
-                    <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Doctor Profile">
-                </div> *@
                 <span class="profile-name">@firstName </span>
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>

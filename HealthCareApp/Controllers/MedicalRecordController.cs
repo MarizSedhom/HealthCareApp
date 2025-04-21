@@ -44,7 +44,7 @@ namespace HealthCareApp.Controllers
                 patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             }
 
-            return View(_medicalRecordService.FindAll(med => med.PatientId == patientId, med => med.Doctor, med => med.Patient));
+            return View(_medicalRecordService.FindAll(med => med.PatientId == patientId, med => med.Doctor, med => med.Patient, d=>d.Doctor.Specialization));
         }
 
         // GET: MedicalReportController/Details/5
