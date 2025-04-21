@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
+using HealthCareApp.ViewModel.Doctor;
 
 namespace HealthCareApp.Areas.Identity.Pages.Account
 {
@@ -125,6 +127,18 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                     if (roles.Contains("Patient"))
                     {
                         return RedirectToAction("GetAllDoctorsInfo", "Doctor");
+                    }
+                    if (roles.Contains("Doctor"))
+                    {
+                        Doctor doctor = (Doctor)user;
+                        if (doctor.verificationStatus == VerificationStatus.Accepted)
+                        {
+                            return RedirectToAction("WelcomeDoctor", "Doctor");
+                        }
+                        else
+                        {
+                            return RedirectToAction("AfterDrRegisteration", "Doctor");
+                        }
                     }
                     return LocalRedirect(returnUrl);
                 }

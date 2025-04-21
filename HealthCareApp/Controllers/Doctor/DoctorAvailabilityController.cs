@@ -29,25 +29,25 @@ namespace HealthCareApp.Controllers.Doctor
             this.doctorRepository = doctorRepository;
         }
 
-        public IActionResult DisplayDaysSlots(string DrId= "96537cdd-bddf-4f55-b6ef-ab07e2d49f11")
-        {
+        //public IActionResult DisplayDaysSlots(string DrId= "96537cdd-bddf-4f55-b6ef-ab07e2d49f11")
+        //{
 
-            IEnumerable<AvailabilityWithSlotVM> drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == DrId, v => new AvailabilityWithSlotVM()
-            {
-                AvailabilityDate = v.Date,
-                AvailabilityId = v.Id,
-                AvailabilityType = v.type,
-                ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
-                Slots = v.AvailableSlots.Select(s => new Slot()
-                {
-                   EndTime = s.EndTime,
-                   IsBooked = s.IsBooked,
-                   SlotId=s.Id,
-                   StartTime = s.StartTime
-                })
-            }).OrderBy(v=>v.AvailabilityDate);
-            return View(drAvailabilities);
-        }
+        //    IEnumerable<AvailabilityWithSlotVM> drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == DrId, v => new AvailabilityWithSlotVM()
+        //    {
+        //        AvailabilityDate = v.Date,
+        //        AvailabilityId = v.Id,
+        //        AvailabilityType = v.type,
+        //        ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
+        //        Slots = v.AvailableSlots.Select(s => new Slot()
+        //        {
+        //           EndTime = s.EndTime,
+        //           IsBooked = s.IsBooked,
+        //           SlotId=s.Id,
+        //           StartTime = s.StartTime
+        //        })
+        //    }).OrderBy(v=>v.AvailabilityDate);
+        //    return View(drAvailabilities);
+        //}
         
         public IActionResult GetAllAvailabilitiesForAllDr()
         {
