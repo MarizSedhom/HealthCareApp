@@ -20,7 +20,7 @@
     }
 </style>
 <body>
-    <nav class="doctor-navbar mb-5">
+    <nav class="doctor-navbar">
         <div class="nav-left">
             <div class="logo">
                 <i class="fas fa-heartbeat logPulse" style="display: inline-block"></i>
@@ -28,18 +28,31 @@
             </div>
             <div class="nav-links">
                 <div class="d-flex gap-3">
-                    <a asp-controller="Appointment"
-                       asp-action="AppointmentsHistory"
-                       class="nav-link active"
-                       data-bg="var(--bg-color-2)">Appointments</a>
-                    <a asp-controller="DoctorAvailability"
-                       asp-action="GetAvailabilitiesForDr"
-                       class="nav-link"
-                       data-bg="var(--bg-color-2)">Availability</a>
+
                     <a asp-controller="Doctor"
                        asp-action="GetAllDoctorsInfo"
-                       class="nav-link"
-                       data-bg="var(--bg-color-2)">All Doctors</a>
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "GetAllDoctorsInfo" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Home</a>
+
+                    <a asp-controller="Appointment"
+                       asp-action="AppointmentsHistory"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Appointment" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "AppointmentsHistory" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">History</a>
+
+                    <a asp-controller="Appointment"
+                       asp-action="PatientUpcomingAppointments"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Appointment" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "PatientUpcomingAppointments" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Upcoming Appointments</a>
+
+                    <a asp-controller="MedicalRecord"
+                       asp-action="GetAllRecordsForPatient"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "MedicalRecord" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "GetAllRecordsForPatient" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Medical Records</a>
+
                 </div>
             </div>
         </div>
@@ -48,15 +61,12 @@
             @await Component.InvokeAsync("Notification")
 
             <div id="doctorProfile" class="doctor-profile">
-                <div class="profile-img">
-                    <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Doctor Profile">
-                </div>
-                <span class="profile-name">@firstName </span>
+                <span class="profile-name">@firstName @lastName</span>
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
 
             <div class="profile-dropdown" id="profileDropdown">
-                <a href="#"><i class="fas fa-user"></i> My Profile</a>
+                <a asp-controller="Patient" asp-action="GetPatientProfile"><i class="fas fa-user"></i> My Profile</a>
                 <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                     <button type="submit" class="nav-link btn btn-link text-dark"><i class="fas fa-sign-out-alt"></i>Logout</button>
                 </form>
@@ -81,37 +91,6 @@
             }
         });
 
-        // // Notification functionality
-        // document.querySelector('.notification').addEventListener('click', function () {
-        //     alert('Notification panel would appear here');
-        // });
-
-        // Profile dropdown actions
-        // document.querySelectorAll('.profile-dropdown a').forEach(item => {
-        //     item.addEventListener('click', function (e) {
-        //         e.preventDefault();
-        //         const action = this.textContent.trim();
-        //         alert(`${action} action would be performed here`);
-        //         profileDropdown.classList.remove('show');
-        //     });
-        // });
-        // Navigation functionality
-        const navLinks = document.querySelectorAll('a');
-        navLinks.forEach(link => {
-
-            console.log(navLinks)
-
-            link.addEventListener('click', function (e) {
-                            // e.preventDefault();
-                navLinks.forEach(item => item.classList.remove('active'));
-            console.log(navLinks)
-
-                this.classList.add('active');
-
-                // const activeBgColor = this.getAttribute('data-bg');
-                // this.style.backgroundColor = activeBgColor || 'transparent';
-            });
-        });
     </script>
 </body>
 </html> 

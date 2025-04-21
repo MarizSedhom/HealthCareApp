@@ -288,7 +288,7 @@
 
                         <div class="form-group mb-3">
                             <label asp-for="gender" class="form-label fw-bold"></label>
-                            <select asp-for="gender" class="form-select" asp-items="@(new SelectList(GenderList,"Id","Name"))"></select>
+                            <select asp-for="gender" class="form-select" asp-items="@Html.GetEnumSelectList(typeof(Gender))"></select>
                             <span asp-validation-for="gender" class="text-danger small"></span>
                         </div>
                     </div>
@@ -297,7 +297,7 @@
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label asp-for="Title" class="form-label fw-bold"></label>
-                            <select asp-for="Title" asp-items="@(new SelectList(TitlesList,"Id","Name"))" class="form-control"></select>
+                            <select asp-for="Title" class="form-select" asp-items="@Html.GetEnumSelectList(typeof(Title))"></select>
                             <span asp-validation-for="Title" class="text-danger small"></span>
                         </div>
 
@@ -366,9 +366,9 @@
                         <div class="card">
                             <div class="card-header bg-light d-flex justify-content-between">
                                 <h6 class="mb-0 fw-bold">Clinics</h6>
-                                <a asp-controller="Clinic" asp-action="ManageClinics" class="manage-clinics-btn">
-                                    <i class="fas fa-clinic-medical me-2"></i>Manage Clinics
-                                </a>
+                                <a asp-controller="Clinic" asp-action="ManageClinics" class="manage-clinics-btn"> 
+                                     <i class="fas fa-clinic-medical me-2"></i>Manage Clinics 
+                                 </a>
                             </div>
                             <div class="card-body p-0">
                                 <ul class="list-group list-group-flush">

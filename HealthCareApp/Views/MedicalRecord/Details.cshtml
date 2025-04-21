@@ -85,8 +85,8 @@
         </div>
     </div>
     <div class="card-footer text-end">
-        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
-        <a class="btn btn-secondary" asp-action="Index">Back to List</a>
+        @* <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> *@
+        <a class="btn btn-secondary" href="@ViewBag.ReturnUrl">Back to List</a>
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

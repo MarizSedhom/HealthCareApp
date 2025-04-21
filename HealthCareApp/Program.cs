@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace HealthCareApp
 {
@@ -16,8 +17,15 @@ namespace HealthCareApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddAuthentication()
+             .AddGoogle(options =>
+             {
+                 options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                 options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+             });
+
             // Add services to the container.
-           // var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            // var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("myConn")));
 
@@ -46,6 +54,8 @@ namespace HealthCareApp
                 options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>() // Add this line for roles
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
 
             builder.Services.AddControllersWithViews();
 

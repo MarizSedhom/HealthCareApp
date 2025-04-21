@@ -170,7 +170,7 @@ namespace HealthCareApp.Controllers.Doctor
                 if (slot.IsBooked)
                 {
                     /////////////////////////////notification for Cancel Appointment/////////////////////////////////////////
-                    //string msg =slot.Appointment.Id.ToString();
+                    //string msg =slot.Appointment.patientId.ToString();
                 }
             }
 

@@ -1,75 +1,279 @@
 ﻿@model IEnumerable<HealthCareApp.ViewModel.Appointment.AppointmentsHistoryVM>
 
 @{
-    ViewData["Title"] = "AppointmentsHistory";
+    ViewData["Title"] = "Appointments History";
 }
 
-<div class="container mt-4">
-    <h1 class="mb-4 text-primary">Appointments History</h1>
+<style>
+    :root {
+        --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
+        --dark-blue: #223249;
+        --patient-green: #34a853;
+        --light-green: #D0E8C5;
+        --white: #ffffff;
+        --light-gray: #f8f9fa;
+        --gray: #6c757d;
+    }
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Status)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Date)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.StartTime)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.DoctorName)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Mode)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Clinic)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.PaymentStatus)
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>
-                                    <span class="badge @GetStatusBadgeClass(item.Status.ToString())">
-                                        @Html.DisplayFor(modelItem => item.Status)
-                                    </span>
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Date)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.StartTime)
-                                </td>
-                                <td>
-                                    <strong>@Html.DisplayFor(modelItem => item.DoctorName)</strong>
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Mode)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Clinic)
-                                </td>
-                                <td>
-                                    <span class="badge @GetPaymentBadgeClass(item.PaymentStatus.ToString())">
-                                        @Html.DisplayFor(modelItem => item.PaymentStatus)
-                                    </span>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+    .appointments-gradient-header {
+        background: var(--patient-gradient);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        margin-bottom: 2rem;
+        padding: 2rem;
+        color: var(--white);
+    }
+
+    .appointments-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+    }
+
+        .appointments-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+    .card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        background-color: var(--white);
+    }
+
+    .text-blue {
+        color: var(--dark-blue) !important;
+    }
+
+    .text-patient-green {
+        color: var(--patient-green) !important;
+    }
+
+    .table {
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            color: var(--dark-blue);
+            border-top: none;
+            border-bottom: 2px solid var(--light-green);
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: rgba(0,0,0,0.05);
+        }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(52, 168, 83, 0.05);
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(208, 232, 197, 0.2);
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.5em 0.8em;
+        font-weight: 500;
+        border-radius: 20px;
+    }
+
+    .badge-status-completed {
+        background-color: var(--patient-green);
+        color: var(--white);
+    }
+
+    .badge-status-cancelled {
+        background-color: #dc3545;
+        color: var(--white);
+    }
+
+    .badge-status-pending {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .badge-status-upcoming {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .badge-status-rescheduled {
+        background-color: #17a2b8;
+        color: var(--white);
+    }
+
+    .badge-payment-paid {
+        background-color: var(--patient-green);
+        color: var(--white);
+    }
+
+    .badge-payment-unpaid {
+        background-color: #dc3545;
+        color: var(--white);
+    }
+
+    .badge-payment-pending {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .badge-payment-refunded {
+        background-color: #17a2b8;
+        color: var(--white);
+    }
+
+    .empty-state {
+        background-color: var(--light-gray);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: var(--patient-green);
+        opacity: 0.8;
+        margin-bottom: 1.5rem;
+    }
+
+    .doctor-name {
+        color: var(--dark-blue);
+        font-weight: 600;
+    }
+
+        .doctor-name:hover {
+            color: var(--patient-green);
+            text-decoration: none;
+        }
+</style>
+
+<div class="container py-5">
+    <!-- Appointments Header -->
+    <div class="appointments-gradient-header">
+        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <i class="fas fa-calendar-check fa-2x"></i>
             </div>
+            <div>
+                <h1 class="h2 fw-bold mb-1">Appointments History</h1>
+                <p class="mb-0">View and manage your past medical consultations</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments Table Card -->
+    <div class="appointments-card">
+        <div class="card-header">
+            <h2 class="h4 fw-semibold text-blue mb-0 d-flex align-items-center">
+                <i class="fas fa-history me-2 text-patient-green"></i>
+                Your Past Appointments
+            </h2>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-tag me-2 text-patient-green"></i>
+                                    @Html.DisplayNameFor(model => model.Status)
+                                </th>
+                                <th>
+                                    <i class="fas fa-calendar-alt me-2 text-patient-green"></i>
+                                    @Html.DisplayNameFor(model => model.Date)
+                                </th>
+                                <th>
+                                    <i class="fas fa-clock me-2 text-patient-green"></i>
+                                    @Html.DisplayNameFor(model => model.StartTime)
+                                </th>
+                                <th>
+                                        <i class="fas fa-user-md me-2 text-patient-green"></i>
+                                        @Html.DisplayNameFor(model => model.DoctorName)
+
+                                </th>
+                                <th>
+                                    <i class="fas fa-video me-2 text-patient-green"></i>
+                                    @Html.DisplayNameFor(model => model.Mode)
+                                </th>
+                                <th>
+                                    <i class="fas fa-hospital me-2 text-patient-green"></i>
+                                    @Html.DisplayNameFor(model => model.Clinic)
+                                </th>
+                                <th>
+                                    <i class="fas fa-money-bill-wave me-2 text-patient-green"></i>
+                                    @Html.DisplayNameFor(model => model.PaymentStatus)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge badge-status-@item.Status.ToString().ToLower()">
+                                            <i class="@GetStatusIcon(item.Status.ToString()) me-1"></i>
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @item.Date.ToString()
+                                    </td>
+                                    <td>
+                                        @item.StartTime.ToString("hh:mm tt")
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Doctor" asp-action="ViewDoctorDetails" asp-route-doctorId="@item.DoctorId" class="doctor-name">
+
+                                        @item.DoctorName</a>
+                                    </td>
+                                    <td>
+                                        <span class="@GetModeIcon(item.Mode.ToString()) me-2 text-patient-green"></span>
+                                        @item.Mode
+                                    </td>
+                                    <td>
+                                        @item.Clinic
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-payment-@item.PaymentStatus.ToString().ToLower()">
+                                            <i class="@GetPaymentIcon(item.PaymentStatus.ToString()) me-1"></i>
+                                            @item.PaymentStatus
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <h3 class="h5 text-blue">No Appointments Found</h3>
+                    <p class="text-blue">You don't have any past appointments in our records.</p>
+
+                    <a href="#" class="btn btn-outline-success mt-3">
+                        <i class="fas fa-calendar-plus me-2"></i>
+                        Book New Appointment
+                    </a>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -80,15 +284,15 @@
         switch (status?.ToLower())
         {
             case "completed":
-                return "bg-success";
+                return "badge-status-completed";
             case "cancelled":
-                return "bg-danger";
+                return "badge-status-cancelled";
             case "pending":
-                return "bg-warning text-dark";
+                return "badge-status-pending";
             case "rescheduled":
-                return "bg-info";
+                return "badge-status-rescheduled";
             default:
-                return "bg-secondary";
+                return "badge-secondary";
         }
     }
 
@@ -97,47 +301,64 @@
         switch (paymentStatus?.ToLower())
         {
             case "paid":
-                return "bg-success";
+                return "badge-payment-paid";
             case "unpaid":
-                return "bg-danger";
+                return "badge-payment-unpaid";
             case "pending":
-                return "bg-warning text-dark";
+                return "badge-payment-pending";
             case "refunded":
-                return "bg-info";
+                return "badge-payment-refunded";
             default:
-                return "bg-secondary";
+                return "badge-secondary";
+        }
+    }
+
+    string GetStatusIcon(string status)
+    {
+        switch (status?.ToLower())
+        {
+            case "completed":
+                return "fas fa-check-circle";
+            case "cancelled":
+                return "fas fa-times-circle";
+            case "pending":
+                return "fas fa-clock";
+            case "rescheduled":
+                return "fas fa-calendar-alt";
+            default:
+                return "fas fa-question-circle";
+        }
+    }
+
+    string GetPaymentIcon(string paymentStatus)
+    {
+        switch (paymentStatus?.ToLower())
+        {
+            case "paid":
+                return "fas fa-check-circle";
+            case "unpaid":
+                return "fas fa-exclamation-circle";
+            case "pending":
+                return "fas fa-clock";
+            case "refunded":
+                return "fas fa-undo";
+            default:
+                return "fas fa-question-circle";
+        }
+    }
+
+    string GetModeIcon(string mode)
+    {
+        switch (mode?.ToLower())
+        {
+            case "online":
+                return "fas fa-video";
+            case "in-person":
+                return "fas fa-hospital-user";
+            case "phone":
+                return "fas fa-phone-alt";
+            default:
+                return "fas fa-stethoscope";
         }
     }
 }
-
-<style>
-    .table {
-        font-size: 0.9rem;
-    }
-
-        .table th {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-        }
-
-    .badge {
-        font-size: 0.75rem;
-        padding: 0.35em 0.65em;
-        font-weight: 500;
-    }
-
-    .card {
-        border: none;
-        border-radius: 10px;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: rgba(0, 123, 255, 0.05);
-    }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: rgba(0, 0, 0, 0.02);
-    }
-</style>

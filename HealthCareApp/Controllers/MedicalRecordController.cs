@@ -1,9 +1,12 @@
-﻿using HealthCareApp.Models;
+﻿using System.Security.Claims;
+using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+
 
 
 namespace HealthCareApp.Controllers
@@ -24,24 +27,44 @@ namespace HealthCareApp.Controllers
 
         }
         // GET: MedicalReportController
-        public ActionResult Index(string doctorId = "d2dffdfa-3168-4fe8-8e52-60ed1c08fc72")
+        public ActionResult Index(string doctorId = null)
         {
+
+            if(doctorId == null)
+            {
+                doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
             return View(_medicalRecordService.FindAll(med => med.DoctorId == doctorId, med => med.Patient ,med => med.Doctor));
         }
 
-        // GET: MedicalReportController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult getAllRecordsForPatient(string patientId = null)
         {
+            if(patientId == null)
+            {
+                patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
+
+            return View(_medicalRecordService.FindAll(med => med.PatientId == patientId, med => med.Doctor, med => med.Patient, d=>d.Doctor.Specialization));
+        }
+
+        // GET: MedicalReportController/Details/5
+        public ActionResult Details(int id, string returnUrl)
+        {
+            ViewBag.ReturnUrl = returnUrl;
             return View(_medicalRecordService.Find(med => med.Id == id, med => med.Patient, med => med.Doctor));
         }
 
-        public ActionResult Details(string doctorId, string patientId)
-        {
-            return View(_medicalRecordService.Find(med => med.DoctorId == doctorId && med.PatientId == patientId, med => med.Patient, med => med.Doctor));
-        }
+        //public ActionResult Details(string doctorId, string patientId)
+        //{
+        //    return View(_medicalRecordService.Find(med => med.DoctorId == doctorId && med.PatientId == patientId, med => med.Patient, med => med.Doctor));
+        //}
         // GET: MedicalReportController/Create
-        public ActionResult Create(string doctorId = "E123")
+        public ActionResult Create(string doctorId = null)
         {
+            if (doctorId == null)
+            {
+                doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
 
             var patients = _patientService.GetAll()
              .Select(d => new SelectListItem
@@ -62,8 +85,13 @@ namespace HealthCareApp.Controllers
         // POST: MedicalReportController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(MedicalRecord medicalRecord, string doctorId = "d2dffdfa-3168-4fe8-8e52-60ed1c08fc72")
+        public ActionResult Create(MedicalRecord medicalRecord, string doctorId = null)
         {
+            if (doctorId == null)
+            {
+                doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
+
             var patients = _patientService.GetAll()
                 .Select(d => new SelectListItem
                 {

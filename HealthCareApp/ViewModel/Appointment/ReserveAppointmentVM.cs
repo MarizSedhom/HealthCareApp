@@ -11,6 +11,7 @@ namespace HealthCareApp.ViewModel.Appointment
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
 
+        public string? DoctorId { get; set; }
         public string? DoctorImg { get; set; }
         public string? DoctorTitle { get; set; }
         public string? DoctorName { get; set; }

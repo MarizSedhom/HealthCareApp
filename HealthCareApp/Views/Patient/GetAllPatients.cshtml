@@ -1,0 +1,105 @@
+﻿@model IEnumerable<HealthCareApp.ViewModel.Patient.PatientsInfoVM>
+
+@{
+    ViewData["Title"] = "GetAllPatients";
+}
+
+<h1 class="mb-4 text-center">Patient List</h1>
+
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.PatientName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Age)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PhoneNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EmergencyContact)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MedicalHistory)
+                </th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="font-weight-bold">
+                        @Html.DisplayFor(modelItem => item.PatientName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td class="font-weight-bold">
+                        @Html.DisplayFor(modelItem => item.Age)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PhoneNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EmergencyContact)
+                    </td>
+                    <td>
+                        @{
+                            var medicalHistory = item.MedicalHistory?.Length > 30 ?
+                            item.MedicalHistory.Substring(0, 30) + "..." :
+                            item.MedicalHistory;
+                        }
+                        <span title="@item.MedicalHistory">@medicalHistory</span>
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group" role="group">
+                            <a asp-action="ManagePatientStat" asp-route-patientId="@item.Id" class="btn btn-sm btn-outline-info">Manage Patient Statistics</a>
+                            <a asp-action="EditPatientInfo" asp-route-patientId="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a asp-action="DeactivatePatientAccount" asp-route-patientId="@item.Id" class="btn btn-sm btn-outline-danger">Deactivate</a>
+                            <a asp-action="PatientHistory" asp-route-patientId="@item.Id" class="btn btn-sm btn-outline-secondary">History</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .table {
+        font-size: 0.9rem;
+    }
+
+        .table th {
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+        }
+
+    .badge {
+        font-size: 0.8rem;
+        min-width: 25px;
+        padding: 4px 6px;
+    }
+
+    .btn-group .btn {
+        margin: 2px;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    .table-responsive {
+        max-height: 75vh;
+        overflow-y: auto;
+    }
+</style>

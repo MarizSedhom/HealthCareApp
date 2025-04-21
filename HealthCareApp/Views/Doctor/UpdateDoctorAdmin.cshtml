@@ -68,7 +68,7 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="gender" class="control-label"></label>
-                    <select asp-for="gender" class="form-control" asp-items="@(new SelectList(GenderList,"Id","Name"))">
+                    <select asp-for="gender" class="form-control" asp-items="@(new SelectList(GenderList,"patientId","Name"))">
                         <option value="">select gender</option>
                     </select>
                     <span asp-validation-for="Title" class="text-danger"></span>
@@ -88,21 +88,21 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Title" class="control-label"></label>
-                    <select asp-for="Title" class="form-control" asp-items="@(new SelectList(TitleList,"Id","Name"))">
+                    <select asp-for="Title" class="form-control" asp-items="@(new SelectList(TitleList,"patientId","Name"))">
                         <option value="">select Title</option>
                     </select>
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="SelectedSpecialization" class="control-label"></label>
-                    <select asp-for="SelectedSpecialization" class="form-control" asp-items="@(new SelectList(Model.Specializations,"Id","Name"))">
+                    <select asp-for="SelectedSpecialization" class="form-control" asp-items="@(new SelectList(Model.Specializations,"patientId","Name"))">
                         <option value="">select Specialization</option>
                     </select>
                     <span asp-validation-for="SelectedSpecialization" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="SelectedSubSpecializations" class="control-label"></label>
-                    <select asp-for="SelectedSubSpecializations" class="form-control" asp-items="@(new SelectList(Model.SubSpecializationsList,"Id","Name"))">
+                    <select asp-for="SelectedSubSpecializations" class="form-control" asp-items="@(new SelectList(Model.SubSpecializationsList,"patientId","Name"))">
                     </select>
                     <span asp-validation-for="SelectedSubSpecializations" class="text-danger"></span>
                 </div>

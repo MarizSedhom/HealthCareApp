@@ -143,7 +143,7 @@
 
             <div class="form-group mb-4">
                 <label asp-for="SelectedCityId" class="form-label">City</label>
-                <select asp-for="SelectedCityId" class="form-control-custom" asp-items="@(new SelectList(Model.cities,"Id","Name"))">
+                <select asp-for="SelectedCityId" class="form-control-custom" asp-items="@(new SelectList(Model.cities,"patientId","Name"))">
                     <option value="">Select City</option>
                 </select>
                 <span asp-validation-for="SelectedCityId" class="text-danger"></span>
@@ -151,7 +151,7 @@
 
             <div class="form-group mb-4">
                 <label asp-for="SelectedRegionId" class="form-label">Region</label>
-                <select asp-for="SelectedRegionId" class="form-control-custom" asp-items="@(new SelectList(Model.regions,"Id","Name"))">
+                <select asp-for="SelectedRegionId" class="form-control-custom" asp-items="@(new SelectList(Model.regions,"patientId","Name"))">
                     <option value="">Select Region</option>
                 </select>
                 <span asp-validation-for="SelectedRegionId" class="text-danger"></span>

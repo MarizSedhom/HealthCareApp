@@ -78,8 +78,9 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public ActionResult AddReview(string doctorId = "1")
+        public ActionResult AddReview(string doctorId)
         {
+         
             var review = new AddReviewVM()
             {
                 DoctorId = doctorId,
@@ -107,7 +108,7 @@ namespace HealthCareApp.Controllers
 
 
                 reviewService.Add(review);
-                return RedirectToAction(nameof(GetDoctorReviews));
+                return RedirectToAction("ViewDoctorDetails", "Doctor", new { doctorId = review.DoctorId});
             }
             else
             {

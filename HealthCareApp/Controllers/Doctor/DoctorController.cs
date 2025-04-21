@@ -5,9 +5,13 @@ using HealthCareApp.Service;
 using HealthCareApp.ViewModel.Appointment;
 using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
+using HealthCareApp.ViewModel.Patient;
 using HealthCareApp.ViewModel.Review;
 
 using Microsoft.AspNetCore.Mvc;
+
+using Stripe;
+
 using System.Linq;
 using System.Security.Claims;
 
@@ -20,12 +24,17 @@ namespace HealthCareApp.Controllers.Doctor
 
         private IDoctorRepository DoctorRepository { get; }
         private IGenericRepoServices<Models.Review> ReviewRepository { get; }
+        private IGenericRepoServices<Appointment> AppointmentRepository { get; }
         public IAvailabilityRepository AvailabilityRepository { get; }
-        public IGenericRepoServices<Appointment> ApopointmentRepository { get; }
         private IGenericRepoServices<SubSpecialization> SubSpecializationRepository { get; }
-        public DoctorController(IDoctorRepository DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository,
-            IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, 
-            IGenericRepoServices<Models.Review> ReviewRepository, IAvailabilityRepository AvailabilityRepository , IGenericRepoServices<Appointment>apopointmentRepository)
+        NotificationService notificationService;
+
+
+
+
+        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository,
+        IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository,
+        IAvailabilityRepository AvailabilityRepository, NotificationService notificationService, IGenericRepoServices<Appointment> AppointmentRepository)
         {
             this.DoctorRepository = DectorRepository;
             specializationRepository = SpecializationRepository;
@@ -33,7 +42,31 @@ namespace HealthCareApp.Controllers.Doctor
             this.fileService = fileService;
             this.ReviewRepository = ReviewRepository;
             this.AvailabilityRepository = AvailabilityRepository;
-            ApopointmentRepository = apopointmentRepository;
+
+            this.notificationService = notificationService;
+            this.AppointmentRepository = AppointmentRepository;
+        }
+        
+        public IActionResult WelcomeDoctor()
+        {
+            var doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var welcomeDoctorVM = DoctorRepository.FindWithSelect
+             (
+                d => d.Id == doctorId,
+                d => new WelcomeDoctorVM
+                {
+                    DoctorName = $" {d.Title} {d.FirstName} {d.LastName}",
+                    TotalUpcomingAppointments = d.availabilities
+                                    .Where(a => a.Date >= DateOnly.FromDateTime(DateTime.Now))
+                                    .SelectMany(a => a.AvailableSlots
+                                    .Where(s => s.IsBooked &&(a.Date > DateOnly.FromDateTime(DateTime.Now) || s.StartTime >= TimeOnly.FromDateTime(DateTime.Now))))
+                                    .Count(),
+                    TotalReviews = d.Reviews.Where(r => r.IsApproved).Count()
+                            
+                }
+             ); 
+            return View(welcomeDoctorVM);
+
         }
 
         //doctor pending page
@@ -56,10 +89,37 @@ namespace HealthCareApp.Controllers.Doctor
 
         //doctor pending page
         [HttpGet]
-        public IActionResult ApproveDoctor(string doctorId,VerificationStatus isApproved)
+        public IActionResult ApproveDoctor(string doctorId , VerificationStatus isApproved)
         {
             Models.Doctor doctor = DoctorRepository.GetById(doctorId);
             doctor.verificationStatus = isApproved;
+            /****************Notifications*************************/
+            //notification for dr
+            if (isApproved== VerificationStatus.Accepted)
+            {
+                var notificationDr = new Notification
+                {
+                    UserId = doctorId,
+                    Message = $"Your Account as a Doctor as been Approved by admin, You can start using our services.",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.ApproveAccount,
+                };
+
+                notificationService.Notify(notificationDr);
+            }
+            else if (isApproved == VerificationStatus.Rejected)
+            {
+                var notificationDr = new Notification
+                {
+                    UserId = doctorId,
+                    Message = $"Your Account as a Doctor as been Rejected by admin, Complete your profile and provide verifications files .",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.ApproveAccount,
+                };
+
+                notificationService.Notify(notificationDr);
+            }
+
             DoctorRepository.SaveChanges();
             return RedirectToAction(nameof(ViewPendingDoctorForAdmin));
         }
@@ -377,37 +437,92 @@ namespace HealthCareApp.Controllers.Doctor
             return profileVM;
         }
 
-        public IActionResult GetAllDoctorsInfo()
-        {
-            var allDoctors = DoctorRepository.FindAllWithSelect
-            (
-                null,
-                d => new DoctorInfoVM
-                {
-                    DoctorId = d.Id,
-                    Title = d.Title.ToString(),
-                    FirstName = d.FirstName,
-                    LastName = d.LastName,
-                    Specialization = d.Specialization.Name,
-                    Rate = d.Reviews.Count(r => r.IsApproved && !r.IsDeleted) > 0 ? d.Reviews.Where(r => r.IsApproved && !r.IsDeleted).Average(r => r.Rating) : 0.0,
-                    Description = d.Description,
-                    Fees = d.Fees,
-                    ExperienceYears = d.ExperienceYears,
-                    WaitingTimeInMinutes = d.WaitingTimeInMinutes,
-                    ProfilePicture = d.ProfilePicture,
-                    SubSpecializations = d.SubSpecializations.Select(s => s.Name).ToList(),
-                    Clinics = d.Clinics.Select(c => new ClinicInfoVM
-                    {
-                        Id = c.Id,
-                        Name = c.Name,
-                        ClinicRegion = c.Region.RegionNameEn,
-                        ClinicAddress = c.ClinicAddress,
-                        ClinicPhoneNumber = c.ClinicPhoneNumber,
-                        ClinicCity = c.Region.City.CityNameEn,
-                    }).ToList()
-                }
-            );
+        /* public IActionResult GetAllDoctorsInfo()
+         {
+             var allDoctors = DoctorRepository.FindAllWithSelect
+             (
+                 null,
+                 d => new DoctorInfoVM
+                 {
+                     DoctorId = d.Id,
+                     Title = d.Title.ToString(),
+                     FirstName = d.FirstName,
+                     LastName = d.LastName,
+                     Specialization = d.Specialization.Name,
+                     Rate = d.Reviews.Count(r => r.IsApproved && !r.IsDeleted) > 0 ? d.Reviews.Where(r => r.IsApproved && !r.IsDeleted).Average(r => r.Rating) : 0.0,
+                     Description = d.Description,
+                     Fees = d.Fees,
+                     ExperienceYears = d.ExperienceYears,
+                     WaitingTimeInMinutes = d.WaitingTimeInMinutes,
+                     ProfilePicture = d.ProfilePicture,
+                     SubSpecializations = d.SubSpecializations.Select(s => s.Name).ToList(),
+                     Clinics = d.Clinics.Select(c => new ClinicInfoVM
+                     {
+                         Id = c.Id,
+                         Name = c.Name,
+                         ClinicRegion = c.Region.RegionNameEn,
+                         ClinicAddress = c.ClinicAddress,
+                         ClinicPhoneNumber = c.ClinicPhoneNumber,
+                         ClinicCity = c.Region.City.CityNameEn,
+                     }).ToList()
+                 }
+             );
 
+             return View(allDoctors);
+         }*/
+
+        public IActionResult GetAllDoctorsInfo(string title, string gender, string availability, string price, string sortOrder)
+        {
+            var allDoctors = DoctorRepository.FindAllWithSelect(
+                d =>
+                    (string.IsNullOrEmpty(title) || d.Title.ToString() == title) &&
+                    (string.IsNullOrEmpty(gender) || d.gender.ToString() == gender) &&
+                    (string.IsNullOrEmpty(price) ||
+                        (price == "lt100" && d.Fees < 100) ||
+                        (price == "100to200" && d.Fees >= 100 && d.Fees <= 200) ||
+                        (price == "200to300" && d.Fees > 200 && d.Fees <= 300) ||
+                        (price == "gt300" && d.Fees > 300)
+                    ) &&
+                    (string.IsNullOrEmpty(availability) ||
+                        (availability == "today" && d.availabilities.Any(a => a.Date == DateOnly.FromDateTime(DateTime.Today))) ||
+                        (availability == "tomorrow" && d.availabilities.Any(a => a.Date == DateOnly.FromDateTime(DateTime.Today).AddDays(1)))
+                    ),
+                        d => new DoctorInfoVM
+                        {
+                            DoctorId = d.Id,
+                            Title = d.Title.ToString(),
+                            FirstName = d.FirstName,
+                            LastName = d.LastName,
+                            Specialization = d.Specialization.Name,
+                            Rate = d.Reviews.Count(r => r.IsApproved && !r.IsDeleted) > 0 ? d.Reviews.Where(r => r.IsApproved && !r.IsDeleted).Average(r => r.Rating) : 0.0,
+                            Description = d.Description,
+                            Fees = d.Fees,
+                            ExperienceYears = d.ExperienceYears,
+                            WaitingTimeInMinutes = d.WaitingTimeInMinutes,
+                            ProfilePicture = d.ProfilePicture,
+                            SubSpecializations = d.SubSpecializations.Select(s => s.Name).ToList(),
+                            Clinics = d.Clinics.Select(c => new ClinicInfoVM
+                            {
+                                Id = c.Id,
+                                Name = c.Name,
+                                ClinicRegion = c.Region.RegionNameEn,
+                                ClinicAddress = c.ClinicAddress,
+                                ClinicPhoneNumber = c.ClinicPhoneNumber,
+                                ClinicCity = c.Region.City.CityNameEn,
+                            }).ToList()
+                        }
+            );
+            // Apply sorting - fixed to match the form parameter values
+            allDoctors = sortOrder switch
+            {
+                "rate_desc" => allDoctors.OrderByDescending(d => d.Rate).ToList(),
+                "rate_asc" => allDoctors.OrderBy(d => d.Rate).ToList(),
+                "price-high" => allDoctors.OrderByDescending(d => d.Fees).ToList(),
+                "price-low" => allDoctors.OrderBy(d => d.Fees).ToList(),
+                "waiting_asc" => allDoctors.OrderBy(d => d.WaitingTimeInMinutes).ToList(),
+                "experience" => allDoctors.OrderByDescending(d => d.ExperienceYears).ToList(),
+                _ => allDoctors
+            };
             return View(allDoctors);
         }
         
@@ -470,3 +585,4 @@ namespace HealthCareApp.Controllers.Doctor
         
     }
 }
+

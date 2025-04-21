@@ -6,37 +6,317 @@
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
-<h2 class="text-center text-secondary-emphasis">Add Review</h2>
+<style>
+    :root {
+        --patient-green: #34a853;
+        --patient-light-green: #ade1bb;
+        --doctor-blue: #C5D3E8;
+        --dark-blue: #223249;
+        --primary-blue: #A6AEBF;
+        --light-bg: #f8f9fa;
+        --text-dark: #223249;
+        --text-light: #757575;
+        --white: #ffffff;
+        --gray: #f5f5f5;
+        --dark-gray: #757575;
+        --border-color: #ddd;
+        --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
+        --button-gradient: linear-gradient(135deg, var(--patient-light-green), var(--patient-green));
+    }
 
-<div class="card shadow-sm w-50 mx-auto mt-4">
-    <div class="card-body">
-        <form asp-action="AddReview">
+    .review-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 2rem;
+    }
 
-            <div asp-validation-summary="All" class="text-danger"></div>
+    .review-card {
+        background: var(--white);
+        box-shadow: 0 15px 50px rgba(52, 168, 83, 0.12);
+        border-radius: 1.5rem;
+        max-width: 550px;
+        margin: 0 auto;
+        padding: 2.75rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(52, 168, 83, 0.15);
+        }
+
+        .review-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: var(--patient-gradient);
+        }
+
+    .form-title-icon {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        filter: drop-shadow(0 4px 6px rgba(52, 168, 83, 0.2));
+    }
+
+        .form-title-icon svg {
+            width: 65px;
+            height: 65px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+    @@keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .review-title {
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 2rem;
+        text-align: center;
+        margin-bottom: 2.5rem;
+        position: relative;
+    }
+
+        .review-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--patient-gradient);
+            border-radius: 2px;
+        }
+
+    .review-form label {
+        font-weight: 600;
+        color: var(--dark-blue);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.05rem;
+    }
+
+        .review-form label svg {
+            filter: drop-shadow(0 1px 2px rgba(52, 168, 83, 0.2));
+        }
+
+    .review-form .form-control,
+    .review-form textarea {
+        border-radius: 0.75rem;
+        border: 2px solid var(--primary-blue);
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: var(--white);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+    }
+
+        .review-form .form-control:focus,
+        .review-form textarea:focus {
+            border-color: var(--patient-green);
+            box-shadow: 0 0 0 4px rgba(52, 168, 83, 0.15);
+            outline: none;
+        }
+
+    .rating-input-group {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .star-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--patient-green);
+        font-size: 1.35rem;
+        text-shadow: 0 1px 3px rgba(52, 168, 83, 0.2);
+    }
+
+    .action-btns {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        width: 100%;
+    }
+
+    .review-btn-primary {
+        background: var(--patient-gradient);
+        color: var(--white);
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 15px rgba(52, 168, 83, 0.25);
+        width: 100%;
+        justify-content: center;
+    }
+
+        .review-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 168, 83, 0.3);
+        }
+
+    .review-btn-secondary {
+        background: var(--white);
+        color: var(--text-dark);
+        padding: 0.5rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        justify-content: center;
+        display: inline-flex;
+        /* gap: 0.5rem; */
+        color: var(--patient-green);
+        transition: all 0.3s;
+        border-radius: 8px;
+    }
+
+        .review-btn-secondary:hover {
+            background-color: var(--patient-light-green);
+            transform: translateX(-5px);
+            text-decoration: none;
+            color: white;
+        }
+
+    .alert-danger {
+        background-color: #fff5f5;
+        border-color: #ffecec;
+        color: #e53e3e;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        border-left: 4px solid #e53e3e;
+    }
+
+    .text-danger {
+        color: #e53e3e;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
+    @@media (max-width: 576px) {
+        .review-container {
+            padding: 1.5rem 1rem;
+        }
+
+        .review-card {
+            padding: 2rem 1.5rem;
+            border-radius: 1.25rem;
+        }
+
+        .review-title {
+            font-size: 1.75rem;
+        }
+
+        .action-btns {
+            gap: 0.75rem;
+        }
+    }
+</style>
+
+<div class="review-container">
+    <div class="review-card">
+        <div class="form-title-icon">
+            <svg viewBox="0 0 24 24" width="56" height="56" fill="none">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                      fill="url(#gradient)"
+                      stroke="var(--patient-green)"
+                      stroke-width="1.5" />
+                <defs>
+                    <linearGradient id="gradient" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="var(--patient-light-green)" />
+                        <stop offset="100%" stop-color="var(--patient-green)" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+
+        <h2 class="review-title">Share Your Experience</h2>
+
+        <form asp-action="AddReview" class="review-form">
             <input type="hidden" name="PatientId" value="@userId" />
             <input type="hidden" name="DoctorId" value="@Model.DoctorId" />
 
-            <div class="form-group">
-                <label asp-for="Rating" class="control-label">Rating:</label>
-                <input asp-for="Rating" class="form-control" min="0" max="5" placeholder="Enter rating from 0 to 5"/>
-                <span asp-validation-for="Rating" class="text-danger"></span>
-            </div><br />
+            <div asp-validation-summary="All" class="text-danger"></div>
 
-            <div class="form-group">
-                <label asp-for="ReviewText" class="control-label">Review: </label><br />
-                <textarea asp-for="ReviewText" class="form-control"></textarea>
-                <span asp-validation-for="ReviewText" class="text-danger"></span>
-            </div><br />
-           
-            <div class="form-group">
-                <input type="submit" value="Add" class="btn btn-success me-4" />|
-                <a asp-action="GetDoctorReviews" asp-route-doctorId="@Model.DoctorId" class="btn btn-secondary ms-3">Back to Reviews</a>
+            <div class="rating-input-group">
+                <label asp-for="Rating">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--patient-green)" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                    Rating
+                </label>
+                <div class="position-relative">
+                    <input asp-for="Rating" class="form-control"
+                           min="0" max="5"
+                           placeholder="Rate from 0 to 5"
+                           style="padding-right: 2.5rem;" />
+                    <span class="star-icon">★</span>
+                </div>
+                <span asp-validation-for="Rating" class="text-danger small d-block mt-1"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ReviewText">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--patient-green)" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                    Your Feedback
+                </label>
+                <textarea asp-for="ReviewText" class="form-control"
+                          rows="4"
+                          placeholder="Describe your experience..."></textarea>
+                <span asp-validation-for="ReviewText" class="text-danger small d-block mt-1"></span>
+            </div>
+
+            <div class="action-btns">
+                <button type="submit" class="review-btn-primary">
+                    
+                    Submit Review
+                </button>
+                <a asp-controller="Doctor" asp-action="ViewDoctorDetails" asp-route-doctorId="@Model.DoctorId" class="review-btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>
+
+                    Back to Reviews
+                </a>
             </div>
         </form>
     </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

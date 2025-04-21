@@ -1,0 +1,108 @@
+﻿@model HealthCareApp.ViewModel.Patient.PatientStatVM
+
+@{
+    ViewData["Title"] = "ManagePatientStat";
+}
+
+<div class="container">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h1 class="h4 mb-0">Patient Statistics Dashboard</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Left Column - Appointments -->
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h2 class="h5 mb-0">Appointments Summary</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                                <span class="font-weight-bold">Completed Appointments:</span>
+                                <span class="badge badge-success badge-pill text-dark">@Model.CompletedAppointments</span>
+                            </div>
+                            <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                                <span class="font-weight-bold">Canceled Appointments:</span>
+                                <span class="badge badge-danger badge-pill text-dark">@Model.CanceledAppointments</span>
+                            </div>
+                            <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                                <span class="font-weight-bold">Upcoming Appointments:</span>
+                                <span class="badge badge-primary badge-pill text-dark">@Model.UpcomingAppointments</span>
+                            </div>
+                            <div class="stat-item d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                <span class="font-weight-bold">Rescheduled Appointments:</span>
+                                <span class="badge badge-warning badge-pill text-dark">@Model.RescheduledAppointments</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Reviews -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h2 class="h5 mb-0">Reviews Summary</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                                <span class="font-weight-bold">Approved Reviews:</span>
+                                <span class="badge badge-success badge-pill text-dark">@Model.ApprovedReviews</span>
+                            </div>
+                            <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                                <span class="font-weight-bold">Rejected Reviews:</span>
+                                <span class="badge badge-danger badge-pill text-dark">@Model.RejectedReviews</span>
+                            </div>
+                            <div class="stat-item d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                <span class="font-weight-bold">Pending Reviews:</span>
+                                <span class="badge badge-secondary badge-pill text-dark">@Model.PendingReviews</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a asp-action="GetAllPatients" class="btn btn-secondary">Back To List</a>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+    .card-header {
+        padding: 1rem 1.25rem;
+    }
+
+    .stat-item {
+        transition: all 0.3s ease;
+    }
+
+        .stat-item:hover {
+            background-color: #f8f9fa !important;
+            transform: translateX(5px);
+        }
+
+    .badge-pill {
+        font-size: 0.9rem;
+        min-width: 2.5rem;
+        padding: 0.35em 0.65em;
+    }
+
+    body {
+        background-color: #f5f7fa;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin-top: 2rem;
+    }
+</style>

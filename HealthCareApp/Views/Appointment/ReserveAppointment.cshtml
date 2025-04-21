@@ -4,98 +4,247 @@
 @{
     ViewData["Title"] = "Reserve Appointment";
     var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
     string day = Model.Date == DateOnly.FromDateTime(DateTime.Now) ? "Today"
                  : Model.Date == DateOnly.FromDateTime(DateTime.Now).AddDays(1) ? "Tomorrow"
                  : Model.Day.ToString();
 }
 
-<h2 class="text-center mb-4">Reserve an Appointment</h2>
+<style>
+    :root {
+        --patient-green: #34a853;
+        --patient-light-green: #ade1bb;
+        --doctor-blue: #C5D3E8;
+        --dark-blue: #223249;
+        --primary-blue: #A6AEBF;
+        --light-bg: #f8f9fa;
+        --text-dark: #223249;
+        --text-light: #757575;
+        --white: #ffffff;
+        --gray: #f5f5f5;
+        --dark-gray: #757575;
+        --border-color: #ddd;
+        --hover-blue: #f0f4fa;
+        --patient-gradient: linear-gradient(135deg, #D0E8C5, var(--patient-green));
+        --button-gradient: linear-gradient(135deg, var(--patient-light-green), var(--patient-green));
+        --button-gradient-reverse: linear-gradient(135deg, var(--patient-green), var(--patient-light-green));
+    }
 
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="card shadow-sm mb-4 rounded-4">
-            <div class="row g-0">
-                <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
-                    <img src="@Model.DoctorImg" alt="Doctor Image" class="img-fluid rounded-circle border border-2" style="height: 180px; width: 180px; object-fit: cover;" />
+    .booking-card {
+        background: var(--white);
+        border-radius: 1rem;
+        box-shadow: 0 10px 30px rgba(52, 168, 83, 0.1);
+        border: none;
+        transition: transform 0.3s ease;
+    }
+
+        .booking-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .doctor-profile-reserve {
+        background: var(--patient-gradient);
+        border-radius: 1rem 1rem 0 0;
+        padding: 2rem;
+    }
+
+    .doctor-img {
+        width: 120px;
+        height: 120px;
+        border: 3px solid var(--white);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .time-badge {
+        background: var(--patient-light-green);
+        color: var(--text-dark);
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+    }
+
+    .form-section {
+        background: var(--light-bg);
+        border-radius: 0 0 1rem 1rem;
+        padding: 2rem;
+    }
+
+    .form-control:focus {
+        border-color: var(--patient-green);
+        box-shadow: 0 0 0 0.25rem rgba(52, 168, 83, 0.25);
+    }
+
+    .btn-patient {
+        background: var(--button-gradient);
+        color: var(--white);
+        border: none;
+        padding: 0.75rem 2rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-patient:hover {
+            background: var(--button-gradient-reverse);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+    /* Back button styling with patient gradient */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        /* gap: 0.5rem; */
+        color: var(--patient-green);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        /* border: 1px solid var(--border-color); */
+    }
+
+        .back-link:hover {
+            background: rgba(173, 225, 187, 0.1);
+            color: var(--dark-blue);
+            transform: translateX(-5px);
+            text-decoration: none;
+            border-color: transparent;
+        }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Doctor Profile Header -->
+            <div class="booking-card mb-4">
+                <div class="doctor-profile-reserve text-center">
+                    <div class="d-flex flex-column align-items-center">
+                        <img src="~/uploads/image/Doctor/@Model.DoctorImg"
+                             class="doctor-img rounded-circle mb-3"
+                             alt="Doctor @Model.DoctorName">
+                        <div class="text-white">
+                            <h3 class="mb-1 fw-bold">@Model.DoctorName</h3>
+                            <h5 class="mb-3">@Model.DoctorTitle</h5>
+                            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                <span class="time-badge">
+                                    <i class="fas fa-calendar-day me-2"></i>@day, @Model.Date.ToString("MMM dd")
+                                </span>
+                                <span class="time-badge">
+                                    <i class="fas fa-clock me-2"></i>@Model.StartTime - @Model.EndTime
+                                </span>
+                                <span class="time-badge">
+                                    <i class="fas fa-money-bill-wave me-2"></i>@Model.Fees
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="text-muted mb-1">@Model.DoctorTitle</h5>
-                        <h4 class="fw-bold">@Model.DoctorName</h4>
-                        <p class="text-muted mb-2">@Model.Specialization at <strong>@Model.Clinic</strong></p>
-                        <p class="small text-secondary">@Model.DoctorDescription</p>
 
-                        <hr />
-
-                        <div class="row mb-2">
-                            <div class="col-md-6">
-                                <p><strong>Date:</strong> <span class="badge bg-light text-dark">@day, @Model.Date.ToString("MMM dd")</span></p>
+                <!-- Appointment Details -->
+                <div class="p-4">
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <div class="text-center p-3 rounded-3" style="background: var(--light-bg);">
+                                <i class="fas fa-stethoscope fa-2x text-muted mb-3"></i>
+                                <h5 class="mb-1">@Model.Specialization</h5>
+                                <small class="text-muted">Specialization</small>
                             </div>
-                            <div class="col-md-6">
-                                <p><strong>Time:</strong> @Model.StartTime - @Model.EndTime</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 rounded-3" style="background: var(--light-bg);">
+                                <i class="fas fa-hospital fa-2x text-muted mb-3"></i>
+                                <h5 class="mb-1">@Model.Clinic</h5>
+                                <small class="text-muted">Clinic</small>
                             </div>
-                            <div class="col-md-6">
-                                <p><strong>Mode:</strong> <span class="badge bg-warning text-dark">@Model.Mode</span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Waiting Time:</strong> <span class="text-muted">@Model.WaitingTime</span> mins</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Fees:</strong> <span class="fw-bold text-success">@Model.Fees</span></p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 rounded-3" style="background: var(--light-bg);">
+                                <i class="fas fa-clock fa-2x text-muted mb-3"></i>
+                                <h5 class="mb-1">@Model.WaitingTime mins</h5>
+                                <small class="text-muted">Wait Time</small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Reservation Form -->
-        <div class="card p-4 shadow-sm rounded-4">
-            <form id="appointmentForm" method="post">
-                <div asp-validation-summary="All" class="text-danger"></div>
+            <!-- Reservation Form -->
+            <div class="booking-card">
+                <div class="form-section">
+                    <h4 class="mb-4 fw-bold text-center" style="color: var(--patient-green);">
+                        <i class="fas fa-calendar-check me-2"></i>Complete Your Booking
+                    </h4>
 
-                <input asp-for="SlotId" type="hidden" />
-                <input type="hidden" value="@patientId" name="PatientId" />
+                    <form id="appointmentForm" method="post">
 
-                <div class="mb-3">
-                    <label asp-for="PatientName" class="form-label fw-semibold"></label>
-                    <input asp-for="PatientName" class="form-control" disabled />
+                        <input asp-for="SlotId" type="hidden" />
+                        <input type="hidden" value="@patientId" name="PatientId" />
+
+                        <!-- Patient Info -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold" style="color: var(--text-dark);">
+                                <i class="fas fa-user me-2"></i>Patient Information
+                            </label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="PatientName" class="form-control" disabled
+                                               style="border-color: var(--patient-light-green);">
+                                        <label asp-for="PatientName"></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="PatientPhone" class="form-control" disabled
+                                               style="border-color: var(--patient-light-green);">
+                                        <label asp-for="PatientPhone"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Section -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold" style="color: var(--text-dark);">
+                                <i class="fas fa-credit-card me-2"></i>Payment Details
+                            </label>
+                            <div class="form-floating">
+                                <select asp-for="PaymentMethod"
+                                        asp-items="@Html.GetEnumSelectList(typeof(PaymentMethod))"
+                                        class="form-select"
+                                        style="border-color: var(--patient-light-green);">
+                                </select>
+                                <label asp-for="PaymentMethod"></label>
+                                <span asp-validation-for="PaymentMethod" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-3 flex-column align-items-center justify-content-center mt-5">
+
+                            <input type="submit" value="Confirm Booking"
+                                   class="btn btn-patient rounded-pill px-4" />
+                            <a asp-controller="Doctor" asp-action="ViewDoctorDetails" asp-route-doctorId="@Model.DoctorId"
+                               class="back-link">
+                                <i class="fas fa-arrow-left"></i>Back
+                            </a>
+                        </div>
+
+                        <!-- Hidden Fields -->
+                        <input asp-for="Fees" type="hidden" />
+                        <input asp-for="DoctorName" type="hidden" />
+                        <input asp-for="DoctorTitle" type="hidden" />
+                        <input asp-for="Specialization" type="hidden" />
+                        <input asp-for="Clinic" type="hidden" />
+                        <input asp-for="Date" type="hidden" />
+                        <input asp-for="StartTime" type="hidden" />
+                        <input asp-for="EndTime" type="hidden" />
+                    </form>
                 </div>
-
-                <div class="mb-3">
-                    <label asp-for="PatientPhone" class="form-label fw-semibold"></label>
-                    <input asp-for="PatientPhone" class="form-control" disabled />
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="PaymentMethod" class="form-label fw-semibold"></label>
-                    <select asp-for="PaymentMethod" asp-items="@Html.GetEnumSelectList(typeof(PaymentMethod))" class="form-select"></select>
-                    <span asp-validation-for="PaymentMethod" class="text-danger"></span>
-                </div>
-
-                <div class="d-flex gap-3">
-                    <input type="submit" value="Reserve" class="btn btn-info text-white px-4" />
-                    <a asp-action="PatientUpcomingAppointments" class="btn btn-secondary">Back to List</a>
-                </div>
-
-                <!-- Hidden Fields -->
-                <input asp-for="Fees" type="hidden" />
-                <input asp-for="DoctorName" type="hidden" />
-                <input asp-for="DoctorTitle" type="hidden" />
-                <input asp-for="Specialization" type="hidden" />
-                <input asp-for="Clinic" type="hidden" />
-                <input asp-for="Date" type="hidden" />
-                <input asp-for="StartTime" type="hidden" />
-                <input asp-for="EndTime" type="hidden" />
-            </form>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-
     <script>
         $(document).ready(function () {
             $('#appointmentForm').on('submit', function (e) {

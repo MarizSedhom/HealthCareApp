@@ -63,7 +63,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        public IActionResult DetailsByID(int id)
+        public IActionResult DetailsByID(int id, string returnUrl)
         {
             ClinicInfoVM clinic = ClinicRepo.FindWithSelect(c => c.Id == id, c => new ClinicInfoVM()
             {
@@ -76,6 +76,7 @@ namespace HealthCareApp.Controllers
                     ClinicLocation = c.ClinicLocation,
 
             });
+            ViewBag.ReturnUrl = returnUrl;
             clinic.PaginationInfo = new PaginationInfo();
 
             return View(clinic);

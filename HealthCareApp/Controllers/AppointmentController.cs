@@ -78,6 +78,7 @@ namespace HealthCareApp.Controllers
                     Date = slot.Availability.Date,
                     StartTime = slot.StartTime,
                     EndTime = slot.EndTime,
+                    DoctorId = slot.Availability.Doctor.Id,
                     DoctorImg = slot.Availability.Doctor.ProfilePicture,
                     DoctorTitle = slot.Availability.Doctor.Title.ToString(),
                     DoctorName = $"{slot.Availability.Doctor.FirstName} {slot.Availability.Doctor.LastName}",
@@ -115,6 +116,7 @@ namespace HealthCareApp.Controllers
             {
                 SuccessUrl = domain + "Appointment/SaveAppointmentWithVisa",
                 CancelUrl = domain + $"Appointment/ReserveAppointment/{appointmentVM.SlotId}", // home
+                PaymentMethodTypes = new List<string> { "card" },
                 LineItems = new List<SessionLineItemOptions>(),
                 Mode = "payment",
                 CustomerEmail = patientEmail
@@ -278,15 +280,33 @@ namespace HealthCareApp.Controllers
             return View(upcomingAppointments);
         }
 
-        public ActionResult AppointmentsHistory()
+        public ActionResult AppointmentsHistory(string patientId)
         {
+            if (patientId == null)
+            {
+                patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
+
+            IEnumerable<Appointment> patientAppointments = appointmentService.FindAll(app => app.PatientId == patientId && !app.IsDeleted, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor, app => app.AvailableSlot.Availability.Doctor.Specialization, app => app.AvailableSlot.Availability.Clinic);
+            foreach (var app in patientAppointments)
+            {
+                if (DateOnly.FromDateTime(DateTime.Now) > app.AvailableSlot.Availability.Date || (DateOnly.FromDateTime(DateTime.Now) == app.AvailableSlot.Availability.Date && TimeOnly.FromDateTime(DateTime.Now) > app.AvailableSlot.EndTime))
+                {
+                    app.Status = Status.Completed;
+                    app.PaymentStatus = PaymentStatus.Paid;
+
+                    appointmentService.Update(app);
+                }
+            }
+
             var appointmentsHistory = appointmentService.FindAllWithSelectIgnoreFilter
-            (   null,
+            (   app => app.PatientId == patientId,
                 app => new AppointmentsHistoryVM
                 {
                     Status = app.Status,
                     Date = $"{app.AvailableSlot.Availability.Date:dddd, MMMM dd, yyyy}",
                     StartTime = app.AvailableSlot.StartTime,
+                    DoctorId = app.AvailableSlot.Availability.DoctorId,
                     DoctorName = $"{app.AvailableSlot.Availability.Doctor.Title} {app.AvailableSlot.Availability.Doctor.FirstName} {app.AvailableSlot.Availability.Doctor.LastName}",
                     Mode = app.AvailableSlot.Availability.type,
                     Clinic = $"{app.AvailableSlot.Availability.Clinic.ClinicAddress} {app.AvailableSlot.Availability.Clinic.Region.RegionNameEn} {app.AvailableSlot.Availability.Clinic.Region.City.CityNameEn}",

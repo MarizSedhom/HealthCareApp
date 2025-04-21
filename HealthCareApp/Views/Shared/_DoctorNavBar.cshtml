@@ -4,6 +4,8 @@
     var user = await UserManager.GetUserAsync(User);
     var firstName = user?.FirstName;
     var lastName = user?.LastName;
+
+
     var doctor = await UserManager.Users.OfType<Doctor>()
             .FirstOrDefaultAsync(d => d.Id == user.Id);
 
@@ -26,7 +28,7 @@
     }
 </style>
 <body>
-    <nav class="doctor-navbar mb-5">
+    <nav class="doctor-navbar ">
         <div class="nav-left">
             <div class="logo">
                 <i class="fas fa-heartbeat logPulse" style="display: inline-block"></i>
@@ -34,17 +36,25 @@
             </div>
             <div class="nav-links">
                 <div class="d-flex gap-3 link-container">
+                    <a asp-controller="Doctor"
+                       asp-action="WelcomeDoctor"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "WelcomeDoctor" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Home</a>
                     <a asp-controller="Appointment"
                        asp-action="DisplayUpcomingAppoinments"
-                       class="nav-link active"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Appointment" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "DisplayUpcomingAppoinments" ? "active" : "")"
                        data-bg="var(--bg-color-2)">Appointments</a>
                     <a asp-controller="DoctorAvailability"
                        asp-action="GetAvailabilitiesForDr"
-                       class="nav-link"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "DoctorAvailability" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "GetAvailabilitiesForDr" ? "active" : "")"
                        data-bg="var(--bg-color-2)">Availability</a>
                     <a asp-controller="Review"
                        asp-action="GetDoctorReviews"
-                       class="nav-link"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Review" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "GetDoctorReviews" ? "active" : "")"
                        data-bg="var(--bg-color-2)">My Reviews</a>
                 </div>
             </div>
@@ -110,22 +120,22 @@
       
       
         // Navigation functionality
-        const navLinks = document.querySelectorAll('.link-container a');
-        navLinks.forEach(link => {
+        // // const navLinks = document.querySelectorAll('.link-container a');
+        // // navLinks.forEach(link => {
 
-            console.log(navLinks)
+        // //     console.log(navLinks)
 
-            link.addEventListener('click', function (e) {
-                            // e.preventDefault();
-                navLinks.forEach(item => item.classList.remove('active'));
-            console.log(navLinks)
+        // //     link.addEventListener('click', function (e) {
+        // //                     // e.preventDefault();
+        // //         navLinks.forEach(item => item.classList.remove('active'));
+        // //     console.log(navLinks)
 
-                this.classList.add('active');
+        // //         this.classList.add('active');
 
-                // const activeBgColor = this.getAttribute('data-bg');
-                // this.style.backgroundColor = activeBgColor || 'transparent';
-            });
-        });
+        // //         // const activeBgColor = this.getAttribute('data-bg');
+        // //         // this.style.backgroundColor = activeBgColor || 'transparent';
+        // //     });
+        // // });
     </script>
 </body>
 </html> 

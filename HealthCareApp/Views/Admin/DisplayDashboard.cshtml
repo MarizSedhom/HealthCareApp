@@ -1,0 +1,594 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Admin Dashboard</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --info: #3b82f6;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #374151;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dashboard-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .dashboard-section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--light-gray);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-title {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .patients-section .stat-card {
+            border-left: 4px solid var(--primary);
+        }
+
+        .doctors-section .stat-card {
+            border-left: 4px solid var(--secondary);
+        }
+
+        .appointments-section .stat-card {
+            border-left: 4px solid var(--warning);
+        }
+
+        .reviews-section .stat-card {
+            border-left: 4px solid var(--info);
+        }
+
+        .chart-container {
+            height: 250px;
+            margin-top: 20px;
+            border-radius: 8px;
+            background-color: var(--light-gray);
+            padding: 10px;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Healthcare Admin Dashboard</h1>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- Patients Section -->
+            <div class="dashboard-section patients-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-injured"></i> Patients Overview
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Total Patients</div>
+                        <div class="stat-value">@Model.TotalPatients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Planned Patients</div>
+                        <div class="stat-value">@Model.TotalPannedPatients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Male Patients</div>
+                        <div class="stat-value">@Model.TotalMalePatients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Female Patients</div>
+                        <div class="stat-value">@Model.TotalFemalePatients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Avg. Patient Age</div>
+                        <div class="stat-value">@Model.AvgPatientsAge</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Avg. Male Age</div>
+                        <div class="stat-value">@Model.AvgMalePatientsAge</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Avg. Female Age</div>
+                        <div class="stat-value">@Model.AvgFemalePatientsAge</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="patientDemographicsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Doctors Section -->
+            <div class="dashboard-section doctors-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-md"></i> Doctors Overview
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Total Doctors</div>
+                        <div class="stat-value">@Model.TotalDoctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Approved Doctors</div>
+                        <div class="stat-value">@Model.TotalApprovedDoctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Rejected Doctors</div>
+                        <div class="stat-value">@Model.TotalRejectedDoctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Male Doctors</div>
+                        <div class="stat-value">@Model.TotalMaleDoctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Female Doctors</div>
+                        <div class="stat-value">@Model.TotalFemaleDoctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Avg. Doctor Age</div>
+                        <div class="stat-value">@Model.AvgDoctorsAge</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="doctorDemographicsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Doctor Roles Section -->
+            <div class="dashboard-section doctors-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-tag"></i> Doctor Roles
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Professors</div>
+                        <div class="stat-value">@Model.TotalProfessors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Lecturers</div>
+                        <div class="stat-value">@Model.TotalLecturers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Consultants</div>
+                        <div class="stat-value">@Model.TotalConsultants</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Specialists</div>
+                        <div class="stat-value">@Model.TotalSpecialists</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="doctorRolesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Appointments Section -->
+            <div class="dashboard-section appointments-section">
+                <h2 class="section-title">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Upcoming</div>
+                        <div class="stat-value">@Model.TotalUpcomingAppointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Rescheduled</div>
+                        <div class="stat-value">@Model.TotalRescheduledAppointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Cancelled</div>
+                        <div class="stat-value">@Model.TotalCancelledAppointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Completed</div>
+                        <div class="stat-value">@Model.TotalCompletedAppointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Max This Month</div>
+                        <div class="stat-value">@Model.MaxAppointmentsNumThisMonth</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="appointmentStatusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Reviews & Payments Section -->
+            <div class="dashboard-section reviews-section">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i> Reviews & Payments
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Pending Reviews</div>
+                        <div class="stat-value">@Model.TotalPendingReviews</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Approved Reviews</div>
+                        <div class="stat-value">@Model.TotalApprovedReviews</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Rejected Reviews</div>
+                        <div class="stat-value">@Model.TotalRejectedReviews</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Total Payments</div>
+                        <div class="stat-value">@Model.TotalPayments</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="reviewsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include required libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- Initialize Charts -->
+    <script>
+        // Set default font for all charts
+        Chart.defaults.font.family = "'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#6b7280';
+        
+        // ===== Patient Demographics Chart =====
+        const patientCtx = document.getElementById('patientDemographicsChart').getContext('2d');
+        const patientChart = new Chart(patientCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [@Model.TotalMalePatients, @Model.TotalFemalePatients],
+                    backgroundColor: ['#3b82f6', '#ec4899'],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Patient Gender Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Doctor Demographics Chart =====
+        const doctorDemoCtx = document.getElementById('doctorDemographicsChart').getContext('2d');
+        const doctorDemoChart = new Chart(doctorDemoCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [@Model.TotalMaleDoctors, @Model.TotalFemaleDoctors],
+                    backgroundColor: ['#3b82f6', '#ec4899'],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Doctor Gender Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Doctor Roles Chart =====
+        const doctorRolesCtx = document.getElementById('doctorRolesChart').getContext('2d');
+        const doctorRolesChart = new Chart(doctorRolesCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Professors', 'Lecturers', 'Consultants', 'Specialists'],
+                datasets: [{
+                    data: [
+                        @Model.TotalProfessors, 
+                        @Model.TotalLecturers, 
+                        @Model.TotalConsultants, 
+                        @Model.TotalSpecialists
+                    ],
+                    backgroundColor: [
+                        '#10b981', // green
+                        '#3b82f6', // blue
+                        '#f59e0b', // amber
+                        '#8b5cf6'  // purple
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Doctor Roles Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Appointment Status Chart =====
+        const appointmentCtx = document.getElementById('appointmentStatusChart').getContext('2d');
+        const appointmentChart = new Chart(appointmentCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Upcoming', 'Rescheduled', 'Cancelled', 'Completed', 'Max This Month'],
+                datasets: [{
+                    label: 'Appointments',
+                    data: [
+                        @Model.TotalUpcomingAppointments, 
+                        @Model.TotalRescheduledAppointments, 
+                        @Model.TotalCancelledAppointments, 
+                        @Model.TotalCompletedAppointments,
+                        @Model.MaxAppointmentsNumThisMonth
+                    ],
+                    backgroundColor: [
+                        '#3b82f6',  // blue
+                        '#f59e0b',  // amber
+                        '#ef4444',  // red
+                        '#10b981',  // green
+                        '#8b5cf6'   // purple
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Appointment Status',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Reviews Chart =====
+        const reviewsCtx = document.getElementById('reviewsChart').getContext('2d');
+        const reviewsChart = new Chart(reviewsCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Pending', 'Approved', 'Rejected'],
+                datasets: [{
+                    data: [
+                        @Model.TotalPendingReviews, 
+                        @Model.TotalApprovedReviews, 
+                        @Model.TotalRejectedReviews
+                    ],
+                    backgroundColor: [
+                        '#f59e0b',  // amber
+                        '#10b981',  // green
+                        '#ef4444'   // red
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Review Status Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
