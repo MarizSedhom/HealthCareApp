@@ -99,7 +99,7 @@
                     </label>
                     <select asp-for="AvailableId"
                             class="form-control custom-select"
-                            asp-items="@(new SelectList(ViewBag.DrAvailabeDays, "Id", "Name"))">
+                            asp-items="@(new SelectList(ViewBag.DrAvailabeDays, "patientId", "Name"))">
                         <option value="">Select Day</option>
                     </select>
                     <span asp-validation-for="AvailableId" class="text-danger small"></span>

@@ -10,7 +10,7 @@ public class SubSpecialization
     [RegularExpression(@"^[A-Za-z&,]+(?: [A-Za-z&,]+)*(?: \([A-Za-z&,]+(?: [A-Za-z&,]+)*\))?$",
         ErrorMessage = "Invalid format. Must be words with single spaces and an optional description in parentheses.")]
     [Unique<SubSpecialization>("The name is already in use.", "Name")]
-    //[Unique<SubSpecialization>("Combination of subspecialization name & specialization name is already in use.", "SpecializationId", "Id")]
+    //[Unique<SubSpecialization>("Combination of subspecialization name & specialization name is already in use.", "SpecializationId", "patientId")]
     public string Name { get; set; }
 
     [ForeignKey("Specialization")]

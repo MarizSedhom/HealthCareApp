@@ -48,16 +48,16 @@ public class UniqueAttribute<T> : ValidationAttribute where T : class
         }).ToList();
 
         // Add expression id != current id (to check if any object with another id has the unique values)
-        var idProp = modelType.GetProperty("Id"); // ensure matching property id if there is a view model
+        var idProp = modelType.GetProperty("patientId"); // ensure matching property id if there is a view model
         if (idProp != null)
         {
             var idValue = idProp.GetValue(validationContext.ObjectInstance);
-            var dbId = Expression.Property(parameter, "Id");
+            var dbId = Expression.Property(parameter, "patientId");
             var idNotEqual = Expression.NotEqual(dbId, Expression.Constant(idValue));
             expressions.Add(idNotEqual);
 
             // Check if the db entity & model all properties values not changed to skip validation
-            var current = repo.Find(e => EF.Property<object>(e, "Id") == idValue);
+            var current = repo.Find(e => EF.Property<object>(e, "patientId") == idValue);
             if (current != null)
             {
                 var unchanged = properties.All(p =>

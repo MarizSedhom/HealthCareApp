@@ -31,8 +31,8 @@ namespace HealthCareApp.ViewModel.Doctor
         //    PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.PatientPhone;
         //    IsBooked = s.IsBooked;
         //    Status = (s.IsBooked) ? "Booked" : "Available";
-        //    AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id;
-        //    SlotId = s.Id;
+        //    AppointmentId = (s.Appointment == null) ? null : s.Appointment.patientId;
+        //    SlotId = s.patientId;
         //    AvailabilityId = s.AvailabilityId;
 
         //}
