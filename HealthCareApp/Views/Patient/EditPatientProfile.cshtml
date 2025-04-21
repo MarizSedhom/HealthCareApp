@@ -1,0 +1,269 @@
+﻿@model HealthCareApp.ViewModel.Patient.EditPatientInfoVM;
+
+@{
+    ViewData["Title"] = "Update Patient Profile";
+}
+
+<style>
+    :root {
+        --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-green: #34a853;
+        --virtual-green: #4ca853;
+        --bg-color-2: #f7fff7;
+    }
+
+    .patient-profile-header {
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
+
+    .bg-light-green {
+        background-color: #D0E8C5;
+    }
+
+    .btn-highlight-green {
+        background-color: var(--highlight-green);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .btn-highlight-green:hover {
+            background-color: var(--virtual-green);
+            transform: translateY(-2px);
+        }
+
+    .card {
+        transition: transform 0.2s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+    .rounded-3 {
+        border-radius: 1rem !important;
+    }
+
+    .text-highlight-green {
+        color: var(--highlight-green);
+    }
+
+    .bg-highlight-green {
+        background-color: var(--highlight-green);
+    }
+
+    .btn-highlight-green {
+        background-color: var(--highlight-green);
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-highlight-green:hover {
+            background-image: linear-gradient(to right, var(--highlight-green), #4ca853);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+            .btn-highlight-green:hover::before {
+                left: 0;
+            }
+
+        .btn-highlight-green span {
+            position: relative;
+            z-index: 1;
+        }
+
+    .shadow-name {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--highlight-green);
+        box-shadow: 0 0 0 0.25rem rgba(52, 168, 83, 0.25);
+    }
+
+    .form-floating > label {
+        color: #6c757d;
+    }
+
+    .input-group-text {
+        background-color: var(--light-gray);
+        color: var(--dark-blue);
+    }
+
+    .btn-cancel {
+        background-color: var(--dark-blue);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .btn-cancel:hover {
+            background-color: #2e4366;
+            transform: translateY(-2px);
+        }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--dark-blue);
+    }
+
+    .required::after {
+        content: "*";
+        color: red;
+        margin-left: 4px;
+    }
+</style>
+
+<div class="container-fluid p-0">
+    <!-- Profile Header -->
+    <div class="patient-profile-header my-5" style="background: var(--patient-gradient);">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <!-- Patient Info -->
+                <div class="col text-white mx-5">
+                    <h1 class="display-5 fw-bold mb-3 shadow-name">Update Your Profile</h1>
+                    <p class="fs-5 mb-0">Make changes to your personal information and medical history</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <form asp-action="EditPatientProfile" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+            <input type="hidden" asp-for="@Model.patientId" />
+
+            <div class="row g-4">
+                <!-- Left Column -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-header bg-highlight-green text-white py-3 rounded-top">
+                            <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Personal Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label asp-for="FirstName" class="form-label required">First Name</label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="LastName" class="form-label required">Last Name</label>
+                                <input asp-for="LastName" class="form-control" placeholder="Enter your last name" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label required">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                          @*   <div class="mb-3">
+                                <label asp-for="PhoneNumber" class="form-label required">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="Enter your phone number" />
+                                </div>
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div> *@
+
+                            <div class="mb-3">
+                                <label asp-for="DateOfBirth" class="form-label required">Date of Birth</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                    <input asp-for="DateOfBirth" class="form-control" type="date" />
+                                </div>
+                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Gender" class="form-label required">Gender</label>
+                                <select asp-for="Gender" class="form-select">
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="EmergencyContact" class="form-label">Emergency Contact</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                                    <input asp-for="EmergencyContact" class="form-control" placeholder="Emergency contact number" />
+                                </div>
+                                <span asp-validation-for="EmergencyContact" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-header bg-highlight-green text-white py-3 rounded-top">
+                            <h5 class="mb-0"><i class="fas fa-file-medical me-2"></i>Medical History</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label asp-for="MedicalHistory" class="form-label">Medical History</label>
+                                <textarea asp-for="MedicalHistory" class="form-control" rows="15"
+                                          placeholder="Enter your medical history including any allergies, chronic conditions, previous surgeries, or medications you're currently taking."></textarea>
+                                <span asp-validation-for="MedicalHistory" class="text-danger"></span>
+                                <div class="form-text text-muted mt-2">
+                                    <i class="fas fa-info-circle me-1"></i> Please provide detailed information about your medical history to help doctors provide better care.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-center gap-3 mt-5">
+                <a asp-action="GetPatientProfile" class="btn btn-lg btn-cancel px-5 py-3 rounded-pill shadow-sm">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-lg btn-highlight-green px-5 py-3 rounded-pill shadow-sm">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Add client-side validation for password matching
+        $(document).ready(function() {
+            $("#ConfirmPassword").on("keyup", function() {
+                var newPassword = $("#NewPassword").val();
+                var confirmPassword = $(this).val();
+
+                if (newPassword !== confirmPassword) {
+                    $(this).addClass("is-invalid");
+                    if (!$(this).next().hasClass("invalid-feedback")) {
+                        $(this).after("<div class='invalid-feedback'>Passwords do not match</div>");
+                    }
+                } else {
+                    $(this).removeClass("is-invalid");
+                    $(this).next(".invalid-feedback").remove();
+                }
+            });
+        });
+    </script>
+}

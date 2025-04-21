@@ -1,6 +1,8 @@
 ﻿using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using HealthCareApp.ViewModel.Patient;
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 
@@ -10,11 +12,13 @@ namespace HealthCareApp.Controllers
     {
         private readonly IGenericRepoServices<Patient> PatientRepo;
         private readonly IGenericRepoServices<MedicalRecord> MedicalRepo;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public PatientController(IGenericRepoServices<Patient> PatientRepo, IGenericRepoServices<MedicalRecord> MedicalRepo)
+        public PatientController(IGenericRepoServices<Patient> PatientRepo, IGenericRepoServices<MedicalRecord> MedicalRepo, UserManager<ApplicationUser> userManager)
         {
             this.PatientRepo = PatientRepo;
             this.MedicalRepo = MedicalRepo;
+            _userManager = userManager;
         }
 
         public IActionResult Index(int page = 1, int pageSize = 6)
@@ -235,6 +239,95 @@ namespace HealthCareApp.Controllers
         public IActionResult PatientHistory(string patientId)
         {
             return RedirectToAction("AppointmentsHistory", "Appointment", new { patientId });
+        }
+
+
+        //action for profile patient
+        public async Task<IActionResult> GetPatientProfile()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+            {
+                return NotFound();
+            }
+
+            var patient = PatientRepo.Find(p=>p.Id==userId, p=>p.Appointments);
+
+            if (patient == null)
+            {
+                return NotFound();
+            }
+
+            // Calculate age from date of birth
+            int age = DateTime.Now.Year - patient.DateOfBirth.Year;
+            if (DateTime.Now.DayOfYear < patient.DateOfBirth.DayOfYear)
+            {
+                age--;
+            }
+
+            // Create view model
+            var viewModel = new PatientsInfoVM
+            {
+                Id = patient.Id,
+                Age = age,
+                PatientName = $"{patient.FirstName} {patient.LastName}",
+                Email = patient.Email,
+                PhoneNumber = patient.PhoneNumber,
+                EmergencyContact = patient.EmergencyContact,
+                MedicalHistory = patient.MedicalHistory
+            };
+
+            return View(viewModel);
+        }
+
+        public IActionResult EditPatientProfile()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+            {
+                return NotFound();
+            }
+
+            //var patient = PatientRepo.Find(p => p.Id == userId, p => p.Appointments);
+
+            var patientInfo = PatientRepo.FindWithSelect(p => p.Id == userId,
+                p => new EditPatientInfoVM
+                {
+                    patientId = p.Id,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName,
+                    Email = p.Email,
+                    DateOfBirth = p.DateOfBirth,
+                    EmergencyContact = p.EmergencyContact,
+                    MedicalHistory = p.MedicalHistory,
+                    Gender = p.gender
+                }
+            );
+            return View(patientInfo);
+        }
+
+        [HttpPost]
+        public IActionResult EditPatientProfile(string patientId, EditPatientInfoVM editPatientVM)
+        {
+            if (ModelState.IsValid)
+            {
+                Patient patient = PatientRepo.GetById(patientId);
+
+                patient.Email = editPatientVM.Email;
+                patient.FirstName = editPatientVM.FirstName;
+                patient.LastName = editPatientVM.LastName;
+                patient.DateOfBirth = editPatientVM.DateOfBirth;
+                patient.EmergencyContact = editPatientVM.EmergencyContact;
+                patient.gender = editPatientVM.Gender;
+                patient.MedicalHistory = editPatientVM.MedicalHistory;
+
+                PatientRepo.Update(patient);
+                return RedirectToAction("GetPatientProfile");
+            }
+            else
+            {
+                return View(editPatientVM);
+            }
         }
     }
 }
