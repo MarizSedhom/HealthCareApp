@@ -22,7 +22,7 @@ namespace HealthCareApp.Controllers.Doctor
         private readonly IGenericRepoServices<Specialization> specializationRepository;
         private readonly IFileService fileService;
 
-        private IDoctorRepository DoctorRepository { get; }
+        private IGenericRepoServices<Models.Doctor> DoctorRepository { get; }
         private IGenericRepoServices<Models.Review> ReviewRepository { get; }
         private IGenericRepoServices<Appointment> AppointmentRepository { get; }
         public IAvailabilityRepository AvailabilityRepository { get; }
@@ -526,61 +526,7 @@ namespace HealthCareApp.Controllers.Doctor
             return View(allDoctors);
         }
         
-        //doctor mangment
-        
-        [HttpGet]
-        public IActionResult GetDoctorManagment(string doctorId  )        
-        {
-            Models.Doctor doctor = DoctorRepository.GetDrWithClinicAvailabilities(doctorId);
-            DrManagementVM drManagementVM = new DrManagementVM();
-            drManagementVM.doctorId = doctorId;
-            drManagementVM.DoctorVM = UpdateDoctorAdmin(doctorId);
-            drManagementVM.clinicInfoVMs = doctor.Clinics.Select(c => new ClinicInfoVM()
-            {
-                ClinicAddress = c.ClinicAddress,
-                ClinicCity = c.Region.City.CityNameEn,
-                ClinicPhoneNumber = c.ClinicPhoneNumber,
-                ClinicRegion = c.Region.RegionNameEn,
-                Id = c.Id,
-                Name = c.Name,
-                doctorId = doctorId
-            });
-            drManagementVM.Availabilities = doctor.availabilities.Select(v=>new GetAvailabilityForDrVM
-            {
-                AvailableSlotsCnt = v.AvailableSlots.Count(v => !v.IsBooked),
-                AppointmentCnt = v.AvailableSlots.Count(v => v.IsBooked),
-                ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
-                Date = v.Date,
-                dayOfWeek = v.dayOfWeek,
-                DoctorId = doctorId,
-                Duration = v.Duration,
-                StartTime = v.StartTime,
-                EndTime = v.EndTime,
-                TimeRange = $"{v.StartTime} - {v.EndTime}",
-                Id = v.Id,
-                type = v.type,
-                
-            }).OrderBy(v => v.Date);
-
-
-          //var slots = doctor.availabilities.SelectMany(s => s.AvailableSlots).Where(s => s.IsBooked).Select(s => s.Appointment)//.Select(
-            drManagementVM.upcomingAppointmentsVM= ApopointmentRepository.FindAllWithSelect( null,app => new UpcomingAppointmentsVM
-            {
-                Status = app.Status,
-                Day = app.AvailableSlot.Availability.dayOfWeek,
-                Date = app.AvailableSlot.Availability.Date,
-                Time = app.AvailableSlot.StartTime,
-                PatientId = app.PatientId,
-                PatientName = $"{app.Patient.FirstName} {app.Patient.LastName}",
-                PatientPhone = app.Patient.PhoneNumber,
-                Mode = app.AvailableSlot.Availability.type,
-                paymentStatus = app.PaymentStatus,
-                paymentMethod = app.PaymentMethod,
-
-
-            });
-            return View(drManagementVM);
-        }
+      
 
         
     }
