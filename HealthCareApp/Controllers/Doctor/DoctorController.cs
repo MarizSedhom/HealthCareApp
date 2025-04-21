@@ -22,12 +22,12 @@ namespace HealthCareApp.Controllers.Doctor
 
         private IGenericRepoServices<Models.Doctor> DoctorRepository { get; }
         private IGenericRepoServices<Models.Review> ReviewRepository { get; }
+        private IGenericRepoServices<Appointment> AppointmentRepository { get; }
         public IAvailabilityRepository AvailabilityRepository { get; }
-
         private IGenericRepoServices<SubSpecialization> SubSpecializationRepository { get; }
         NotificationService notificationService;
 
-        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository, IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository, IAvailabilityRepository AvailabilityRepository, NotificationService notificationService)
+        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository, IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository, IAvailabilityRepository AvailabilityRepository, NotificationService notificationService, IGenericRepoServices<Appointment> AppointmentRepository)
         {
             this.DoctorRepository = DectorRepository;
             specializationRepository = SpecializationRepository;
@@ -36,6 +36,28 @@ namespace HealthCareApp.Controllers.Doctor
             this.ReviewRepository = ReviewRepository;
             this.AvailabilityRepository = AvailabilityRepository;
             this.notificationService = notificationService;
+            this.AppointmentRepository = AppointmentRepository;
+        }
+        
+        public IActionResult WelcomeDoctor()
+        {
+            var doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var welcomeDoctorVM = DoctorRepository.FindWithSelect
+             (
+                d => d.Id == doctorId,
+                d => new WelcomeDoctorVM
+                {
+                    DoctorName = $" {d.Title} {d.FirstName} {d.LastName}",
+                    TotalUpcomingAppointments = d.availabilities
+                                    .Where(a => a.Date >= DateOnly.FromDateTime(DateTime.Now))
+                                    .SelectMany(a => a.AvailableSlots
+                                    .Where(s => s.IsBooked &&(a.Date > DateOnly.FromDateTime(DateTime.Now) || s.StartTime >= TimeOnly.FromDateTime(DateTime.Now))))
+                                    .Count(),
+                    TotalReviews = d.Reviews.Where(r => r.IsApproved).Count()
+                            
+                }
+             ); 
+            return View(welcomeDoctorVM);
         }
 
         //doctor pending page
