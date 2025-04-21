@@ -288,7 +288,7 @@
 
                         <div class="form-group mb-3">
                             <label asp-for="gender" class="form-label fw-bold"></label>
-                            <select asp-for="gender" class="form-select" asp-items="@(new SelectList(GenderList,"patientId","Name"))"></select>
+                            <select asp-for="gender" class="form-select" asp-items="@Html.GetEnumSelectList(typeof(Gender))"></select>
                             <span asp-validation-for="gender" class="text-danger small"></span>
                         </div>
                     </div>
@@ -297,7 +297,7 @@
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label asp-for="Title" class="form-label fw-bold"></label>
-                            <select asp-for="Title" asp-items="@(new SelectList(TitlesList,"patientId","Name"))" class="form-control"></select>
+                            <select asp-for="Title" class="form-select" asp-items="@Html.GetEnumSelectList(typeof(Title))"></select>
                             <span asp-validation-for="Title" class="text-danger small"></span>
                         </div>
 
