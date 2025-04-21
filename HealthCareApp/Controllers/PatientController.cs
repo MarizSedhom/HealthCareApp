@@ -1,7 +1,7 @@
 ﻿using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using HealthCareApp.ViewModel.Patient;
-
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
@@ -12,12 +12,14 @@ namespace HealthCareApp.Controllers
     {
         private readonly IGenericRepoServices<Patient> PatientRepo;
         private readonly IGenericRepoServices<MedicalRecord> MedicalRepo;
+        private readonly IGenericRepoServices<Appointment> AppointmentRepo;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public PatientController(IGenericRepoServices<Patient> PatientRepo, IGenericRepoServices<MedicalRecord> MedicalRepo, UserManager<ApplicationUser> userManager)
+        public PatientController(IGenericRepoServices<Patient> PatientRepo, IGenericRepoServices<MedicalRecord> MedicalRepo, UserManager<ApplicationUser> userManager, IGenericRepoServices<Appointment> AppointmentRepo)
         {
             this.PatientRepo = PatientRepo;
             this.MedicalRepo = MedicalRepo;
+            this.AppointmentRepo = AppointmentRepo;
             _userManager = userManager;
         }
 
@@ -328,6 +330,38 @@ namespace HealthCareApp.Controllers
             {
                 return View(editPatientVM);
             }
+        }
+
+        public IActionResult DisplayPatientsForDoctor()
+        {
+
+            string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var patients = AppointmentRepo.FindAllWithSelect(a => a.AvailableSlot.Availability.DoctorId == doctorId,
+
+                p => new AllPatientsForDoctorVM
+                {
+                    PatientId = p.PatientId,
+                    PatientName = p.Patient.FirstName + " " + p.Patient.LastName,
+                    Age = DateTime.Now.Year - p.Patient.DateOfBirth.Year -
+                        (DateTime.Now.DayOfYear < p.Patient.DateOfBirth.DayOfYear ? 1 : 0),
+                    Email = p.Patient.Email,
+                    PhoneNumber = p.Patient.PhoneNumber,
+                    EmergencyContact = p.Patient.EmergencyContact,
+                    MedicalHistory = p.Patient.MedicalHistory
+                },
+                p => p.Patient).DistinctBy(p => p.PatientId).ToList();
+                
+                foreach(var patient in patients)
+            {
+                var medicalRecord = MedicalRepo.FindWithSelect(mr => mr.PatientId == patient.PatientId && mr.DoctorId == doctorId, m => m.Id);
+
+                patient.MedicalRecordId = medicalRecord;
+            }
+
+            return View(patients);
+            
+      
         }
     }
 }

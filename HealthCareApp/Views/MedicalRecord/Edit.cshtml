@@ -1,74 +1,182 @@
 ﻿@model HealthCareApp.Models.MedicalRecord
-
 @{
     ViewData["Title"] = "Edit Medical Record";
 }
 
-<div class="container-fluid">
-    <h1 class="mb-4">Dr. @ViewBag.Doctor</h1>
-    <h4 class="text-teal-600 mb-4">Edit Medical Record</h4>
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+        --virtual-blue: #4e7dc5;
+    }
 
-    <div class="card medical-form-card shadow-lg">
-        <div class="card-body">
+    .medical-record-card {
+        max-width: 1000px;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: none;
+    }
+
+    .gradient-header {
+        background: var(--doctor-gradient);
+        padding: 2.5rem 2rem;
+        border-bottom: 4px solid var(--dark-blue);
+    }
+
+    .patient-avatar {
+        width: 80px;
+        height: 80px;
+        background: #C5D3E8;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .medical-history-box {
+        background: rgba(197, 211, 232, 0.6);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .form-textarea {
+        background: var(--light-gray);
+        border: 2px solid #C5D3E8;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        min-height: 150px;
+        transition: all 0.3s ease;
+    }
+
+        .form-textarea:focus {
+            border-color: var(--virtual-blue);
+            box-shadow: 0 0 0 3px rgba(78, 125, 197, 0.2);
+        }
+
+    .gradient-button {
+        background: linear-gradient(135deg, #C5D3E8 0%, var(--dark-blue) 100%);
+        color: white !important;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+        .gradient-button:hover {
+            opacity: 0.9;
+            background: linear-gradient(135deg, var(--dark-blue) 0%, #C5D3E8 100%);
+            transform: translateY(-1px);
+        }
+
+    .back-button {
+        background: var(--dark-blue);
+        color: var(--white) !important;
+        border: none;
+        text-decoration: none;
+    }
+
+        .back-button:hover {
+            background: rgba(197, 211, 232, 0.6);
+            transform: translateX(-5px);
+            box-shadow: 0 4px 12px rgba(34, 50, 73, 0.1);
+            color: var(--dark-blue) !important;
+        }
+        .footer{
+        background: rgba(197, 211, 232, 0.1);
+    }
+
+</style>
+
+<div class="container-fluid d-flex justify-content-center align-items-center min-vh-100 p-4"
+    >
+    <div class="medical-record-card w-100">
+        <!-- Header -->
+        <div class="gradient-header text-white">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fas fa-file-medical fa-2x"></i>
+                <div>
+                    <h1 class="h2 mb-1">Edit Medical Record</h1>
+                    <h2 class="h6 mb-0 text-[#A6AEBF]">
+                        @Model.Patient.FirstName @Model.Patient.LastName
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body bg-white p-4">
             <form asp-action="Edit" class="row g-4">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="Id" />
 
-                <!-- Left Column (Patient Select) -->
-                <div class="col-md-4 pe-4 border-end">
-                    <div class="patient-select-wrapper">
-                        <div class="form-group patient-select">
-                            <input type="hidden" asp-for="DoctorId" />
-                  
-                            <label asp-for="PatientId" class="control-label">
-                                <i class="fas fa-user-injured icon"></i> Patient
-                            </label>
-                            <div class="custom-select">
-                                <select asp-for="PatientId" class="form-control" asp-items="ViewBag.Patients">
-                                    <option value="">-- Select Patient --</option>
-                                </select>
-                                <span class="custom-arrow"><i class="fas fa-chevron-down"></i></span>
+                <!-- Left Column -->
+                <div class="col-md-4 pe-4 border-end border-[#C5D3E8]">
+                    <div class="bg-[#f8f9fa] rounded-2xl p-4 border-2 border-[#C5D3E8]">
+                        <div class="d-flex flex-column align-items-center">
+                            <div class="patient-avatar">
+                                <i class="fas fa-user fa-2x text-[#223249]"></i>
                             </div>
-                            <span asp-validation-for="PatientId" class="text-danger"></span>
-                        </div>
-
-                        <!-- Patient Summary -->
-                        <div class="patient-summary mt-4">
-                            <div class="text-center py-3">
-                                <i class="fas fa-user-circle fa-4x text-blue-400"></i>
-                                @* <p class="mt-2 text-muted">Patient: @Model.Patient?.FullName</p> *@
+                            <h3 class=" text-[#223249] mt-3 mb-1">
+                                @Model.Patient.FirstName @Model.Patient.LastName
+                            </h3>
+                            <p class="text-muted mb-4">
+                                @{
+                                    var today = DateOnly.FromDateTime(DateTime.Today);
+                                    var age = today.Year - Model.Patient.DateOfBirth.Year;
+                                    if (Model.Patient.DateOfBirth > today.AddYears(-age)) age--;
+                                }
+                                Age: @age years
+                            </p>
+                            <div class="medical-history-box w-100 d-flex flex-column align-items-center">
+                                <h4 class=" font-semibold mb-2">Medical History</h4>
+                                <div class="text-muted small h6">
+                                    @if (!string.IsNullOrEmpty(Model.Patient.MedicalHistory))
+                                    {
+                                        @Html.Raw(Model.Patient.MedicalHistory)
+                                    }
+                                    else
+                                    {
+                                        <span>No medical history recorded</span>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column (Form Fields) -->
+                <!-- Right Column -->
                 <div class="col-md-8 ps-4">
-                    <div class="form-group">
-                        <label asp-for="Diagnosis" class="control-label">
-                            <i class="fas fa-stethoscope me-2"></i>Diagnosis
-                        </label>
-                        <textarea asp-for="Diagnosis" class="form-control diagnosis-input" rows="3"
+                    <div class="form-group mb-4">
+                        <label class="h4 form-label text-[#4e7dc5] font-semibold mb-2 d-block">Diagnosis</label>
+                        <textarea asp-for="Diagnosis"
+                                  class="form-textarea"
+                                  rows="5" cols="70"
                                   placeholder="Enter diagnosis details..."></textarea>
-                        <span asp-validation-for="Diagnosis" class="text-danger"></span>
+                        <span asp-validation-for="Diagnosis" class="text-danger small"></span>
                     </div>
 
-                    <div class="form-group mt-4">
-                        <label asp-for="Prescription" class="control-label">
-                            <i class="fas fa-prescription-bottle-alt me-2"></i>Prescription
-                        </label>
-                        <textarea asp-for="Prescription" class="form-control prescription-input" rows="5"
+                    <div class="form-group mb-4">
+                        <label class="h4 form-label text-[#4e7dc5] font-semibold mb-2 d-block">Prescription</label>
+                        <textarea asp-for="Prescription"
+                                  class="form-textarea"
+                                  rows="7" cols="70"
                                   placeholder="List medications and instructions..."></textarea>
-                        <span asp-validation-for="Prescription" class="text-danger"></span>
+                        <span asp-validation-for="Prescription" class="text-danger small"></span>
                     </div>
+                </div>
 
-                
-
-                    <div class="form-group mt-5">
-                        <button type="submit" class="btn btn-save">
+                <!-- Footer -->
+                <div class="col-12 border-top border-[#C5D3E8] pt-4 footer">
+                    <div class="d-flex flex-column align-items-center justify-content-end gap-3">
+                        <button type="submit" class="gradient-button">
                             <i class="fas fa-save me-2"></i>Save Changes
                         </button>
-                        <a asp-action="Index" class="btn btn-back ms-3">
+                        <a href="@ViewBag.ReturnUrl" class="btn back-button ">
                             <i class="fas fa-arrow-left me-2"></i>Back to List
                         </a>
                     </div>
@@ -77,151 +185,6 @@
         </div>
     </div>
 </div>
-
-    <style>
-        /* Main Container */
-        .medical-form-card {
-            border-radius: 15px;
-            border: none;
-            background: #ffffff;
-        }
-
-        /* Patient Select Section */
-        .patient-select-wrapper {
-            position: sticky;
-            top: 20px;
-        }
-
-        .patient-select {
-            position: relative;
-            margin-bottom: 2rem;
-        }
-
-            .patient-select .control-label {
-                display: block;
-                margin-bottom: 10px;
-                font-weight: 600;
-                color: #2c3e50;
-                position: relative;
-                padding-left: 30px;
-            }
-
-                .patient-select .control-label .icon {
-                    position: absolute;
-                    left: 0;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    color: #3a7bd5;
-                    font-size: 1.1rem;
-                }
-
-            .patient-select select {
-                appearance: none;
-                width: 100%;
-                padding: 12px 20px;
-                border: 2px solid #e0f2fe;
-                border-radius: 10px;
-                background: #f8fafc;
-                font-size: 15px;
-                color: #1e3a8a;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            }
-
-                .patient-select select:focus {
-                    outline: none;
-                    border-color: #3a7bd5;
-                    box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.2);
-                    background: #ffffff;
-                }
-
-        .custom-arrow {
-            position: absolute;
-            right: 15px;
-            top: 70%;
-            transform: translateY(-50%);
-            color: #3a7bd5;
-            pointer-events: none;
-        }
-
-}
-
-        /* Patient Summary */
-        .patient-summary {
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 20px;
-            border: 1px dashed #cbd5e1;
-        }
-
-        /* Right Column Styles */
-        .diagnosis-input, .prescription-input {
-            border-radius: 10px;
-            border: 2px solid #e2e8f0;
-            background: #f8fafc;
-            transition: all 0.3s;
-        }
-
-            .diagnosis-input:focus, .prescription-input:focus {
-                border-color: #3a7bd5;
-                box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.2);
-                background: #ffffff;
-            }
-
-        .date-input {
-            border-radius: 10px;
-            padding: 10px 15px;
-        }
-
-        /* Buttons */
-        .btn-save {
-            background: linear-gradient(135deg, #3a7bd5, #00d2ff);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 10px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-            .btn-save:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(58, 123, 213, 0.3);
-            }
-
-        .btn-back {
-            background: #f1f5f9;
-            color: #64748b;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-            .btn-back:hover {
-                background: #e2e8f0;
-                color: #475569;
-            }
-
-        /* Form Switch */
-        .form-check-input:checked {
-            background-color: #3a7bd5;
-            border-color: #3a7bd5;
-        }
-
-        /* Responsive Adjustments */
-        @@media (max-width: 768px) {
-            .border-end {
-                border-right: none !important;
-                border-bottom: 1px solid #e2e8f0;
-                padding-bottom: 2rem;
-                margin-bottom: 2rem;
-            }
-        }
-
-
 
 @section Scripts {
     @{

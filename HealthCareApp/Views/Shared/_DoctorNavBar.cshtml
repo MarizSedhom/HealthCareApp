@@ -46,11 +46,17 @@
                        class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "DoctorAvailability" &&
                         ViewContext.RouteData.Values["Action"].ToString() == "GetAvailabilitiesForDr" ? "active" : "")"
                        data-bg="var(--bg-color-2)">Availability</a>
+                    <a asp-controller="Patient"
+                       asp-action="DisplayPatientsForDoctor"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Patient" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "DisplayPatientsForDoctor" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">My Patients</a>
                     <a asp-controller="Review"
                        asp-action="GetDoctorReviews"
                        class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Review" &&
                         ViewContext.RouteData.Values["Action"].ToString() == "GetDoctorReviews" ? "active" : "")"
                        data-bg="var(--bg-color-2)">My Reviews</a>
+
                 </div>
             </div>
         </div>

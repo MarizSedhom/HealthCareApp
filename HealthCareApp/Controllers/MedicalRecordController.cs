@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
+using HealthCareApp.ViewModel.Patient;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -59,70 +60,64 @@ namespace HealthCareApp.Controllers
         //    return View(_medicalRecordService.Find(med => med.DoctorId == doctorId && med.PatientId == patientId, med => med.Patient, med => med.Doctor));
         //}
         // GET: MedicalReportController/Create
-        public ActionResult Create(string doctorId = null)
+        public ActionResult Create(string patientId, string returnUrl, string doctorId = null)
         {
             if (doctorId == null)
             {
                 doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             }
 
-            var patients = _patientService.GetAll()
-             .Select(d => new SelectListItem
-             {
-                 Value = d.Id,
-                 Text = d.FirstName + " " + d.LastName
-             }).ToList();
-
             var doctor = _doctorService.GetById(doctorId);
+           
 
             ViewBag.Doctor = doctor.FirstName + " " + doctor.LastName;
 
-            ViewBag.Patients = patients;
+            var patient = _patientService.GetById(patientId);
+          
+
+            ViewBag.Patient = patient;  
+            ViewBag.ReturnUrl = returnUrl;
 
             return View();
         }
 
-        // POST: MedicalReportController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(MedicalRecord medicalRecord, string doctorId = null)
+        public ActionResult Create(MedicalRecord medicalRecord, string returnUrl, string doctorId = null)
         {
             if (doctorId == null)
             {
                 doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             }
 
-            var patients = _patientService.GetAll()
-                .Select(d => new SelectListItem
-                {
-                    Value = d.Id,
-                    Text = d.FirstName + " " + d.LastName
-                }).ToList();
-
             var doctor = _doctorService.GetById(doctorId);
+          
 
             ViewBag.Doctor = doctor.FirstName + " " + doctor.LastName;
 
-            ViewBag.Patients = patients;
+            var patient = _patientService.GetById(medicalRecord.PatientId);
+          
+
+            ViewBag.Patient = patient;
+            ViewBag.ReturnUrl = returnUrl;
+
             try
             {
                 medicalRecord.CreatedAt = DateTime.Now;
                 medicalRecord.DoctorId = doctorId;
-
-
                 _medicalRecordService.Add(medicalRecord);
-                return RedirectToAction("Index");
+                return Redirect(returnUrl ?? Url.Action("DisplayPatientsForDoctor", "Patient"));
             }
-            catch
+            catch (Exception ex)
             {
+                ModelState.AddModelError("", "Error creating record: " + ex.Message);
                 return View(medicalRecord);
             }
         }
 
 
-
         //GET: MedicalReportController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int id, string returnUrl)
         {
             var medicalRecord = _medicalRecordService.Find(med => med.Id == id, med => med.Patient, med => med.Doctor);
 
@@ -138,18 +133,30 @@ namespace HealthCareApp.Controllers
                     Value = p.Id,
                     Text = p.FirstName + " " + p.LastName
                 }).ToList();
+            ViewBag.ReturnUrl = returnUrl;
 
             return View(medicalRecord);
         }
 
-        // POST: MedicalReportController/Edit/5
+        //POST: MedicalReportController/Edit/5
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(MedicalRecord medicalRecord)
+        public ActionResult Edit(MedicalRecord medicalRecord, string returnUrl)
         {
-            var doctor = _doctorService.GetById(medicalRecord.DoctorId);
+            var existingRecord = _medicalRecordService.Find(m => m.Id == medicalRecord.Id);
+            if (existingRecord == null)
+                return NotFound();
 
-            ViewBag.Doctor = doctor.FirstName + " " + doctor.LastName;
+            existingRecord.Diagnosis = medicalRecord.Diagnosis;
+            existingRecord.Prescription = medicalRecord.Prescription;
+
+            var doctor = _doctorService.GetById(existingRecord.DoctorId);
+           
+                ViewBag.Doctor = doctor.FirstName + " " + doctor.LastName;
+           
+           
+            
 
             ViewBag.Patients = _patientService.GetAll()
                 .Select(p => new SelectListItem
@@ -158,22 +165,24 @@ namespace HealthCareApp.Controllers
                     Text = p.FirstName + " " + p.LastName
                 }).ToList();
 
+            ViewBag.ReturnUrl = returnUrl;
 
             try
             {
-                medicalRecord.CreatedAt = DateTime.Now;
-                _medicalRecordService.Update(medicalRecord);
+              
+                _medicalRecordService.Update(existingRecord);
+                return RedirectToAction("DisplayPatientsForDoctor", "Patient");
 
-                return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
-                return View(medicalRecord);
+                ModelState.AddModelError("", "Error updating record: " + ex.Message);
+                return View(existingRecord);
             }
         }
 
 
-      
+
 
         // POST: MedicalReportController/Delete/5
         [HttpPost]

@@ -159,6 +159,7 @@ namespace HealthCareApp.Data
         public DbSet<HealthCareApp.ViewModel.Patient.PatientsInfoVM> PatientsInfoVM { get; set; } = default!;
         public DbSet<HealthCareApp.ViewModel.Patient.PatientStatVM> PatientStatVM { get; set; } = default!;
         public DbSet<HealthCareApp.ViewModel.Patient.EditPatientInfoVM> EditPatientInfoVM { get; set; } = default!;
+        public DbSet<HealthCareApp.ViewModel.Patient.AllPatientsForDoctorVM> AllPatientsForDoctorVM { get; set; } = default!;
 
     }
 

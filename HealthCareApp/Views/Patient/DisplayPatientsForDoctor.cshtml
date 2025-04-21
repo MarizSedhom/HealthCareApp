@@ -1,0 +1,593 @@
+﻿@model IEnumerable<HealthCareApp.ViewModel.Patient.AllPatientsForDoctorVM>
+
+@{
+    ViewData["Title"] = "DisplayPatientsForDoctor";
+    var currentDate = DateTime.Now;
+}
+
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+        --virtual-blue: #4e7dc5;
+        --danger-red: #dc3545;
+    }
+
+    .healthcare-container {
+        min-height: 100vh;
+        /* background: linear-gradient(to bottom, var(--light-gray), #f0f8ff); */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .header-container {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        margin-bottom: 24px;
+        background: var(--doctor-gradient);
+    }
+
+    .search-container {
+        background: var(--white);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 16px;
+        border-radius: 6px;
+        border: 1px solid rgba(197, 211, 232, 0.5);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--virtual-blue);
+            box-shadow: 0 0 0 2px rgba(78, 125, 197, 0.2);
+        }
+
+    .patient-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem;
+    }
+
+    .patient-card {
+        background: var(--white);
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(197, 211, 232, 0.3);
+        overflow: hidden;
+    }
+
+        .patient-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+    .card-header-bar {
+        height: 8px;
+        background: var(--dark-blue);
+    }
+
+    .patient-info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+    }
+
+    .patient-info-icon {
+        min-width: 24px;
+        color: var(--virtual-blue);
+        margin-right: 0.75rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 1rem;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border: 1px solid #C5D3E8;
+        background: var(--white);
+        color: var(--dark-blue);
+        text-decoration: none;
+        flex: 1;
+        min-height: 42px;
+    }
+
+        .action-button:hover {
+            background: rgba(197, 211, 232, 0.2);
+        }
+
+    .action-button-view {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border: 1px solid var(--dark-blue);
+        background: var(--white);
+        color: var(--dark-blue);
+        text-decoration: none;
+        flex: 1;
+        min-height: 42px;
+    }
+
+    .action-button-view:hover {
+            background: rgba(34, 50, 73);
+            color:white;
+    }
+        .action-button i {
+            font-size: 1rem;
+            margin-right: 8px;
+        }
+
+    .gradient-button {
+        background: var(--doctor-gradient);
+        color: white !important;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        min-height: 42px;
+        width: 100%;
+    }
+
+        .gradient-button:hover {
+            background: linear-gradient(135deg, #223249, #C5D3E8);
+        }
+
+        .gradient-button i {
+            font-size: 1rem;
+            margin-right: 8px;
+        }
+
+    .real-time-clock {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        border-radius: 8px;
+        padding: 8px 16px;
+    }
+
+    .medical-history-content {
+        background: var(--light-gray);
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        background: var(--doctor-gradient);
+        color: var(--white);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+    }
+
+    .search-wrapper {
+        position: relative;
+    }
+
+    .search-input {
+        padding-left: 40px;
+    }
+
+    #noResultsMessage {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        grid-column: 1 / -1;
+    }
+
+    .header-container-2 {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+
+    .search-container {
+        background: linear-gradient(145deg, #f5f9ff, #e4ecf7);
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(34, 50, 73, 0.1);
+        padding: 0.75rem;
+        margin-bottom: 24px;
+        border: 1px solid rgba(197, 211, 232, 0.5);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .search-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #C5D3E8, #223249);
+        }
+
+    .search-wrapper {
+        display: flex;
+        align-items: center;
+        position: relative;
+        background: white;
+        border-radius: 12px;
+        box-shadow: inset 0 2px 5px rgba(34, 50, 73, 0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .search-wrapper:focus-within {
+            box-shadow: 0 0 0 3px rgba(78, 125, 197, 0.3), inset 0 2px 5px rgba(34, 50, 73, 0.05);
+        }
+
+    .search-icon-wrapper {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #C5D3E8, #223249);
+        color: white;
+    }
+
+    .search-icon-primary {
+        position: absolute;
+        font-size: 1.2rem;
+        opacity: 0.7;
+        transform: rotate(-30deg) translateX(-2px);
+        transition: all 0.3s ease;
+    }
+
+    .search-icon-secondary {
+        position: absolute;
+        font-size: 1rem;
+        opacity: 0.9;
+        transform: translateX(3px) translateY(2px);
+        transition: all 0.3s ease;
+    }
+
+    .search-wrapper:focus-within .search-icon-primary {
+        transform: rotate(-45deg) translateX(-4px) scale(1.1);
+        opacity: 1;
+    }
+
+    .search-wrapper:focus-within .search-icon-secondary {
+        transform: translateX(5px) translateY(3px) scale(1.1);
+        opacity: 1;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 14px 16px 14px 12px;
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #223249;
+        transition: all 0.3s ease;
+        border-radius: 0;
+    }
+
+        .search-input::placeholder {
+            color: #8995a8;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .search-input:focus {
+            outline: none;
+        }
+
+    .search-clear-btn {
+        width: 40px;
+        height: 40px;
+        background: none;
+        border: none;
+        border-radius: 50%;
+        color: #223249;
+        opacity: 0.6;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 5px;
+        transition: all 0.2s ease;
+        visibility: hidden;
+    }
+
+        .search-clear-btn:hover {
+            background: rgba(197, 211, 232, 0.3);
+            opacity: 1;
+        }
+
+    .search-input:not(:placeholder-shown) + .search-clear-btn {
+        visibility: visible;
+    }
+
+    /* Add responsive adjustments */
+    @@media (max-width: 640px) {
+        .search-input
+
+    {
+        padding: 12px 12px 12px 8px;
+        font-size: 0.9rem;
+    }
+
+    .search-icon-wrapper {
+        width: 42px;
+        height: 42px;
+    }
+
+    }
+</style>
+
+<div class="healthcare-container">
+    <div class="container py-8 px-4 md:px-8 max-w-7xl mx-auto">
+        <header class="header-container mt-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center text-white">
+                <div>
+                    <div class="d-flex justify-content-between">
+                        <h1 class="text-3xl font-bold tracking-tight">My Patients</h1>
+                        <div class="real-time-clock" style="font-size:25px;">
+                            <span id="currentTime">@currentDate.ToString("hh:mm tt")</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex items-center space-x-4">
+                        <p class="text-blue-100/80" id="currentDate">@currentDate.ToString("dddd, MMMM dd, yyyy")</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="header-container-2" style="background-color: #96a5ba;">
+
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <div class="search-icon-wrapper ">
+                        <i class="fas fa-stethoscope search-icon-primary"></i>
+                        @* <i class="fas fa-search search-icon-secondary"></i> *@
+                    </div>
+                    <input type="text" id="patientSearch" class="search-input" placeholder="Search patients by name, email or phone..." />
+                    <button class="search-clear-btn" id="clearSearchBtn" title="Clear search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+                <div class="patient-grid" id="patientGrid">
+                    @foreach (var item in Model)
+                    {
+                        <div class="patient-card" data-patient-name="@item.PatientName.ToLower()" data-patient-email="@item.Email.ToLower()" data-patient-phone="@item.PhoneNumber">
+                            <div class="card-header-bar"></div>
+                            <div class="p-4">
+                                <div class="flex items-center gap-4 mb-4">
+                                    <div class="patient-info-icon">
+                                        <i class="fas fa-user-md fa-2x"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-[#223249] ms-2">@item.PatientName</h3>
+                                        <!-- Patient ID hidden as requested -->
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <div class="patient-info-item">
+                                        <i class="fas fa-birthday-cake patient-info-icon"></i>
+                                        <span>Age: @item.Age years</span>
+                                    </div>
+                                    <div class="patient-info-item">
+                                        <i class="fas fa-envelope patient-info-icon"></i>
+                                        <span>@item.Email</span>
+                                    </div>
+                                    <div class="patient-info-item">
+                                        <i class="fas fa-phone-alt patient-info-icon"></i>
+                                        <span>@item.PhoneNumber</span>
+                                    </div>
+                                    <div class="patient-info-item">
+                                        <i class="fas fa-ambulance patient-info-icon"></i>
+                                        <span>Emergency: @item.EmergencyContact</span>
+                                    </div>
+                                </div>
+
+                                <div class="action-buttons">
+                                    <button type="button"
+                                            class="action-button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#medicalHistoryModal-@item.PatientId">
+                                        <i class="fas fa-notes-medical"></i>History
+                                    </button>
+
+                                    @if (item.MedicalRecordId == 0)
+                                    {
+                                        <a asp-controller="MedicalRecord"
+                                           asp-action="Create"
+                                           asp-route-patientId="@item.PatientId"
+                                           asp-route-returnUrl="@Url.Action("DisplayPatientsForDoctor", "Patient")" as
+                                           class="flex-1">
+                                            <button class="gradient-button">
+                                                <i class="fas fa-file-medical"></i>Create Record
+                                            </button>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="MedicalRecord"
+                                           asp-action="Details"
+                                           asp-route-id="@item.MedicalRecordId"
+                                           asp-route-returnUrl="@Url.Action("DisplayPatientsForDoctor", "Patient")" as
+                                           class="flex-1">
+                                            <button class="action-button-view w-full">
+                                                <i class="fas fa-clipboard-check"></i>View Record
+                                            </button>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medical History Modal -->
+                        <div class="modal fade"
+                             id="medicalHistoryModal-@item.PatientId"
+                             tabindex="-1"
+                             aria-labelledby="medicalHistoryModalLabel-@item.PatientId">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-white">
+                                            <i class="fas fa-notes-medical mr-2"></i>
+                                            Medical History - @item.PatientName
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white"
+                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="medical-history-content">
+                                            @if (!string.IsNullOrEmpty(item.MedicalHistory))
+                                            {
+                                                @Html.Raw(item.MedicalHistory)
+                                            }
+                                            else
+                                            {
+                                                <div class="text-center py-4">
+                                                    <i class="fas fa-clipboard-list text-gray-400 text-4xl mb-2"></i>
+                                                    <p class="text-muted italic">No medical history recorded</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer d-flex justify-content-center">
+                                        <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div id="noResultsMessage">
+                        <i class="fas fa-search fa-3x text-gray-300 mb-3"></i>
+                        <p class="text-gray-500">No patients match your search criteria</p>
+                        <button id="clearSearch" class="action-button mt-3">
+                            <i class="fas fa-times-circle"></i> Clear Search
+                        </button>
+                    </div>
+                </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Update the clock in real-time
+    function updateClock() {
+        const now = new Date();
+        const timeElement = document.getElementById('currentTime');
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = hours % 12 || 12;
+        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+        timeElement.textContent = `${formattedHours}:${formattedMinutes} ${ampm}`;
+    }
+
+    // Update clock every minute
+    setInterval(updateClock, 60000);
+    updateClock(); // Initial call to display the clock right away
+
+    // Search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('patientSearch');
+        const patientCards = document.querySelectorAll('.patient-card');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+        const clearSearchBtn = document.getElementById('clearSearch');
+
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            let matchFound = false;
+
+            patientCards.forEach(card => {
+                const patientName = card.getAttribute('data-patient-name');
+                const patientEmail = card.getAttribute('data-patient-email');
+                const patientPhone = card.getAttribute('data-patient-phone');
+
+                if (!searchTerm ||
+                    patientName.includes(searchTerm) ||
+                    patientEmail.includes(searchTerm) ||
+                    patientPhone.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    matchFound = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            noResultsMessage.style.display = matchFound ? 'none' : 'block';
+        }
+
+        searchInput.addEventListener('input', performSearch);
+
+        clearSearchBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            performSearch();
+            searchInput.focus();
+        });
+    });
+
+
+      document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('patientSearch');
+        const clearBtn = document.getElementById('clearSearchBtn');
+
+        if (clearBtn && searchInput) {
+            clearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                searchInput.focus();
+                // Trigger the input event to update search results
+                searchInput.dispatchEvent(new Event('input'));
+            });
+
+            // Update clear button visibility on input
+            searchInput.addEventListener('input', function() {
+                clearBtn.style.visibility = this.value ? 'visible' : 'hidden';
+            });
+        }
+    });
+
+</script>
