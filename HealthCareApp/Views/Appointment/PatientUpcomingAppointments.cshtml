@@ -1,68 +1,475 @@
 ﻿@model IEnumerable<HealthCareApp.ViewModel.Appointment.PatientUpcomingAppointmentsVM>
-
 @{
     ViewData["Title"] = "PatientUpcomingAppointments";
+    var currentDate = DateTime.Now;
+    string activeTab = Context.Request.Query["tab"].FirstOrDefault()?.ToLower() ?? "all";
+
+    var filteredAppointments = activeTab == "all"
+        ? Model
+        : Model.Where(item =>
+            activeTab == "virtual"
+                ? item.Mode.ToString().Equals("Online", StringComparison.OrdinalIgnoreCase)
+                : item.Mode.ToString().Equals("Offline", StringComparison.OrdinalIgnoreCase)
+          ).ToList();
 }
 
-<h1 class="text-center">Upcoming Appointments</h1>
-
-
-
 <style>
-    .badge-hover:hover {
-        opacity: 0.85;
-        transform: scale(1.05);
-        transition: all 0.2s ease-in-out;
-        cursor: pointer;
+    :root {
+        --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-green: #34a853;
+        --virtual-green: #4ca853;
+        --danger-red: #dc3545;
+        --success-green: #28a745;
+        --bg-color-2: #f7fff7;
     }
+
+    .bg-healthcare-green {
+        background: #34a853;
+    }
+
+    .healthcare-container {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, var(--light-gray), var(--bg-color-2));
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .healthcare-header {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        margin-bottom: 24px;
+        background: var(--patient-gradient);
+    }
+
+    .filter-tabs {
+        width: 400px;
+        height: 48px;
+        display: flex;
+        gap: 8px;
+        background: #f0fff0;
+        border-radius: 8px;
+        padding: 4px;
+        max-width: 400px;
+        margin-bottom: 24px;
+    }
+
+    .filter-tab {
+        flex: 1;
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        color: var(--highlight-green);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        text-decoration: none;
+    }
+
+        .filter-tab.active {
+            background: var(--highlight-green);
+            color: var(--white);
+        }
+
+    .appointment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 20px;
+        padding: 2rem;
+    }
+
+    .appointment-card {
+        background: var(--white);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(208, 232, 197, 0.3);
+    }
+
+        .appointment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+    .card-header-bar {
+        height: 8px;
+        background: var(--highlight-green);
+    }
+
+        .card-header-bar.virtual {
+            background: var(--virtual-green);
+        }
+
+    .status-indicator {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+        .status-indicator.paid {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-indicator.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-indicator.unpaid {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+    .payment-method {
+        background: rgba(52, 168, 83, 0.1);
+        color: var(--virtual-green);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border: 1px solid #f0fff0;
+        background: var(--highlight-green);
+        color: var(--white);
+        width: auto;
+        text-decoration: none;
+    }
+
+        .action-button:hover {
+            background: #D0E8C5;
+            color: var(--highlight-green);
+        }
+
+    .cancel-button {
+        background: rgba(220, 53, 69, 0.1);
+        color: var(--danger-red);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+        border-radius: 50%;
+    }
+
+        .cancel-button:hover {
+            background: var(--danger-red);
+            color: var(--white);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        grid-column: 1 / -1;
+    }
+
+    .empty-state-icon {
+        background: var(--bg-color-2);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+
+    .real-time-clock {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        border-radius: 8px;
+        padding: 8px 16px;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+        .badge.offline {
+            background: var(--bg-color-2);
+            color: var(--highlight-green);
+        }
+
+        .badge.online {
+            background: rgba(52, 168, 83, 0.1);
+            color: var(--virtual-green);
+        }
+
+    .healthcare-border {
+        border-color: #D0E8C5 !important;
+        border-radius: 1rem;
+    }
+
+    .today-badge {
+        background: #e3ffd6;
+        color: #34a853;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .card-subtitle {
+        font-size: 0.875rem;
+        color: #6c757d !important;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-footer {
+        padding: 16px;
+        padding-top: 0;
+        background-color: var(--bg-color-2);
+    }
+
+    .history-button {
+        background: transparent;
+        color: var(--white);
+        border: 2px solid var(--white);
+        border-radius: 30px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+        .history-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
 </style>
 
-<a asp-action="AppointmentsHistory" class="btn btn-secondary">Appointments History</a>
+<div class="healthcare-container p-2" style="border-radius:10px">
+    <div class="container mx-auto py-8 px-4 md:px-8 max-w-7xl">
+        <header class="healthcare-header mt-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center text-white">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="text-3xl font-bold tracking-tight">Upcoming Appointments</h1>
+                        <div class="real-time-clock" style="font-size:25px;">
+                            <span id="currentTime" class="d-flex align-items-center">@currentDate.ToString("hh:mm tt")</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex items-center space-x-4">
+                        <p class="text-blue-100/80" id="currentDate">@currentDate.ToString("dddd, MMMM dd, yyyy")</p>
+                    </div>
+                </div>
+                <div>
+                    <a asp-action="AppointmentsHistory" class="history-button">
+                        <i class="fas fa-history"></i>
+                        View Appointments History
+                    </a>
+                </div>
+            </div>
+        </header>
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    @foreach (var appointment in Model.OrderBy(app => app.Date).ThenBy(app => app.StartTime))
-    {
-        var isToday = appointment.Date == DateOnly.FromDateTime(DateTime.Now);
-        var isTomorrow = appointment.Date == DateOnly.FromDateTime(DateTime.Now).AddDays(1);
-        var dateLabel = isToday ? "Today" : isTomorrow ? "Tomorrow" : appointment.Day.ToString();
+        <div class="card shadow rounded-4 border-0 my-4" style="background-color:#c5e3bd;">
+            <div class="card-body">
+                <div class="text-white p-3">
+                    <h5 class="card-title text-start text-white">Your Schedule</h5>
+                    <h6 class="card-subtitle mb-2 text-muted text-start">Managing your appointments with ease</h6>
+                    <hr />
+                </div>
 
-        <div class="col">
-            <div class="card shadow-sm rounded-4 border-0 h-100">
-                <div class="card-body">
-
-                    <!-- Title: Doctor Name -->
-                    <h5 class="card-title mb-1 fw-semibold">@appointment.DoctorTitle @appointment.DoctorName</h5>
-
-                    <!-- Subtitle: Date -->
-                    <h6 class="card-subtitle text-muted mb-3">
-                        @dateLabel, @appointment.Date.ToString("MMM dd, yyyy")
-                    </h6>
-
-                    <!-- Mode Badge -->
-                    <div class="d-flex justify-content-end mb-2">
-                        <span class="badge bg-warning text-dark badge-hover">@appointment.Mode</span>
+                <div class="d-flex justify-content-between mt-2 mb-3 p-3">
+                    <div>
+                        <h3 class="text-2xl font-bold healthcare-dark-blue mb-1">
+                            Upcoming Appointments
+                            <span class="ml-2 bg-healthcare-green rounded-circle rounded-full text-white p-2 px-3">
+                                @filteredAppointments.Count()
+                            </span>
+                        </h3>
+                        <p class="text-gray-500 text-sm">Displaying <span id="filterCount">@filteredAppointments.Count()</span> of @Model.Count() appointments</p>
                     </div>
 
-                    <!-- Details -->
-                    <p><strong>Time: </strong> @appointment.StartTime.ToString("hh\\:mm tt") - @appointment.EndTime.ToString("hh\\:mm tt")</p>
-                    <p><strong>Specialization: </strong> @appointment.Specialization</p>
-                    <p><strong>Clinic: </strong> @appointment.Clinic</p>
-                    <p><strong>Fees: </strong> @appointment.Fees</p>
-
-                    <p>
-                        <strong>Payment Status: </strong>
-                        @if (appointment.PaymentStatus == PaymentStatus.Paid)
-                        {
-                            <span class="badge bg-success badge-hover">@appointment.PaymentStatus</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary badge-hover">@appointment.PaymentStatus</span>
-                        }
-                    </p>
+                    <div class="filter-tabs">
+                        <a href="?tab=all" class="filter-tab @(activeTab == "all" ? "active" : "")">All</a>
+                        <a href="?tab=in-person" class="filter-tab @(activeTab == "in-person" ? "active" : "")">In-Person</a>
+                        <a href="?tab=virtual" class="filter-tab @(activeTab == "virtual" ? "active" : "")">Virtual</a>
+                    </div>
                 </div>
-                <a asp-action="CancelAppointment" asp-route-id="@appointment.Id" class="btn btn-danger">Cancel</a>
+
+                <div class="appointment-grid">
+                    @foreach (var appointment in filteredAppointments.OrderBy(app => app.Date).ThenBy(app => app.StartTime))
+                    {
+                        var isToday = appointment.Date == DateOnly.FromDateTime(DateTime.Now);
+
+                        <div class="appointment-card p-3" data-mode="@appointment.Mode.ToString().ToLower()">
+                            <div class="card-header-bar @(appointment.Mode.ToString() == "Online" ? "virtual" : "")"></div>
+
+                            <div class="p-6">
+                                <div class="d-flex justify-content-between mb-4">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-[#34a853] mt-3">@appointment.DoctorTitle @appointment.DoctorName</h3>
+                                        <p class="text-sm text-muted"><i class="fas fa-stethoscope mt-0 mr-2 text-[#34a853] pe-2"></i>@appointment.Specialization</p>
+                                    </div>
+                                    <div>
+                                        <span class="badge @appointment.Mode.ToString().ToLower() mt-3">
+                                            @if (appointment.Mode.ToString() == "Online")
+                                            {
+                                                <i class="fas fa-video me-1"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-hospital-user me-1"></i>
+                                            }
+                                            @appointment.Mode
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <!-- Date Card -->
+                                    <div class="col-12 col-md-6 mb-3 mb-md-0">
+                                        <div class="card h-100 border healthcare-border shadow-sm">
+                                            <div class="card-body d-flex flex-column justify-content-around">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <h6 class="card-subtitle text-muted">Date</h6>
+                                                        <h4 class="card-title mt-0">@appointment.Date.ToString("M/d/yyyy")</h4>
+                                                    </div>
+                                                    <div>
+                                                        @if (isToday)
+                                                        {
+                                                            <span class="badge today-badge">Today</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Time Card -->
+                                    <div class="col-12 col-md-6">
+                                        <div class="card h-100 border healthcare-border shadow-sm">
+                                            <div class="card-body mt-2">
+                                                <h6 class="card-subtitle text-muted">Time</h6>
+                                                <h4 class="card-title">@appointment.StartTime.ToString("hh\\:mm tt") - @appointment.EndTime.ToString("hh\\:mm tt")</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+                                    <div>
+                                        <span class="text-muted"><i class="fas fa-clinic-medical text-[#34a853] me-2"></i>@appointment.Clinic</span>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        @if (appointment.PaymentStatus == PaymentStatus.Paid)
+                                        {
+                                            <span class="status-indicator paid">
+                                                <i class="fas fa-check-circle me-1"></i>
+                                                @appointment.PaymentStatus
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-indicator unpaid">
+                                                <i class="fas fa-clock me-1"></i>
+                                                @appointment.PaymentStatus
+                                            </span>
+                                        }
+                                        <span class="payment-method">
+                                            <i class="fas fa-money-bill-wave me-1"></i>
+                                            @appointment.Fees EGP
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-center gap-2 mt-3">
+                                        <a asp-action="CancelAppointment" asp-route-id="@appointment.Id"
+                                           class="action-button w-100">
+                                            <i class="fas fa-times-circle mr-2"></i>
+                                            Cancel Appointment
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!filteredAppointments.Any())
+                    {
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-calendar-times text-[#34a853] text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-medium text-[#34a853] mb-2">No appointments found</h3>
+                            <p class="text-[#34a853]/70 max-w-md mb-6 mx-auto">
+                                You don't have any @(activeTab != "all" ? activeTab : "") appointments scheduled yet.
+                            </p>
+                            <a href="#" class="btn btn-outline-success mt-3">
+                                <i class="fas fa-calendar-plus me-2"></i>
+                                Book New Appointment
+                            </a>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
-    }
+    </div>
 </div>
+
+@functions {
+    private string GetFriendlyDay(DateOnly date)
+    {
+        if (date == DateOnly.FromDateTime(DateTime.Now)) return "Today";
+        if (date == DateOnly.FromDateTime(DateTime.Now).AddDays(1)) return "Tomorrow";
+        return date.DayOfWeek.ToString();
+    }
+}
+
+@section Scripts {
+    <script>
+        // Real-time clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent =
+                now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('currentDate').textContent =
+                now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Filter functionality
+        function updateFilterCount() {
+            const visibleCards = document.querySelectorAll('.appointment-card:not([style*="display: none"])').length;
+            document.getElementById('filterCount').textContent = visibleCards;
+        }
+
+        // Initialize from URL parameters
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('tab') || 'all';
+            updateFilterCount();
+        });
+    </script>
+}
