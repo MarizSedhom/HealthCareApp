@@ -1,0 +1,176 @@
+﻿@model HealthCareApp.ViewModel.Patient.PatientsInfoVM
+
+@{
+    ViewData["Title"] = "Patient Profile";
+}
+
+<style>
+    :root {
+        --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-green: #34a853;
+        --virtual-green: #4ca853;
+        --bg-color-2: #f7fff7;
+    }
+
+    .patient-profile-header {
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
+
+    .bg-light-green {
+        background-color: #D0E8C5;
+    }
+
+    .btn-highlight-green {
+        background-color: var(--highlight-green);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .btn-highlight-green:hover {
+            background-color: var(--virtual-green);
+            transform: translateY(-2px);
+        }
+
+    .card {
+        transition: transform 0.2s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+    .rounded-3 {
+        border-radius: 1rem !important;
+    }
+
+    .text-highlight-green {
+        color: var(--highlight-green);
+    }
+
+    .bg-highlight-green {
+        background-color: var(--highlight-green);
+    }
+
+    .btn-highlight-green {
+        background-color: var(--highlight-green);
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-highlight-green:hover {
+            background-image: linear-gradient(to right, var(--highlight-green), #4ca853);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+            .btn-highlight-green:hover::before {
+                left: 0;
+            }
+
+        .btn-highlight-green span {
+            position: relative;
+            z-index: 1;
+        }
+
+    .shadow-name {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+</style>
+
+<div class="container-fluid p-0">
+    <!-- Profile Header -->
+    <div class="patient-profile-header my-5" style="background: var(--patient-gradient);">
+        <div class="container py-5 ">
+            <div class="row align-items-center">
+               
+
+                <!-- Patient Info -->
+                <div class="col text-white mx-5">
+                    <h1 class="display-5 fw-bold mb-3 shadow-name">@Model.PatientName</h1>
+                    <div class="d-flex gap-4">
+                        <div class="badge bg-white text-highlight-green fs-6 px-4 py-2 rounded-pill">
+                            <i class="fas fa-birthday-cake me-2"></i>Age: @Model.Age years
+                        </div>
+                        <div class="badge bg-white text-highlight-green fs-6 px-4 py-2 rounded-pill">
+                            <i class="fas fa-phone me-2"></i>@Model.PhoneNumber
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row g-4">
+            <!-- Left Column -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-header bg-highlight-green text-white py-3 rounded-top">
+                        <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Personal Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row g-3">
+                            <dt class="col-sm-4 text-highlight-green">Email</dt>
+                            <dd class="col-sm-8">@Model.Email</dd>
+
+                            <dt class="col-sm-4 text-highlight-green">Phone</dt>
+                            <dd class="col-sm-8">@Model.PhoneNumber</dd>
+
+                            <dt class="col-sm-4 text-highlight-green">Emergency Contact</dt>
+                            <dd class="col-sm-8">@Model.EmergencyContact</dd>
+                        </dl>
+                    </div>
+                </div>
+
+             
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-header bg-highlight-green text-white py-3 rounded-top">
+                        <h5 class="mb-0"><i class="fas fa-file-medical me-2"></i>Medical History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            @if (!string.IsNullOrEmpty(Model.MedicalHistory))
+                            {
+                                <div class="prescription-content" style="background: rgba(255, 255, 255, 0.5); border-radius: 8px; padding: 15px;">
+                                    @Html.Raw(Model.MedicalHistory)
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No medical history available.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+               
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Button -->
+        <div class="text-center mt-5">
+        <a asp-action="EditPatientProfile"
+               class="btn btn-lg btn-highlight-green px-5 py-3 rounded-pill shadow-sm text-white">
+                <i class="fas fa-edit me-2"></i>Update Profile
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
