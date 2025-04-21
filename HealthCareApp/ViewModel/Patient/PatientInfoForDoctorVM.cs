@@ -7,5 +7,6 @@ namespace HealthCareApp.ViewModel.Patient
         public string PatientFullName { get; set; }
         public int Age { get; set; }
         public string MedicalHistory { get; set; }
+
     }
 }

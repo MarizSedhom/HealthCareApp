@@ -291,9 +291,10 @@
                     </div>
 
                     <div class="filter-tabs">
-                        <a href="?tab=all" class="filter-tab @(activeTab == "all" ? "active" : "")">All</a>
-                        <a href="?tab=in-person" class="filter-tab @(activeTab == "in-person" ? "active" : "")">In-Person</a>
-                        <a href="?tab=virtual" class="filter-tab @(activeTab == "virtual" ? "active" : "")">Virtual</a>
+                        <a href="?tab=all&doctorId=@ViewBag.DoctorId" class="filter-tab @(activeTab == "all" ? "active" : "")">All</a>
+                        <a href="?tab=in-person&doctorId=@ViewBag.DoctorId" class="filter-tab @(activeTab == "in-person" ? "active" : "")">In-Person</a>
+                        <a href="?tab=virtual&doctorId=@ViewBag.DoctorId" class="filter-tab @(activeTab == "virtual" ? "active" : "")">Virtual</a>
+
                     </div>
                 </div>
 

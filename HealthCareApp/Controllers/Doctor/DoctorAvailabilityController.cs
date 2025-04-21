@@ -101,9 +101,10 @@ namespace HealthCareApp.Controllers.Doctor
             return View(GetDrWithAvailabilities(drNames));
         }
         [HttpGet]
-        public IActionResult GetAvailabilitiesForDr()
+        public IActionResult GetAvailabilitiesForDr(string doctorId=null)
         {
-            string doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(doctorId==null)
+                doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             //??isDeleted in AVibility?
             //??diplay avaibiliy of today and future? not past ?or doctor need data for past
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
@@ -175,7 +176,7 @@ namespace HealthCareApp.Controllers.Doctor
 
             SlotRepository.HardDeleteRange(oldAvailability.AvailableSlots);
             AvailabilityRepository.HardDelete(oldAvailability);
-            return RedirectToAction(nameof(GetAvailabilitiesForDr), new { id = drId });
+            return RedirectToAction(nameof(GetAvailabilitiesForDr), new { doctorId = drId });
 
         }
 
@@ -244,7 +245,7 @@ namespace HealthCareApp.Controllers.Doctor
             //NotificationRepository.(notifications)
             NotificationRepository.AddRange(notifications);
 
-            return RedirectToAction(nameof(GetAvailabilitiesForDr), new { id = newAvailability.DoctorId });
+            return RedirectToAction(nameof(GetAvailabilitiesForDr), new { doctorId = newAvailability.DoctorId });
 
         }
         private IEnumerable<DateOnly> GetScheduleDays(IEnumerable<DateOnly> currentAvailabilities)
@@ -328,7 +329,8 @@ namespace HealthCareApp.Controllers.Doctor
                 Status = (s.IsBooked) ? "Booked" : "Available",
                 AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
                 SlotId = s.Id,
-                AvailabilityId = s.AvailabilityId
+                AvailabilityId = s.AvailabilityId,
+                drId = s.Availability.DoctorId
 
             });
 
@@ -339,13 +341,13 @@ namespace HealthCareApp.Controllers.Doctor
         //////////////////////////// Notification for patient about the cancelation ///////////////////
         public IActionResult CancelSlotPost(int slotId)
         {
-            AvailabilitySlots slot = SlotRepository.Find(s => s.Id == slotId, s => s.Appointment);
+            AvailabilitySlots slot = SlotRepository.Find(s => s.Id == slotId, s => s.Appointment,s=>s.Availability);
             /***************************************** Notification for patient about the cancelation ********************************************/
             /***************************************** how dealing with digital payment ********************************************/
             if (slot != null)
                 SlotRepository.HardDelete(slot); //delete slot with appoiment 
 
-            return RedirectToAction(nameof(ViewSlots), new { availabilityId = slot.AvailabilityId });
+            return RedirectToAction(nameof(ViewSlots), new { drId = slot.Availability.DoctorId ,availabilityId = slot.AvailabilityId });
         }
         public IActionResult RescheduleAppointment(int slotId)
         {
@@ -392,7 +394,7 @@ namespace HealthCareApp.Controllers.Doctor
 
             /***************************************** Notification for patient about Reschedule Appointment ********************************************/
 
-            return RedirectToAction(nameof(GetAvailabilitiesForDr), new { id = drId });
+            return RedirectToAction(nameof(GetAvailabilitiesForDr), new { doctorId = drId });
         }
 
 
@@ -453,12 +455,13 @@ namespace HealthCareApp.Controllers.Doctor
         //}
 
         [HttpGet]
-        public IActionResult AddAvailability()
+        public IActionResult AddAvailability(string id=null)
         {
             //DateTime.Today.AddDays(i)
-            string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (id == null)
+                  id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return View(SetAddAvailabilityVM(DoctorId));
+            return View(SetAddAvailabilityVM(id));
         }
         private AddAvailabilityVM SetAddAvailabilityVM(string id)
         {
@@ -490,8 +493,10 @@ namespace HealthCareApp.Controllers.Doctor
 
         }
         [HttpPost]
-        public IActionResult AddAvailability(string id,List<DrAvailabilityVM> DrAvailability)
+        public IActionResult AddAvailability(List<DrAvailabilityVM> DrAvailability, string id = null)
         {
+            if (id == null)
+                id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (ModelState.IsValid)
             {
@@ -528,7 +533,7 @@ namespace HealthCareApp.Controllers.Doctor
                     }
 
                 }
-                return RedirectToAction(nameof(GetAvailabilitiesForDr), new {id = id});
+                return RedirectToAction(nameof(GetAvailabilitiesForDr), new { doctorId = id});
             }
 
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);

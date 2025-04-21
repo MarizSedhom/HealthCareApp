@@ -24,7 +24,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="UpdateDoctorAdmin">
+        <form asp-action="UpdateDoctorAdmin" enctype="multipart/form-data">
             <div class="profile-picture-container">
                 <label for="ProfilePicture" style="cursor: pointer; display: inline-block;">
                     @if (!string.IsNullOrEmpty(Model.CurrentPicturePath))
@@ -75,8 +75,16 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Description" class="control-label"></label>
-                    <input asp-for="Description" class="form-control" />
+                    <textarea asp-for="Description" class="form-control"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="verificationFileFromDr" class="control-label"></label>
+                    <input asp-for="verificationFileFromDr" class="form-control" />
+                    @if(Model.CurrentPicturePath!=null){
+                        <a href="@Model.CurrrentverificationPath" target="_blank">Current Verification File</a>
+
+                    }
                 </div>
                 <div class="form-group">
                     <label asp-for="Title" class="control-label"></label>
@@ -102,11 +110,6 @@
                     <label asp-for="Fees" class="control-label"></label>
                     <input asp-for="Fees" class="form-control" />
                     <span asp-validation-for="Fees" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="WaitingTimeInMinutes" class="control-label"></label>
-                    <input asp-for="WaitingTimeInMinutes" class="form-control" />
-                    <span asp-validation-for="WaitingTimeInMinutes" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="WaitingTimeInMinutes" class="control-label"></label>
@@ -168,13 +171,13 @@
                 var SelectedSpecialization = $(this).val();
                 if (SelectedSpecialization) {
                     $.ajax({
-                        url: '/Clinic/GetRegions',
+                        url: '/SubSpecialization/GetSubSpecialization',
                         type: 'GET',
                         data: { SelectedSpecialization: SelectedSpecialization },
                         success: function (response) {
                             var SubSpecializationsDropdown = $("#SelectedSubSpecializations");
                             SubSpecializationsDropdown.empty(); // Clear existing options
-                            SubSpecializationsDropdown.append('<option value="">Select a SubSpecialization</option>');
+                            // SubSpecializationsDropdown.append('<option value="">Select a SubSpecialization</option>');
                             // Populate the product dropdown
                             $.each(response, function (index, SubSpecialization) {
                                 SubSpecializationsDropdown.append(
@@ -187,8 +190,9 @@
                             alert("Error fetching SubSpecialization: " + error);
                         }
                     });
-                } else {
-                    $("#SelectedSubSpecializations").empty().append('<option value="">Select a region</option>');
+                } 
+                else {
+                    $("#SelectedSubSpecializations").empty();
                 }
             });
         });

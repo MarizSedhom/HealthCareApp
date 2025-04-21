@@ -50,16 +50,25 @@
 @if (Model.IsBooked)
 {
     <h3>This slot has an existing appointment. You can either cancel the appointment or reschedule it. Please choose an appropriate action</h3>
-    <a asp-action="CancelSlotPost" asp-route-slotId="@Model.SlotId" class="btn btn-danger">Cancel Slot</a>
-    <a asp-action="RescheduleAppointment" asp-route-slotId="@Model.SlotId"  class="btn btn-danger"> Reschedul Appointment</a>
+    <a asp-action="CancelSlotPost" asp-controller="DoctorAvailability" asp-route-slotId="@Model.SlotId" class="btn btn-danger">Cancel Slot</a>
+    <a asp-action="RescheduleAppointment" asp-controller="DoctorAvailability" asp-route-slotId="@Model.SlotId" class="btn btn-danger"> Reschedul Appointment</a>
 }
 else
 {
     <h3>You are about to remove this slot. Are you sure you wish to cancel it?</h3>
-    <a asp-action="CancelSlotPost" asp-route-slotId="@Model.SlotId" class="btn btn-danger">Cancel Slot</a>
+    <a asp-action="CancelSlotPost" asp-controller="DoctorAvailability" asp-route-slotId="@Model.SlotId" class="btn btn-danger">Cancel Slot</a>
 
 }
 <div>
-    <a asp-action="ViewSlots" asp-route-availabilityId="@Model.AvailabilityId">Back to List</a>
+    <a asp-action="ViewSlots" asp-route-drId="@Model.drId" asp-route-availabilityId="@Model.AvailabilityId">Back to List</a>
 
 </div>
+@if (User.IsInRole("Admin"))
+{
+    <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
+       class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Back to Doctor List
+    </a>
+
+}

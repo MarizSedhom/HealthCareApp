@@ -110,7 +110,7 @@ namespace HealthCareApp.Controllers
 
             return PartialView("_DetailsByName", vm);
         }
-        public ActionResult DisplayPatientInfoForDoctor(string patientId)
+        public ActionResult DisplayPatientInfoForDoctor(string patientId,string doctorId=null)
         {
             var patientInfo = PatientRepo.FindWithSelect(p => p.Id == patientId,
                 p => new PatientInfoForDoctorVM
@@ -119,6 +119,7 @@ namespace HealthCareApp.Controllers
                     Age = DateTime.Now.Year - p.DateOfBirth.Year,
                     MedicalHistory = p.MedicalHistory
                 });
+            ViewBag.doctorId = doctorId;
 
             return View(patientInfo);
         }
