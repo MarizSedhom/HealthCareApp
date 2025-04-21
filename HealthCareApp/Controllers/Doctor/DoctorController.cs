@@ -373,6 +373,7 @@ namespace HealthCareApp.Controllers.Doctor
 
             return View(AfterDrRegisteration);
         }
+
         [HttpPost]
         public async Task< IActionResult> AfterDrRegisteration( AfterDrRegisterationVM afterRegisteration, string? DoctorId = null)
         {
@@ -403,12 +404,19 @@ namespace HealthCareApp.Controllers.Doctor
                 }
                 DoctorRepository.SaveChanges();
 
-                //# need to redirect
+                return RedirectToAction("DisplayPageForPendingDoctors", "Doctor");
             }
-            afterRegisteration.SubSpecialization = SubSpecializationRepository.FindAllWithSelect(s => s.SpecializationId == doctor.SpecializationId, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
-            return View(afterRegisteration);
+            else
+            {
+                afterRegisteration.SubSpecialization = SubSpecializationRepository.FindAllWithSelect(s => s.SpecializationId == doctor.SpecializationId, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
+                return View(afterRegisteration);
+            }
         }
 
+        public IActionResult DisplayPageForPendingDoctors()
+        {
+            return View();
+        }
 
         private DrUpdateProfileVM GetDrUpdateProfileVm(string DrId)
         {
