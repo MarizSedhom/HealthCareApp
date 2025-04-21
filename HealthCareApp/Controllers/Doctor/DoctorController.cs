@@ -287,38 +287,94 @@ namespace HealthCareApp.Controllers.Doctor
             return profileVM;
         }
 
-        public IActionResult GetAllDoctorsInfo()
-        {
-            var allDoctors = DoctorRepository.FindAllWithSelect
-            (
-                null,
-                d => new DoctorInfoVM
-                {
-                    DoctorId = d.Id,
-                    Title = d.Title.ToString(),
-                    FirstName = d.FirstName,
-                    LastName = d.LastName,
-                    Specialization = d.Specialization.Name,
-                    Rate = d.Reviews.Count(r => r.IsApproved && !r.IsDeleted) > 0 ? d.Reviews.Where(r => r.IsApproved && !r.IsDeleted).Average(r => r.Rating) : 0.0,
-                    Description = d.Description,
-                    Fees = d.Fees,
-                    ExperienceYears = d.ExperienceYears,
-                    WaitingTimeInMinutes = d.WaitingTimeInMinutes,
-                    ProfilePicture = d.ProfilePicture,
-                    SubSpecializations = d.SubSpecializations.Select(s => s.Name).ToList(),
-                    Clinics = d.Clinics.Select(c => new ClinicInfoVM
-                    {
-                        Id = c.Id,
-                        Name = c.Name,
-                        ClinicRegion = c.Region.RegionNameEn,
-                        ClinicAddress = c.ClinicAddress,
-                        ClinicPhoneNumber = c.ClinicPhoneNumber,
-                        ClinicCity = c.Region.City.CityNameEn,
-                    }).ToList()
-                }
-            );
+        /* public IActionResult GetAllDoctorsInfo()
+         {
+             var allDoctors = DoctorRepository.FindAllWithSelect
+             (
+                 null,
+                 d => new DoctorInfoVM
+                 {
+                     DoctorId = d.Id,
+                     Title = d.Title.ToString(),
+                     FirstName = d.FirstName,
+                     LastName = d.LastName,
+                     Specialization = d.Specialization.Name,
+                     Rate = d.Reviews.Count(r => r.IsApproved && !r.IsDeleted) > 0 ? d.Reviews.Where(r => r.IsApproved && !r.IsDeleted).Average(r => r.Rating) : 0.0,
+                     Description = d.Description,
+                     Fees = d.Fees,
+                     ExperienceYears = d.ExperienceYears,
+                     WaitingTimeInMinutes = d.WaitingTimeInMinutes,
+                     ProfilePicture = d.ProfilePicture,
+                     SubSpecializations = d.SubSpecializations.Select(s => s.Name).ToList(),
+                     Clinics = d.Clinics.Select(c => new ClinicInfoVM
+                     {
+                         Id = c.Id,
+                         Name = c.Name,
+                         ClinicRegion = c.Region.RegionNameEn,
+                         ClinicAddress = c.ClinicAddress,
+                         ClinicPhoneNumber = c.ClinicPhoneNumber,
+                         ClinicCity = c.Region.City.CityNameEn,
+                     }).ToList()
+                 }
+             );
 
+             return View(allDoctors);
+         }*/
+
+        public IActionResult GetAllDoctorsInfo(string title, string gender, string availability, string price, string sortOrder)
+        {
+            var allDoctors = DoctorRepository.FindAllWithSelect(
+                d =>
+                    (string.IsNullOrEmpty(title) || d.Title.ToString() == title) &&
+                    (string.IsNullOrEmpty(gender) || d.gender.ToString() == gender) &&
+                    (string.IsNullOrEmpty(price) ||
+                        (price == "lt100" && d.Fees < 100) ||
+                        (price == "100to200" && d.Fees >= 100 && d.Fees <= 200) ||
+                        (price == "200to300" && d.Fees > 200 && d.Fees <= 300) ||
+                        (price == "gt300" && d.Fees > 300)
+                    ) &&
+                    (string.IsNullOrEmpty(availability) ||
+                        (availability == "today" && d.availabilities.Any(a => a.Date == DateOnly.FromDateTime(DateTime.Today))) ||
+                        (availability == "tomorrow" && d.availabilities.Any(a => a.Date == DateOnly.FromDateTime(DateTime.Today).AddDays(1)))
+                    ),
+                        d => new DoctorInfoVM
+                        {
+                            DoctorId = d.Id,
+                            Title = d.Title.ToString(),
+                            FirstName = d.FirstName,
+                            LastName = d.LastName,
+                            Specialization = d.Specialization.Name,
+                            Rate = d.Reviews.Count(r => r.IsApproved && !r.IsDeleted) > 0 ? d.Reviews.Where(r => r.IsApproved && !r.IsDeleted).Average(r => r.Rating) : 0.0,
+                            Description = d.Description,
+                            Fees = d.Fees,
+                            ExperienceYears = d.ExperienceYears,
+                            WaitingTimeInMinutes = d.WaitingTimeInMinutes,
+                            ProfilePicture = d.ProfilePicture,
+                            SubSpecializations = d.SubSpecializations.Select(s => s.Name).ToList(),
+                            Clinics = d.Clinics.Select(c => new ClinicInfoVM
+                            {
+                                Id = c.Id,
+                                Name = c.Name,
+                                ClinicRegion = c.Region.RegionNameEn,
+                                ClinicAddress = c.ClinicAddress,
+                                ClinicPhoneNumber = c.ClinicPhoneNumber,
+                                ClinicCity = c.Region.City.CityNameEn,
+                            }).ToList()
+                        }
+            );
+            // Apply sorting - fixed to match the form parameter values
+            allDoctors = sortOrder switch
+            {
+                "rate_desc" => allDoctors.OrderByDescending(d => d.Rate).ToList(),
+                "rate_asc" => allDoctors.OrderBy(d => d.Rate).ToList(),
+                "price-high" => allDoctors.OrderByDescending(d => d.Fees).ToList(),
+                "price-low" => allDoctors.OrderBy(d => d.Fees).ToList(),
+                "waiting_asc" => allDoctors.OrderBy(d => d.WaitingTimeInMinutes).ToList(),
+                "experience" => allDoctors.OrderByDescending(d => d.ExperienceYears).ToList(),
+                _ => allDoctors
+            };
             return View(allDoctors);
         }
     }
 }
+
