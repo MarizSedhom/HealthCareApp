@@ -280,7 +280,8 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                         Description = Input.Description,
                         ExperienceYears = Input.ExperienceYears ?? 0,
                         SpecializationId = Input.SpecializationId ?? 0, 
-                        verificationStatus = VerificationStatus.Pinding
+                        verificationStatus = VerificationStatus.Pinding,
+                        ProfilePicture= Input.Gender == Gender.Male ? "DefaultMale.jpg" :"DefaultFemale.png",
                     };
 
                     var result = await _userManager.CreateAsync(user, Input.Password);

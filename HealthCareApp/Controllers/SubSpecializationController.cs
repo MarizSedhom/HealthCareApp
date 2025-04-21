@@ -12,6 +12,8 @@ namespace HealthCareApp.Controllers
             this.SubSpecializationRepo = SubSpecializationRepo;
         }
 
+
+        
         public IActionResult Index(int page = 1, int pageSize = 5)
         {
             int skip = (page - 1) * pageSize;
