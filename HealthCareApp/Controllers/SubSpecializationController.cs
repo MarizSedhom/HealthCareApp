@@ -24,7 +24,7 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
-        public IActionResult DetailsByID(int id, int page)
+        public IActionResult DetailsByID(int id, int page = 1)
         {
             var result = SubSpecializationRepo.Find(sspec => sspec.Id == id, sspec => sspec.Specialization);
             ViewBag.CurrentPage = page;
@@ -51,7 +51,7 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create(int page)
+        public IActionResult Create(int page = 1)
         {
             ViewBag.CurrentPage = page;
             SubSpecialization subSpecialization = new SubSpecialization();
@@ -60,7 +60,7 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(SubSpecialization subSpecialization, int page)
+        public IActionResult Create(SubSpecialization subSpecialization, int page = 1)
         {
             if (ModelState.IsValid)
             {
@@ -77,7 +77,7 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id, int page)
+        public IActionResult Edit(int id, int page = 1)
         {
             ViewBag.CurrentPage = page;
             var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, sspec => sspec.Specialization);
@@ -87,7 +87,7 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(SubSpecialization subSpecialization, int page)
+        public IActionResult Edit(SubSpecialization subSpecialization, int page = 1)
         {
             var existingSubSpecialization = SubSpecializationRepo.Find(
                 sspec => sspec.Id == subSpecialization.Id, sspec => sspec.Specialization);
@@ -109,7 +109,7 @@ namespace HealthCareApp.Controllers
         }
 
             [HttpGet]
-        public IActionResult Delete(int id, int page)
+        public IActionResult Delete(int id, int page = 1)
         {
             ViewBag.CurrentPage = page;
             var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, sspec => sspec.Specialization);
@@ -117,7 +117,7 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id, int page)
+        public IActionResult DeleteConfirmed(int id, int page = 1)
         {
             var deletedSSpec = SubSpecializationRepo.GetById(id);
             SubSpecializationRepo.SoftDelete(deletedSSpec);

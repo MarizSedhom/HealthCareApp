@@ -25,7 +25,7 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
-        public IActionResult DetailsByID(int id, int page)
+        public IActionResult DetailsByID(int id, int page = 1)
         {
             ViewBag.CurrentPage = page;
             return View(ClinicRepo.Find(cl => cl.Id == id));
@@ -51,14 +51,14 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create(int page)
+        public IActionResult Create(int page = 1)
         {
             ViewBag.CurrentPage = page;
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(Clinic clinic, int page)
+        public IActionResult Create(Clinic clinic, int page = 1)
         {
             clinic.DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (ModelState.IsValid)
@@ -75,14 +75,14 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id, int page)
+        public IActionResult Edit(int id, int page = 1)
         {
             ViewBag.CurrentPage = page;
             return View(ClinicRepo.Find(cl => cl.Id == id));
         }
 
         [HttpPost]
-        public IActionResult Edit(Clinic clinic, int page)
+        public IActionResult Edit(Clinic clinic, int page = 1)
         {
             if (ModelState.IsValid)
             {
@@ -97,14 +97,14 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Delete(int id, int page)
+        public IActionResult Delete(int id, int page = 1)
         {
             ViewBag.CurrentPage = page;
             return View(ClinicRepo.Find(cl => cl.Id == id));
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id, int page)
+        public IActionResult DeleteConfirmed(int id, int page = 1)
         {
             var deletedClin = ClinicRepo.GetById(id);
             ClinicRepo.SoftDelete(deletedClin);

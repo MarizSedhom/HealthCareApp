@@ -24,7 +24,7 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
-        public IActionResult DetailsByID(int id, int page)
+        public IActionResult DetailsByID(int id, int page = 1)
         {
             ViewBag.CurrentPage = page;
             return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
@@ -50,14 +50,14 @@ namespace HealthCareApp.Controllers
 
 
         [HttpGet]
-        public IActionResult Create(int page)
+        public IActionResult Create(int page = 1)
         {
             ViewBag.CurrentPage = page;
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(Specialization specialization, int page)
+        public IActionResult Create(Specialization specialization, int page = 1)
         {
             if (ModelState.IsValid)
             {
@@ -73,14 +73,14 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id, int page)
+        public IActionResult Edit(int id, int page = 1)
         {
             ViewBag.CurrentPage = page;
             return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
         }
 
         [HttpPost]
-        public IActionResult Edit(Specialization specialization, int page)
+        public IActionResult Edit(Specialization specialization, int page = 1)
         {
             if (ModelState.IsValid)
             {
@@ -93,14 +93,14 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Delete(int id, int page)
+        public IActionResult Delete(int id, int page = 1)
         {
             ViewBag.CurrentPage = page;
             return View(SpecializationRepo.GetByIdNoTracking(s => s.Id == id));
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id, int page)
+        public IActionResult DeleteConfirmed(int id, int page = 1)
         {
             var deletedSpec = SpecializationRepo.GetById(id);
             SpecializationRepo.SoftDelete(deletedSpec);

@@ -11,11 +11,11 @@ namespace HealthCareApp.Models
         public virtual Patient? Patient { get; set; }
 
         [ForeignKey("AvailableSlot")]
-        public int SlotId { get; set; }
+        public int? SlotId { get; set; }
         public virtual AvailabilitySlots? AvailableSlot { get; set; }
 
         [ForeignKey("Payment")]
-        public int PaymentId { get; set; }
+        public int? PaymentId { get; set; }
         public virtual Payment? Payment { get; set; }
 
         public bool IsDeleted { get; set; } = false;

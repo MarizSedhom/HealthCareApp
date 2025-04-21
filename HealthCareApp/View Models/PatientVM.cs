@@ -22,5 +22,7 @@ namespace HealthCareApp.View_Models
 
         [Display(Name = "Medical History")]
         public string MedicalHistory { get; set; }
+
+        public bool IsFirst { get; set; }
     }
 }

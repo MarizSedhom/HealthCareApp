@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PatientVM>
+﻿@model DoctorPatientsVM
 
 @{
     ViewData["Title"] = "Index";
@@ -28,9 +28,9 @@
         loadSearchPage(1);
     }
 
-    function loadSearchPage(page) {
+        function loadSearchPage(page) {
         if (currentSearchTerm === "") {
-            window.location.href = '/Patient/Index?page=' + page + '&pageSize=5';
+            window.location.href = '/Patient/GetDoctorPatients?page=' + page + '&pageSize=6';
             return;
         }
 
@@ -52,7 +52,7 @@
         });
     }
 
-    function search(patientId, doctorId) {
+    /*function search(patientId, doctorId) {
         const targetBodyId = `#medicalRecordsBody_${patientId}`;
         const modalElement = document.querySelector(`#medicalRecordsModal_${patientId}`);
         const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
@@ -88,7 +88,6 @@
                 $(targetBodyId).html('<div class="text-danger">An error occurred: ' + xhr.responseText + '</div>');
             }
         });
-    }
-
+    }*/
 </script>
 
