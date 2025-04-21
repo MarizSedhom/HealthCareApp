@@ -150,16 +150,9 @@
         .chart-container {
             height: 250px;
             margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--light-gray);
             border-radius: 8px;
-        }
-
-        .chart-placeholder {
-            color: var(--gray);
-            text-align: center;
+            background-color: var(--light-gray);
+            padding: 10px;
         }
 
         /* Responsive adjustments */
@@ -167,7 +160,7 @@
             .dashboard-content {
                 grid-template-columns: 1fr;
             }
-
+            
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -178,9 +171,6 @@
     <div class="dashboard-container">
         <div class="dashboard-header">
             <h1 class="dashboard-title">Healthcare Admin Dashboard</h1>
-            <div class="dashboard-actions">
-                <button class="btn btn-primary">Generate Report</button>
-            </div>
         </div>
 
         <div class="dashboard-content">
@@ -220,10 +210,7 @@
                     </div>
                 </div>
                 <div class="chart-container">
-                    <div class="chart-placeholder">
-                        <p>Patient Demographics Chart</p>
-                        <small>Chart visualization will appear here</small>
-                    </div>
+                    <canvas id="patientDemographicsChart"></canvas>
                 </div>
             </div>
 
@@ -258,6 +245,9 @@
                         <div class="stat-value">@Model.AvgDoctorsAge</div>
                     </div>
                 </div>
+                <div class="chart-container">
+                    <canvas id="doctorDemographicsChart"></canvas>
+                </div>
             </div>
 
             <!-- Doctor Roles Section -->
@@ -284,10 +274,7 @@
                     </div>
                 </div>
                 <div class="chart-container">
-                    <div class="chart-placeholder">
-                        <p>Doctor Roles Distribution</p>
-                        <small>Pie chart visualization will appear here</small>
-                    </div>
+                    <canvas id="doctorRolesChart"></canvas>
                 </div>
             </div>
 
@@ -313,12 +300,13 @@
                         <div class="stat-title">Completed</div>
                         <div class="stat-value">@Model.TotalCompletedAppointments</div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Max This Month</div>
+                        <div class="stat-value">@Model.MaxAppointmentsNumThisMonth</div>
+                    </div>
                 </div>
                 <div class="chart-container">
-                    <div class="chart-placeholder">
-                        <p>Appointment Status Chart</p>
-                        <small>Chart visualization will appear here</small>
-                    </div>
+                    <canvas id="appointmentStatusChart"></canvas>
                 </div>
             </div>
 
@@ -345,11 +333,262 @@
                         <div class="stat-value">@Model.TotalPayments</div>
                     </div>
                 </div>
+                <div class="chart-container">
+                    <canvas id="reviewsChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- For production, you would include Font Awesome from CDN -->
+    <!-- Include required libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- Initialize Charts -->
+    <script>
+        // Set default font for all charts
+        Chart.defaults.font.family = "'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#6b7280';
+        
+        // ===== Patient Demographics Chart =====
+        const patientCtx = document.getElementById('patientDemographicsChart').getContext('2d');
+        const patientChart = new Chart(patientCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [@Model.TotalMalePatients, @Model.TotalFemalePatients],
+                    backgroundColor: ['#3b82f6', '#ec4899'],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Patient Gender Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Doctor Demographics Chart =====
+        const doctorDemoCtx = document.getElementById('doctorDemographicsChart').getContext('2d');
+        const doctorDemoChart = new Chart(doctorDemoCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [@Model.TotalMaleDoctors, @Model.TotalFemaleDoctors],
+                    backgroundColor: ['#3b82f6', '#ec4899'],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Doctor Gender Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Doctor Roles Chart =====
+        const doctorRolesCtx = document.getElementById('doctorRolesChart').getContext('2d');
+        const doctorRolesChart = new Chart(doctorRolesCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Professors', 'Lecturers', 'Consultants', 'Specialists'],
+                datasets: [{
+                    data: [
+                        @Model.TotalProfessors, 
+                        @Model.TotalLecturers, 
+                        @Model.TotalConsultants, 
+                        @Model.TotalSpecialists
+                    ],
+                    backgroundColor: [
+                        '#10b981', // green
+                        '#3b82f6', // blue
+                        '#f59e0b', // amber
+                        '#8b5cf6'  // purple
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Doctor Roles Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Appointment Status Chart =====
+        const appointmentCtx = document.getElementById('appointmentStatusChart').getContext('2d');
+        const appointmentChart = new Chart(appointmentCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Upcoming', 'Rescheduled', 'Cancelled', 'Completed', 'Max This Month'],
+                datasets: [{
+                    label: 'Appointments',
+                    data: [
+                        @Model.TotalUpcomingAppointments, 
+                        @Model.TotalRescheduledAppointments, 
+                        @Model.TotalCancelledAppointments, 
+                        @Model.TotalCompletedAppointments,
+                        @Model.MaxAppointmentsNumThisMonth
+                    ],
+                    backgroundColor: [
+                        '#3b82f6',  // blue
+                        '#f59e0b',  // amber
+                        '#ef4444',  // red
+                        '#10b981',  // green
+                        '#8b5cf6'   // purple
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Appointment Status',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Reviews Chart =====
+        const reviewsCtx = document.getElementById('reviewsChart').getContext('2d');
+        const reviewsChart = new Chart(reviewsCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Pending', 'Approved', 'Rejected'],
+                datasets: [{
+                    data: [
+                        @Model.TotalPendingReviews, 
+                        @Model.TotalApprovedReviews, 
+                        @Model.TotalRejectedReviews
+                    ],
+                    backgroundColor: [
+                        '#f59e0b',  // amber
+                        '#10b981',  // green
+                        '#ef4444'   // red
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Review Status Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

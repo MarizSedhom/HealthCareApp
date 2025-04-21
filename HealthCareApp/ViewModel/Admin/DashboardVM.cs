@@ -2,7 +2,6 @@
 {
     public class DashboardVM
     {
-
         public int TotalPatients { get; set; }
         public int TotalPannedPatients { get; set; }
         public int TotalMalePatients { get; set; }
@@ -30,5 +29,6 @@
         public int TotalPendingReviews { get; set; }
         public int TotalApprovedReviews { get; set; }
         public int TotalRejectedReviews { get; set; }
+        public int MaxAppointmentsNumThisMonth { get; set; }
     }
 }
