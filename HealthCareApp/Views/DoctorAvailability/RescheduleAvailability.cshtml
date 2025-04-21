@@ -143,7 +143,7 @@
                 <form asp-action="RescheduleAvailability" class="needs-validation" novalidate>
                     <div class="mb-4">
                         <label asp-for="Id" class="form-label">Select New Day</label>
-                        <select asp-for="Id" asp-items='new SelectList(ViewBag.ScheduleDays, "patientId", "Name")' class="form-select text-center" required>
+                        <select asp-for="Id" asp-items='new SelectList(ViewBag.ScheduleDays, "Id", "Name")' class="form-select text-center" required>
                             <option value="" class="text-center">Select A Day</option>
                         </select>
                         <span asp-validation-for="Id" class="text-danger"></span>
