@@ -23,7 +23,7 @@ namespace HealthCareApp.ViewModel.Doctor
 
         public int? AppointmentId {  get; set; }
         public int? AvailabilityId {  get; set; }
-        public int?drId { get; set; }
+        public string?drId { get; set; }
         //public void SetViewSlotVM(AvailabilitySlots s)
         //{
         //    TimeRange = $"{s.StartTime} - {s.EndTime}";

@@ -27,7 +27,7 @@ namespace HealthCareApp.Controllers
             if (doctorId == null)
                 doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var result = ClinicRepo.FindAllWithSelect(s => true,c=>new ClinicInfoVM()
+            var result = ClinicRepo.FindAllWithSelect(s => s.DoctorId==doctorId,c=>new ClinicInfoVM()
             {
                 ClinicAddress = c.ClinicAddress,
                 ClinicCity = c.Region.City.CityNameEn,
@@ -35,7 +35,9 @@ namespace HealthCareApp.Controllers
                 ClinicRegion = c.Region.RegionNameEn,
                 Id = c.Id,
                 Name = c.Name,
+                doctorId=c.DoctorId
             });
+            ViewBag.doctorId = doctorId;
 
             return View(result);
         }
@@ -180,7 +182,7 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id, int page)
+        public IActionResult Edit(int id, int page, string doctorId,string returnUrl = null)
         {
             ClinicCreateVM clinic = new ClinicCreateVM();
             clinic = ClinicRepo.FindWithSelect(c => c.Id == id, c => new ClinicCreateVM()
@@ -201,13 +203,13 @@ namespace HealthCareApp.Controllers
                 Name = c.CityNameEn
             }).OrderBy(r => r.Name);
 
-            
+            ViewBag.ReturnUrl = returnUrl;
             ViewBag.CurrentPage = page;
             return View(clinic);
         }
 
         [HttpPost]
-        public IActionResult Edit(ClinicCreateVM clinicVM, int page)
+        public IActionResult Edit(ClinicCreateVM clinicVM, int page , string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -219,6 +221,8 @@ namespace HealthCareApp.Controllers
                 ClinicRepo.Update(oldClinic);
                 //ClinicRepo.UpdateNoTracking(clinicVM);
                 // ClinicRepo.Save();
+                //if (returnUrl != null)
+                //    return RedirectToAction(returnUrl);
                 return RedirectToAction(nameof(GetDoctorClinics), new { page, doctorId = clinicVM.doctorId });
             }
             else

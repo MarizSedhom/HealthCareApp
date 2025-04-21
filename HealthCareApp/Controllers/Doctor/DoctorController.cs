@@ -1,6 +1,8 @@
-﻿using HealthCareApp.Models;
+﻿using AspNetCoreGeneratedDocument;
+using HealthCareApp.Models;
 using HealthCareApp.RepositoryServices;
 using HealthCareApp.Service;
+using HealthCareApp.ViewModel.Appointment;
 using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
 using HealthCareApp.ViewModel.Review;
@@ -16,12 +18,14 @@ namespace HealthCareApp.Controllers.Doctor
         private readonly IGenericRepoServices<Specialization> specializationRepository;
         private readonly IFileService fileService;
 
-        private IGenericRepoServices<Models.Doctor> DoctorRepository { get; }
+        private IDoctorRepository DoctorRepository { get; }
         private IGenericRepoServices<Models.Review> ReviewRepository { get; }
         public IAvailabilityRepository AvailabilityRepository { get; }
-
+        public IGenericRepoServices<Appointment> ApopointmentRepository { get; }
         private IGenericRepoServices<SubSpecialization> SubSpecializationRepository { get; }
-        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository, IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository, IAvailabilityRepository AvailabilityRepository)
+        public DoctorController(IDoctorRepository DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository,
+            IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, 
+            IGenericRepoServices<Models.Review> ReviewRepository, IAvailabilityRepository AvailabilityRepository , IGenericRepoServices<Appointment>apopointmentRepository)
         {
             this.DoctorRepository = DectorRepository;
             specializationRepository = SpecializationRepository;
@@ -29,6 +33,7 @@ namespace HealthCareApp.Controllers.Doctor
             this.fileService = fileService;
             this.ReviewRepository = ReviewRepository;
             this.AvailabilityRepository = AvailabilityRepository;
+            ApopointmentRepository = apopointmentRepository;
         }
 
         //doctor pending page
@@ -75,6 +80,7 @@ namespace HealthCareApp.Controllers.Doctor
             return View(doctorsVm);
         }
 
+
         [HttpGet]
         public IActionResult ViewDoctorDetailsForAdmin()
         {
@@ -82,20 +88,104 @@ namespace HealthCareApp.Controllers.Doctor
             return View();
         }
 
-        [HttpGet]
-        public IActionResult UpdateDoctorAdmin(string doctorId= "96537cdd-bddf-4f55-b6ef-ab07e2d49f11")
+        //[HttpGet]
+        //public IActionResult UpdateDoctorAdmin(string doctorId= "236a0bce-bf14-40ad-a62e-60e8f5e93997")
+        //{
+        //    Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
+        //    AdminUpdateDrVM doctorVM = new AdminUpdateDrVM(doctor);
+        //    Specialization specs = specializationRepository.Find(s => s.Id == doctor.SpecializationId, s => s.SubSpecialization);
+        //    doctorVM.Specializations = specializationRepository.FindAllWithSelect(null, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
+        //    doctorVM.SubSpecializationsList= specs.SubSpecialization.Select(s => new Item<int, string>
+        //    {
+        //        Id = s.Id,
+        //        Name = s.Name,
+        //    });
+        //    doctorVM.CurrentPicturePath=FilePaths.DrImgPathRelative+doctorVM.ImgName;
+        //    if (doctorVM.verificationFileName != null)
+        //    {
+        //        doctorVM.CurrrentverificationPath = FilePaths.DrVerificationRelative + doctorVM.verificationFileName;
+
+        //    }
+        //    return View(doctorVM);
+
+        //}
+        private AdminUpdateDrVM UpdateDoctorAdmin(string doctorId = "236a0bce-bf14-40ad-a62e-60e8f5e93997")
         {
             Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
             AdminUpdateDrVM doctorVM = new AdminUpdateDrVM(doctor);
             Specialization specs = specializationRepository.Find(s => s.Id == doctor.SpecializationId, s => s.SubSpecialization);
             doctorVM.Specializations = specializationRepository.FindAllWithSelect(null, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
-            doctorVM.SubSpecializationsList= specs.SubSpecialization.Select(s => new Item<int, string>
+            doctorVM.SubSpecializationsList = specs.SubSpecialization.Select(s => new Item<int, string>
             {
                 Id = s.Id,
                 Name = s.Name,
             });
-            return View(doctorVM);
+            doctorVM.CurrentPicturePath = FilePaths.DrImgPathRelative + doctorVM.ImgName;
+            if (doctorVM.verificationFileName != null)
+            {
+                doctorVM.CurrrentverificationPath = FilePaths.DrVerificationRelative + doctorVM.verificationFileName;
 
+            }
+            return doctorVM;
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateDoctorAdmin(AdminUpdateDrVM doctorVM)
+        {
+            if (ModelState.IsValid)
+            {
+                Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorVM.doctorId, d => d.SubSpecializations);
+                doctor.FirstName = doctorVM.FirstName;
+                doctor.LastName = doctorVM.LastName;
+                // doctor.PhoneNumber = profileVM.PhoneNumber;
+                doctor.gender = doctorVM.gender;
+                doctor.Fees = doctorVM.Fees;
+                doctor.Description = doctorVM.Description;
+                doctor.Title = doctorVM.Title;
+                doctor.Description = doctorVM.Description;
+                doctor.ExperienceYears = doctorVM.ExperienceYears;
+                doctor.WaitingTimeInMinutes = doctorVM.WaitingTimeInMinutes;
+                doctor.SpecializationId = doctorVM.SelectedSpecialization;
+                doctor.DateOfBirth = doctorVM.DateOfBirth;
+                doctor.SubSpecializations.Clear();
+
+                IEnumerable<SubSpecialization> SubSpecializations = SubSpecializationRepository.FindAll(s => doctorVM.SelectedSubSpecializations.Contains(s.Id));
+                foreach (var sub in SubSpecializations)
+                {
+                    sub.Doctors.Add(doctor);
+                }
+
+                if (doctorVM.ProfilePicture != null)
+                {
+                    string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", FilePaths.DrImagesPath);
+                    if (!Directory.Exists(fullPath))
+                    {
+                        Directory.CreateDirectory(fullPath);
+                    }
+                    fileService.DeleteFile(doctor.ProfilePicture, FilePaths.DrImagesPath);
+                    string imageName = await fileService.uploadFileAsync(doctorVM.ProfilePicture, FilePaths.DrImagesPath);
+                    doctor.ProfilePicture = imageName;
+                }
+                if (doctorVM.verificationFileFromDr != null)
+                {
+                    string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", FilePaths.DrVerificationPath);
+                    if (!Directory.Exists(fullPath))
+                    {
+                        Directory.CreateDirectory(fullPath);
+                    }
+                    fileService.DeleteFile(doctor.verificationFileName, FilePaths.DrVerificationPath);
+                    string verificationFileName = await fileService.uploadFileAsync(doctorVM.verificationFileFromDr, FilePaths.DrVerificationPath);
+                    doctor.verificationFileName = verificationFileName;
+                }
+
+                DoctorRepository.Update(doctor);
+                return RedirectToAction(nameof(UpdateDoctorAdmin), new { doctorId = doctorVM.doctorId });
+            }
+
+            return RedirectToAction(nameof(UpdateDoctorAdmin), new { doctorId = doctorVM.doctorId });
+
+            //return View(GetDrUpdateProfileVm(profileVM.DrId));
         }
 
         [HttpGet]
@@ -280,7 +370,7 @@ namespace HealthCareApp.Controllers.Doctor
                 DrId = d.Id
             });
             if (profileVM.ImgName != null)
-                profileVM.CurrentPicturePath = FilePaths.DrPathRelative + profileVM.ImgName;
+                profileVM.CurrentPicturePath = FilePaths.DrImgPathRelative + profileVM.ImgName;
             else
                 profileVM.CurrentPicturePath = null; // #default image
 
@@ -320,5 +410,63 @@ namespace HealthCareApp.Controllers.Doctor
 
             return View(allDoctors);
         }
+        
+        //doctor mangment
+        
+        [HttpGet]
+        public IActionResult GetDoctorManagment(string doctorId  )        
+        {
+            Models.Doctor doctor = DoctorRepository.GetDrWithClinicAvailabilities(doctorId);
+            DrManagementVM drManagementVM = new DrManagementVM();
+            drManagementVM.doctorId = doctorId;
+            drManagementVM.DoctorVM = UpdateDoctorAdmin(doctorId);
+            drManagementVM.clinicInfoVMs = doctor.Clinics.Select(c => new ClinicInfoVM()
+            {
+                ClinicAddress = c.ClinicAddress,
+                ClinicCity = c.Region.City.CityNameEn,
+                ClinicPhoneNumber = c.ClinicPhoneNumber,
+                ClinicRegion = c.Region.RegionNameEn,
+                Id = c.Id,
+                Name = c.Name,
+                doctorId = doctorId
+            });
+            drManagementVM.Availabilities = doctor.availabilities.Select(v=>new GetAvailabilityForDrVM
+            {
+                AvailableSlotsCnt = v.AvailableSlots.Count(v => !v.IsBooked),
+                AppointmentCnt = v.AvailableSlots.Count(v => v.IsBooked),
+                ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
+                Date = v.Date,
+                dayOfWeek = v.dayOfWeek,
+                DoctorId = doctorId,
+                Duration = v.Duration,
+                StartTime = v.StartTime,
+                EndTime = v.EndTime,
+                TimeRange = $"{v.StartTime} - {v.EndTime}",
+                Id = v.Id,
+                type = v.type,
+                
+            }).OrderBy(v => v.Date);
+
+
+          //var slots = doctor.availabilities.SelectMany(s => s.AvailableSlots).Where(s => s.IsBooked).Select(s => s.Appointment)//.Select(
+            drManagementVM.upcomingAppointmentsVM= ApopointmentRepository.FindAllWithSelect( null,app => new UpcomingAppointmentsVM
+            {
+                Status = app.Status,
+                Day = app.AvailableSlot.Availability.dayOfWeek,
+                Date = app.AvailableSlot.Availability.Date,
+                Time = app.AvailableSlot.StartTime,
+                PatientId = app.PatientId,
+                PatientName = $"{app.Patient.FirstName} {app.Patient.LastName}",
+                PatientPhone = app.Patient.PhoneNumber,
+                Mode = app.AvailableSlot.Availability.type,
+                paymentStatus = app.PaymentStatus,
+                paymentMethod = app.PaymentMethod,
+
+
+            });
+            return View(drManagementVM);
+        }
+
+        
     }
 }

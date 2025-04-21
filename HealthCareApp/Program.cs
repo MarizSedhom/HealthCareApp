@@ -28,6 +28,7 @@ namespace HealthCareApp
 
             builder.Services.AddScoped(typeof(IGenericRepoServices<>), typeof(GenericRepo<>));
             builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
+            builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 
             builder.Services.AddScoped<IFileService, Service.FileService>();
 

@@ -6,7 +6,7 @@
         public static string ImgPath = Path.Combine(BasePath, "image");
         public static string DrImagesPath = Path.Combine(ImgPath, "Doctor");
         public static string DrVerificationPath = Path.Combine(BasePath, "DoctorVerificationFile");
-        public static string DrPathRelative = "/uploads/image/Doctor/";
+        public static string DrImgPathRelative = "/uploads/image/Doctor/";
         public static string DrVerificationRelative = "/uploads/DoctorVerificationFile/";
 
 

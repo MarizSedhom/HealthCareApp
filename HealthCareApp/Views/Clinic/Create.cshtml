@@ -1,8 +1,12 @@
 ﻿@using HealthCareApp.ViewModel.Clinic
+
 @model ClinicCreateVM
 
 @{
     ViewData["Title"] = "Create";
+    var ReturnUrl = ViewBag.clinics;
+    var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+
 }
 
 <style>
@@ -167,10 +171,19 @@
                     Create Clinic
                 </button>
             </div>
-                <a asp-action="GetDoctorClinics" asp-route-doctorId="@Model.doctorId" class="back-link">
+            <a asp-action="GetDoctorClinics" asp-route-doctorId="@Model.doctorId" class="back-link">
+               <i class="fas fa-arrow-left"></i>
+                 Back to Clinic List
+            </a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin" 
+                   class="back-link">
                     <i class="fas fa-arrow-left"></i>
-                    Back to List
+                    Back to Doctor List
                 </a>
+
+            }
         </form>
     </div>
 </div>

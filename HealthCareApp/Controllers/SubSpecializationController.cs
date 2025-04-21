@@ -1,4 +1,5 @@
 ﻿using HealthCareApp.RepositoryServices;
+using HealthCareApp.ViewModel.Doctor;
 using Microsoft.AspNetCore.Mvc;
 namespace HealthCareApp.Controllers
 {
@@ -128,6 +129,17 @@ namespace HealthCareApp.Controllers
             SubSpecializationRepo.SoftDelete(deletedSSpec);
             SubSpecializationRepo.Save();
             return RedirectToAction(nameof(Index), new { page });
+        }
+
+        public IActionResult GetSubSpecialization(int SelectedSpecialization)
+        {
+            var SubSpecializationsAll = SubSpecializationRepo.FindAll(s => s.SpecializationId == SelectedSpecialization).OrderBy(s => s.Name);
+            IEnumerable<Item<int, string>> SubSpecializations = SubSpecializationsAll.Select(s => new Item<int, string>
+            {
+                Id = s.Id,
+                Name = s.Name
+            });
+            return Json(SubSpecializations);
         }
     }
 }
