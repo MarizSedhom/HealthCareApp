@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
 using System.Xml;
 using HealthCareApp.ViewModel.Appointment;
+using HealthCareApp.ViewModel.Patient;
 
 namespace HealthCareApp.Data
 {
@@ -155,6 +156,9 @@ namespace HealthCareApp.Data
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+        public DbSet<HealthCareApp.ViewModel.Patient.PatientsInfoVM> PatientsInfoVM { get; set; } = default!;
+        public DbSet<HealthCareApp.ViewModel.Patient.PatientStatVM> PatientStatVM { get; set; } = default!;
+        public DbSet<HealthCareApp.ViewModel.Patient.EditPatientInfoVM> EditPatientInfoVM { get; set; } = default!;
 
     }
 

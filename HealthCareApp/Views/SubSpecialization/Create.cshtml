@@ -18,7 +18,7 @@
             </div>
             <div class="form-group">
                 <label>Specialization</label>
-                <select asp-for="SpecializationId" asp-items="@(new SelectList(ViewBag.Specializations,"Id","Name"))" class="p-1">
+                <select asp-for="SpecializationId" asp-items="@(new SelectList(ViewBag.Specializations,"patientId","Name"))" class="p-1">
                     <option value="0">---Select a specialization---</option>
                 </select>
                 <span asp-validation-for="SpecializationId" class="text-danger"></span>

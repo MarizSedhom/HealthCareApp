@@ -57,6 +57,23 @@ namespace HealthCareApp.RepositoryServices
                 .Select(selector)
                 .FirstOrDefault();
         }
+        public TResult FindWithSelectIgnoreFilter<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            query = query.IgnoreQueryFilters();
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            return query
+                .Where(criteria)
+                .Select(selector)
+                .FirstOrDefault();
+        }
 
 
         public IEnumerable<TResult> FindAllWithSelect<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes)
@@ -298,7 +315,7 @@ namespace HealthCareApp.RepositoryServices
         }
         public T UpdateNoTracking(T entity)
         {
-            var dbEntity = _context.Set<T>().Find(entity.GetType().GetProperty("Id")?.GetValue(entity));
+            var dbEntity = _context.Set<T>().Find(entity.GetType().GetProperty("patientId")?.GetValue(entity));
 
             if (dbEntity != null)
             {
