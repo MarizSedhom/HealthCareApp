@@ -63,7 +63,7 @@
 
     .availability-container {
         min-height: 100vh;
-        background: linear-gradient(to bottom, var(--light-gray), var(--bg-color-2));
+        /* background: linear-gradient(to bottom, var(--light-gray), var(--bg-color-2)); */
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
@@ -98,12 +98,71 @@
         padding: 24px;
         margin-bottom: 24px;
     }
+
+    .review-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+    }
+
+    .hover-scale:hover {
+        transform: translateY(-3px);
+    }
+
+    .star-rating {
+        font-size: 1.2rem;
+        color: var(--light-gray);
+    }
+
+    .text-virtual-blue {
+        color: var(--virtual-blue);
+    }
+
+    .text-dark-blue {
+        color: var(--dark-blue);
+    }
+
+    .bg-light-gray {
+        background: var(--light-gray);
+    }
+
+     .bg-light-blue{
+        background: #C5D3E8;
+
+     }
+
+    .review-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .empty-state {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .gradient-button {
+        background: var(--doctor-gradient);
+        color: white !important;
+        border-radius: 8px;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .gradient-button:hover {
+            background: var(--doctor-gradient-reverse);
+            color: white;
+        }
 </style>
 
 <div class="availability-container">
     <div class="container py-8 px-4 md:px-8 max-w-7xl mx-auto">
 
-        <h3 class="text-center text-dark-blue fw-bold display-4 mb-5">
+        <h3 class="text-center text-dark-blue fw-bold display-4 mb-5 pt-4 mt-2">
             @doctorName[0]. @doctorName[1] @doctorName[2]
         </h3>
         <header class="healthcare-header mt-4">
@@ -150,28 +209,64 @@
 
         <div class="header-container">
             <div class="vstack gap-4">
-                @foreach (var review in approvedReviews)
+                @if (approvedReviews.Any())
                 {
-                    <div class="card bg-color-2 border-highlight-blue hover-scale">
-                        <div class="card-body p-4">
-                            <!-- Review Rating -->
-                            <div class="d-flex gap-2 mb-3">
-                                @for (int i = 1; i <= 5; i++)
-                                {
-                                    <i class="@(i <= review.Rating ? "fas fa-star star-filled" : "far fa-star star-empty")" style="font-size: 20px;"></i>
+                    <div class="row">
+                        @foreach (var review in approvedReviews)
+                        {
+                            <div class="col-md-6 mb-4">
+                                <div class="review-card bg-white border-highlight-blue hover-scale">
+                                    <div class="review-header p-3 border-bottom">
+                                        <div class="star-rating">
+                                            @for (int i = 0; i < 5; i++)
+                                            {
+                                                <i class="fas fa-star @(i < review.Rating ? "text-virtual-blue" : "text-light-gray")"></i>
+                                            }
+                                        </div>
+                                        <small class="text-dark-blue d-flex align-items-center">
+                                            <i class="fas fa-calendar-alt me-2 text-virtual-blue"></i>
+                                            @review.ReviewDate.ToString("MMMM dd, yyyy")
+                                        </small>
+                                    </div>
 
-                                }
+                                    <div class="review-body p-3">
+                                        <p class="text-dark-blue mb-0">
+                                            <i class="fas fa-quote-left text-virtual-blue me-2 opacity-50"></i>
+                                            @review.ReviewText
+                                            <i class="fas fa-quote-right text-virtual-blue ms-2 opacity-50"></i>
+                                        </p>
+                                    </div>
+
+                                    <div class="review-footer bg-light-blue p-2">
+                                        <div class="review-avatar bg-virtual-blue text-white">
+                                            <i class="fas fa-user-md text-dark-blue"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold text-dark-blue">@review.PatientName</div>
+                                            <div class="text-dark-blue small d-flex align-items-center">
+                                                <i class="fas fa-heartbeat me-2 text-virtual-blue"></i>
+                                                @review.Age years old
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
-                            <!-- Review Content -->
-                            <h5 class="text-dark-blue">@review.ReviewText</h5>
-                            <h7 class ="text-dark-blue">@review.PatientName, @review.Age years old.</h7>
-
-                            <!-- Review Date -->
-                            <p class="text-muted small mt-3">
-                                @review.ReviewDate.ToString("MMMM dd, yyyy")
-                            </p>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state text-center py-5">
+                        <div class="empty-state-icon bg-light-gray virtual-blue rounded-circle p-4 mb-3">
+                            <i class="fas fa-comment-medical fa-3x text-virtual-blue"></i>
                         </div>
+                        <h3 class="h5 text-dark-blue mb-2">No Reviews Yet</h3>
+                        <p class="text-muted mb-4">Be the first to share your experience with Dr. [Doctor Name]</p>
+                        <a asp-controller="Review" asp-action="AddReview" asp-route-doctorId="@Model.DoctorId"
+                           class="btn gradient-button">
+                            <i class="fas fa-edit me-2"></i>
+                            Write a Review
+                        </a>
                     </div>
                 }
             </div>
