@@ -4,8 +4,7 @@
 
 @{
     ViewData["Title"] = "Create";
-    var ReturnUrl = ViewBag.clinics;
-    var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+
 
 }
 
@@ -143,7 +142,7 @@
 
             <div class="form-group mb-4">
                 <label asp-for="SelectedCityId" class="form-label">City</label>
-                <select asp-for="SelectedCityId" class="form-control-custom" asp-items="@(new SelectList(Model.cities,"patientId","Name"))">
+                <select asp-for="SelectedCityId" class="form-control-custom" asp-items="@(new SelectList(Model.cities,"Id","Name"))">
                     <option value="">Select City</option>
                 </select>
                 <span asp-validation-for="SelectedCityId" class="text-danger"></span>
@@ -151,7 +150,7 @@
 
             <div class="form-group mb-4">
                 <label asp-for="SelectedRegionId" class="form-label">Region</label>
-                <select asp-for="SelectedRegionId" class="form-control-custom" asp-items="@(new SelectList(Model.regions,"patientId","Name"))">
+                <select asp-for="SelectedRegionId" class="form-control-custom" asp-items="@(new SelectList(Model.regions,"Id","Name"))">
                     <option value="">Select Region</option>
                 </select>
                 <span asp-validation-for="SelectedRegionId" class="text-danger"></span>
@@ -162,8 +161,8 @@
                 <input asp-for="ClinicPhoneNumber" class="form-control-custom" placeholder="Enter phone number" />
                 <span asp-validation-for="ClinicPhoneNumber" class="text-danger"></span>
             </div>
-
             <input asp-for="doctorId" hidden />
+
 
             <div class="button-group">
                 <button type="submit" class="btn-primary-custom">

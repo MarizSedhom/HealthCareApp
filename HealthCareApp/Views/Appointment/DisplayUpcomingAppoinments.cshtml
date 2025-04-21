@@ -368,7 +368,7 @@
 
                                 <div class="card-footer">
                                     <div class="d-flex justify-content-center gap-2 mt-3 ">
-                                        <a href="@Url.Action("DisplayPatientInfoForDoctor", "Patient", new { patientId = item.PatientId })"
+                                        <a href="@Url.Action("DisplayPatientInfoForDoctor", "Patient", new { patientId = item.PatientId , doctorId=ViewBag.DoctorId })"
 										   class="action-button w-100">
                                             <i class="fas fa-user-circle mr-2"></i>
                                             Patient Info
@@ -395,8 +395,14 @@
                 </div>
             </div>
         </div>
-
-     
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
+               class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Doctor List
+            </a>
+          }
     </div>
 </div>
 
