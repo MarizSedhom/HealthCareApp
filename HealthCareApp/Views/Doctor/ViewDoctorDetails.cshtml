@@ -596,7 +596,7 @@
                                                 <div class="slot-container">
                                                     @foreach (var slot in availability.Slots)
                                                     {
-                                                        @if (slot.IsBooked || slot.StartTime <= time)
+                                                        @if (slot.IsBooked || (availability.AvailabilityDate <= DateOnly.FromDateTime(DateTime.Now) && slot.StartTime <= time))
                                                         {
                                                             <div class="time-slot time-slot-booked">
                                                                 <i class="fas fa-times-circle me-2"></i>
