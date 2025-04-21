@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Stripe.Checkout;
+
+using System.Reflection.Metadata;
 using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
@@ -13,12 +15,13 @@ namespace HealthCareApp.Controllers
         IGenericRepoServices<Appointment> appointmentService;
         IGenericRepoServices<AvailabilitySlots> slotService;
         IGenericRepoServices<Patient> patientService;
-
-        public AppointmentController(IGenericRepoServices<Appointment> _appointmentService, IGenericRepoServices<AvailabilitySlots> _slotService, IGenericRepoServices<Patient> _patientService)
+        NotificationService notificationService;
+        public AppointmentController(IGenericRepoServices<Appointment> _appointmentService, IGenericRepoServices<AvailabilitySlots> _slotService, IGenericRepoServices<Patient> _patientService, NotificationService notificationService)
         {
             appointmentService = _appointmentService;
             slotService = _slotService;
             patientService = _patientService;
+            this.notificationService = notificationService;
         }
 
 
@@ -111,7 +114,7 @@ namespace HealthCareApp.Controllers
 
             TempData["Appointment"] = JsonConvert.SerializeObject(appointment);
 
-            var domain = "http://localhost:5113/";
+            var domain = "https://localhost:44333/"; /////According to domain of each one
             var options = new SessionCreateOptions
             {
                 SuccessUrl = domain + "Appointment/SaveAppointmentWithVisa",
@@ -157,13 +160,42 @@ namespace HealthCareApp.Controllers
             if (appointment != null && ModelState.IsValid)
             {
                 // Mark the selected slot as booked
-                AvailabilitySlots reservedSlot = slotService.Find(slot => slot.Id == appointment.SlotId);
+                AvailabilitySlots reservedSlot = slotService.Find(slot => slot.Id == appointment.SlotId, slot=>slot.Availability, slot=>slot.Availability.Doctor);
                 reservedSlot.IsBooked = true;
                 slotService.Update(reservedSlot);
 
                 appointment.PaymentStatus = PaymentStatus.Paid;
 
                 appointmentService.Add(appointment);
+                //////////////////// //dr notification
+                var notificationDr = new Notification
+                {
+                    UserId = reservedSlot.Availability.DoctorId,
+                    Message = $"An Appointment has been reserved on day {reservedSlot.Availability.Date} from time: {reservedSlot.Availability.StartTime} to {reservedSlot.Availability.EndTime}.",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.AppointmentReminder,
+                };
+                notificationService.Notify(notificationDr);
+
+                ///////////////////patient notification
+                var notificationPatientAppointment = new Notification
+                {
+                    UserId = appointment.PatientId,
+                    Message = $"An Appointment has been reserved Successfully on day {reservedSlot.Availability.Date} from time: {reservedSlot.Availability.StartTime} to {reservedSlot.Availability.EndTime}.",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.AppointmentReminder,
+                };
+                notificationService.Notify(notificationPatientAppointment);
+
+                var notificationPatientPayment = new Notification
+                {
+                    UserId = appointment.PatientId,
+                    Message = $"Your payment for the appointment of ammount: {appointment.Amount}LE. via Visa has been successfully processed.",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.Payment,
+                };
+                notificationService.Notify(notificationPatientPayment);
+
                 return RedirectToAction(nameof(PatientUpcomingAppointments));
             }
             else
@@ -185,11 +217,32 @@ namespace HealthCareApp.Controllers
                 };
 
                 // Mark the selected slot as booked
-                AvailabilitySlots reservedSlot = slotService.Find(slot => slot.Id == appointment.SlotId);
+                AvailabilitySlots reservedSlot = slotService.Find(slot => slot.Id == appointment.SlotId, slot=>slot.Availability, slot=>slot.Availability.Doctor);
                 reservedSlot.IsBooked = true;
                 slotService.Update(reservedSlot);
 
                 appointmentService.Add(appointment);
+
+                //////////////////// //dr notification
+                var notificationDr = new Notification
+                {
+                    UserId = reservedSlot.Availability.DoctorId,
+                    Message = $"An Appointment has been reserved on day {reservedSlot.Availability.Date} from time: {reservedSlot.Availability.StartTime} to {reservedSlot.Availability.EndTime}.",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.AppointmentReminder,
+                };
+                notificationService.Notify(notificationDr);
+
+                ///////////////////patient notification
+                var notificationPatientAppointment = new Notification
+                {
+                    UserId = appointment.PatientId,
+                    Message = $"An Appointment has been reserved Successfully on day {reservedSlot.Availability.Date} from time: {reservedSlot.Availability.StartTime} to {reservedSlot.Availability.EndTime} with Dr.{reservedSlot.Availability.Doctor.FirstName} {reservedSlot.Availability.Doctor.LastName}.",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.AppointmentReminder,
+                };
+                notificationService.Notify(notificationPatientAppointment);
+
                 return RedirectToAction(nameof(PatientUpcomingAppointments));
             }
             else
@@ -242,8 +295,30 @@ namespace HealthCareApp.Controllers
                 {
                     canceledAppointment.PaymentStatus = PaymentStatus.Refunded; ///// ???? + notification object
                 }
-                appointmentService.SoftDelete(canceledAppointment);
 
+                //////////////////// //dr notification
+                var notificationDr = new Notification
+                {
+                    UserId = slot.Availability.DoctorId,
+                    Message = $"An Appointment has been Cancelled on day {slot.Availability.Date} from time: {slot.Availability.StartTime} to {slot.Availability.EndTime}.",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.AppointmentCancellation,
+                };
+                notificationService.Notify(notificationDr);
+
+                if(appointment.PaymentMethod == PaymentMethod.Visa)
+                {
+                    var notificationPatientPayment = new Notification
+                    {
+                        UserId = appointment.PatientId,
+                        Message = $"Your payment for the appointment of ammount: {appointment.Amount}LE. via Visa has been Refunded successfully.",
+                        CreatedDate = DateTime.Now,
+                        notificationType = NotificationType.Payment,
+                    };
+                    notificationService.Notify(notificationPatientPayment);
+                }
+
+                appointmentService.SoftDelete(canceledAppointment);
                 return RedirectToAction(nameof(PatientUpcomingAppointments));
             }
             catch
@@ -256,7 +331,7 @@ namespace HealthCareApp.Controllers
         // doctor 
         public ActionResult DisplayUpcomingAppoinments(string doctorId)
         {
-            if(doctorId == null) 
+            if(doctorId == null)
                 doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var upcomingAppointments = appointmentService.FindAllWithSelect(app => app.AvailableSlot.Availability.DoctorId == doctorId && app.Status == Status.Upcoming
