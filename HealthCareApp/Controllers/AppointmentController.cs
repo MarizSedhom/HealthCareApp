@@ -286,7 +286,7 @@ namespace HealthCareApp.Controllers
                 Appointment canceledAppointment = appointmentService.GetById(id);
 
                 // Mark the reserved slot as free
-                AvailabilitySlots slot = slotService.GetById(canceledAppointment.SlotId);
+                AvailabilitySlots slot = slotService.Find(s=>s.Id==canceledAppointment.SlotId, s=>s.Availability);
                 slot.IsBooked = false;
                 slotService.Update(slot);
 
@@ -306,18 +306,18 @@ namespace HealthCareApp.Controllers
                 };
                 notificationService.Notify(notificationDr);
 
-                if(appointment.PaymentMethod == PaymentMethod.Visa)
+               /* if(canceledAppointment.PaymentMethod == PaymentMethod.Visa)
                 {
                     var notificationPatientPayment = new Notification
                     {
                         UserId = appointment.PatientId,
-                        Message = $"Your payment for the appointment of ammount: {appointment.Amount}LE. via Visa has been Refunded successfully.",
+                        Message = $"Your payment for the appointment of ammount: {canceledAppointment.Amount}LE. via Visa has been Refunded successfully.",
                         CreatedDate = DateTime.Now,
                         notificationType = NotificationType.Payment,
                     };
                     notificationService.Notify(notificationPatientPayment);
                 }
-
+               */
                 appointmentService.SoftDelete(canceledAppointment);
                 return RedirectToAction(nameof(PatientUpcomingAppointments));
             }
