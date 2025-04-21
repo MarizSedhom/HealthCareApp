@@ -14,6 +14,7 @@ namespace HealthCareApp.ViewModel.Appointment
         public TimeOnly StartTime { get; set; }
 
         [Display(Name = "Doctor")]
+        public string DoctorId { get; set; }
         public string DoctorName { get; set; }
         public Models.Type Mode { get; set; }
         public string Clinic { get; set; }

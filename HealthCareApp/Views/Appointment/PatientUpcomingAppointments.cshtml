@@ -15,10 +15,14 @@
 
 <style>
     :root {
+        --patient-green: #34a853;
+        --patient-light-green: #ade1bb;
         --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
+        --patient-gradient-reverse: linear-gradient(135deg, #34a853, #D0E8C5);
         --white: #ffffff;
         --light-gray: #f5f5f5;
         --dark-blue: #223249;
+        --text-blue: #223249;
         --highlight-green: #34a853;
         --virtual-green: #4ca853;
         --danger-red: #dc3545;
@@ -50,7 +54,7 @@
         height: 48px;
         display: flex;
         gap: 8px;
-        background: #f0fff0;
+        background: #D0E8C5;
         border-radius: 8px;
         padding: 4px;
         max-width: 400px;
@@ -144,29 +148,27 @@
         border-radius: 4px;
         font-size: 0.85rem;
         font-weight: 500;
-        transition: all 0.2s ease;
-        border: 1px solid #f0fff0;
-        background: var(--highlight-green);
+        transition: all 0.3s ease;
+        border: none;
+        background: var(--patient-gradient);
         color: var(--white);
         width: auto;
         text-decoration: none;
     }
 
         .action-button:hover {
-            background: #D0E8C5;
-            color: var(--highlight-green);
+            background: var(--patient-gradient-reverse);
+            color: var(--white);
         }
 
     .cancel-button {
-        background: rgba(220, 53, 69, 0.1);
-        color: var(--danger-red);
-        border: 1px solid rgba(220, 53, 69, 0.2);
-        border-radius: 50%;
+        background: var(--danger-red);
+        color: var(--white);
+        border: none;
     }
 
         .cancel-button:hover {
-            background: var(--danger-red);
-            color: var(--white);
+            background: #c82333;
         }
 
     .empty-state {
@@ -229,7 +231,7 @@
     .card-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #212529;
+        color: var(--text-blue);
     }
 
     .card-subtitle {
@@ -245,9 +247,9 @@
     }
 
     .history-button {
-        background: transparent;
-        color: var(--white);
-        border: 2px solid var(--white);
+        background: var(--patient-gradient);
+        color: var(--white) !important;
+        border: none;
         border-radius: 30px;
         padding: 0.5rem 1rem;
         font-weight: 600;
@@ -256,11 +258,38 @@
         align-items: center;
         gap: 0.5rem;
         text-decoration: none;
+        position: relative;
+        overflow: hidden;
     }
 
         .history-button:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--patient-gradient-reverse);
             transform: translateY(-3px);
+        }
+
+        .history-button i {
+            color: var(--white);
+            transition: color 0.3s ease;
+        }
+
+    .text-blue {
+        color: var(--text-blue) !important;
+    }
+
+    .schedule-title {
+        color: var(--text-blue) !important;
+    }
+
+    .btn-book-new {
+        background: var(--patient-gradient);
+        color: var(--white);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-book-new:hover {
+            background: var(--patient-gradient-reverse);
+            color: var(--white);
         }
 </style>
 
@@ -279,28 +308,28 @@
                         <p class="text-blue-100/80" id="currentDate">@currentDate.ToString("dddd, MMMM dd, yyyy")</p>
                     </div>
                 </div>
-                <div>
-                    <a asp-action="AppointmentsHistory" class="history-button">
-                        <i class="fas fa-history"></i>
-                        View Appointments History
-                    </a>
-                </div>
             </div>
         </header>
+        <div>
+            <a asp-action="AppointmentsHistory" class="history-button">
+                <i class="fas fa-history"></i>
+                <span class="hover-text">View Appointments History</span>
+            </a>
+        </div>
 
-        <div class="card shadow rounded-4 border-0 my-4" style="background-color:#c5e3bd;">
+        <div class="card shadow rounded-4 border-0 my-4" style="background-color:#c5e3bd1c;">
             <div class="card-body">
-                <div class="text-white p-3">
-                    <h5 class="card-title text-start text-white">Your Schedule</h5>
+                <div class="p-3">
+                    <h5 class="card-title text-start schedule-title">Your Schedule</h5>
                     <h6 class="card-subtitle mb-2 text-muted text-start">Managing your appointments with ease</h6>
                     <hr />
                 </div>
 
                 <div class="d-flex justify-content-between mt-2 mb-3 p-3">
                     <div>
-                        <h3 class="text-2xl font-bold healthcare-dark-blue mb-1">
+                        <h3 class="text-2xl font-bold text-blue mb-1">
                             Upcoming Appointments
-                            <span class="ml-2 bg-healthcare-green rounded-circle rounded-full text-white p-2 px-3">
+                            <span class="ml-2 bg-healthcare-green rounded-circle rounded-full text-white p-1 px-3">
                                 @filteredAppointments.Count()
                             </span>
                         </h3>
@@ -351,7 +380,7 @@
                                                 <div class="d-flex justify-content-between">
                                                     <div>
                                                         <h6 class="card-subtitle text-muted">Date</h6>
-                                                        <h4 class="card-title mt-0">@appointment.Date.ToString("M/d/yyyy")</h4>
+                                                        <h4 class="card-title mt-0 text-blue">@appointment.Date.ToString("M/d/yyyy")</h4>
                                                     </div>
                                                     <div>
                                                         @if (isToday)
@@ -369,7 +398,7 @@
                                         <div class="card h-100 border healthcare-border shadow-sm">
                                             <div class="card-body mt-2">
                                                 <h6 class="card-subtitle text-muted">Time</h6>
-                                                <h4 class="card-title">@appointment.StartTime.ToString("hh\\:mm tt") - @appointment.EndTime.ToString("hh\\:mm tt")</h4>
+                                                <h4 class="card-title text-blue">@appointment.StartTime.ToString("hh\\:mm tt") - @appointment.EndTime.ToString("hh\\:mm tt")</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -377,7 +406,7 @@
 
                                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
                                     <div>
-                                        <span class="text-muted"><i class="fas fa-clinic-medical text-[#34a853] me-2"></i>@appointment.Clinic</span>
+                                        <span class="text-blue"><i class="fas fa-clinic-medical text-muted me-2"></i>@appointment.Clinic</span>
                                     </div>
                                     <div class="d-flex gap-2">
                                         @if (appointment.PaymentStatus == PaymentStatus.Paid)
@@ -404,8 +433,8 @@
                                 <div class="card-footer">
                                     <div class="d-flex justify-content-center gap-2 mt-3">
                                         <a asp-action="CancelAppointment" asp-route-id="@appointment.Id"
-                                           class="action-button w-100">
-                                            <i class="fas fa-times-circle mr-2"></i>
+                                           class="action-button w-100 cancel-button">
+                                            <i class="fas fa-times-circle m-2 p-1"></i>
                                             Cancel Appointment
                                         </a>
                                     </div>
@@ -420,11 +449,11 @@
                             <div class="empty-state-icon">
                                 <i class="fas fa-calendar-times text-[#34a853] text-2xl"></i>
                             </div>
-                            <h3 class="text-xl font-medium text-[#34a853] mb-2">No appointments found</h3>
-                            <p class="text-[#34a853]/70 max-w-md mb-6 mx-auto">
+                            <h3 class="text-xl font-medium text-blue mb-2">No appointments found</h3>
+                            <p class="text-blue max-w-md mb-6 mx-auto">
                                 You don't have any @(activeTab != "all" ? activeTab : "") appointments scheduled yet.
                             </p>
-                            <a href="#" class="btn btn-outline-success mt-3">
+                            <a href="#" class="btn btn-book-new mt-3">
                                 <i class="fas fa-calendar-plus me-2"></i>
                                 Book New Appointment
                             </a>

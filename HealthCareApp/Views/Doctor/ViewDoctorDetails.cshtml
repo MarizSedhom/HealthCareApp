@@ -388,7 +388,7 @@
 
 <div class="container">
     <!-- Doctor Header -->
-    <div class="doctor-gradient-header">
+    <div class="doctor-gradient-header mt-5">
         <div class="d-flex flex-column flex-md-row align-items-center gap-4">
             <img src="~/uploads/image/Doctor/@Model?.Doctor?.ProfilePicture"
                  class="doctor-avatar rounded-circle"
@@ -705,8 +705,7 @@
                 </div>
                 <h3 class="h5 text-blue">No Reviews Yet</h3>
                 <p class="text-blue">Be the first to share your experience with Dr. @Model?.Doctor?.FirstName</p>
-
-                <a href="#" class="btn btn-outline-success mt-3">
+                <a asp-controller="review" asp-action="AddReview" asp-route-doctorId="@Model.Doctor.Id" class="btn btn-outline-success mt-3">
                     <i class="fas fa-pen me-2"></i>
                     Write a Review
                 </a>

@@ -201,8 +201,9 @@
                                     @Html.DisplayNameFor(model => model.StartTime)
                                 </th>
                                 <th>
-                                    <i class="fas fa-user-md me-2 text-patient-green"></i>
-                                    @Html.DisplayNameFor(model => model.DoctorName)
+                                        <i class="fas fa-user-md me-2 text-patient-green"></i>
+                                        @Html.DisplayNameFor(model => model.DoctorName)
+
                                 </th>
                                 <th>
                                     <i class="fas fa-video me-2 text-patient-green"></i>
@@ -235,7 +236,9 @@
                                         @item.StartTime.ToString("hh:mm tt")
                                     </td>
                                     <td>
-                                        <a href="#" class="doctor-name">@item.DoctorName</a>
+                                        <a asp-controller="Doctor" asp-action="ViewDoctorDetails" asp-route-doctorId="@item.DoctorId" class="doctor-name">
+
+                                        @item.DoctorName</a>
                                     </td>
                                     <td>
                                         <span class="@GetModeIcon(item.Mode.ToString()) me-2 text-patient-green"></span>
