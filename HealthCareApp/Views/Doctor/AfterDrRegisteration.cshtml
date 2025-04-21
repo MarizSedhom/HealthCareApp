@@ -57,7 +57,7 @@
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label asp-for="SelectedSubSpecializations" class="form-label fw-bold">Sub-Specialization</label>
-                                    <select asp-for="SelectedSubSpecializations" asp-items="@(new SelectList(Model.SubSpecialization,"Id","Name"))" class="form-select">
+                                    <select asp-for="SelectedSubSpecializations" asp-items="@(new SelectList(Model.SubSpecialization,"patientId","Name"))" class="form-select">
 @*                                         <option value="">Select Sub-Specialization</option>
  *@                                    </select>
                                     <span asp-validation-for="SelectedSubSpecializations" class="text-danger small"></span>

@@ -12,6 +12,7 @@ namespace HealthCareApp.RepositoryServices
         T Find(Expression<Func<T, bool>> criteria, params Expression<Func<T, object>>[] includes);
 
         public TResult FindWithSelect<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes);
+        public TResult FindWithSelectIgnoreFilter<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes);
 
         IEnumerable<TResult> FindAllWithSelect<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes);
         public IEnumerable<TResult> FindAllWithSelectIgnoreFilter<TResult>(Expression<Func<T, bool>> criteria, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includes);

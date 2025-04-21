@@ -135,5 +135,106 @@ namespace HealthCareApp.Controllers
             }
         }
 
+        public IActionResult GetAllPatients()
+        {
+            var allPatients = PatientRepo.FindAllWithSelect
+            (
+                p => true,
+                p => new PatientsInfoVM
+                {
+                    Id = p.Id,
+                    PatientName = p.FirstName + " " + p.LastName,
+                    Email = p.Email,
+                    PhoneNumber = p.PhoneNumber,
+                    EmergencyContact = p.EmergencyContact,
+                    MedicalHistory = p.MedicalHistory,
+                    Age = DateTime.Today.Year - p.DateOfBirth.Year
+                }
+            );
+
+            return View(allPatients);
+        }
+
+        public IActionResult ManagePatientStat(string patientId)
+        {
+            var patientStat = PatientRepo.FindWithSelectIgnoreFilter
+            (
+                p => p.Id == patientId,
+                p => new PatientStatVM
+                {
+                    PatientId = patientId,
+                    UpcomingAppointments = p.Appointments.Where(app => app.PatientId == p.Id && app.Status == Status.Upcoming).Count(),
+                    CompletedAppointments = p.Appointments.Where(app => app.PatientId == p.Id && app.Status == Status.Completed).Count(),
+                    CanceledAppointments = p.Appointments.Where(app => app.PatientId == p.Id && app.Status == Status.Cancelled).Count(),
+                    RescheduledAppointments = p.Appointments.Where(app => app.PatientId == p.Id && app.Status == Status.Rescheduled).Count(),
+                    ApprovedReviews = p.Reviews.Where(r => r.PatientId == p.Id && r.IsApproved && !r.IsDeleted).Count(),
+                    RejectedReviews = p.Reviews.Where(r => r.PatientId == p.Id && !r.IsApproved && r.IsDeleted).Count(),
+                    PendingReviews = p.Reviews.Where(r => r.PatientId == p.Id && !r.IsApproved && !r.IsDeleted).Count(),
+                }
+            );
+            return View(patientStat);
+        }
+
+        public IActionResult EditPatientInfo(string patientId)
+        {
+            var patientInfo = PatientRepo.FindWithSelect(p => p.Id == patientId,
+                p => new EditPatientInfoVM
+                {
+                    patientId = p.Id,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName,
+                    Email = p.Email,
+                    DateOfBirth = p.DateOfBirth,
+                    EmergencyContact = p.EmergencyContact,
+                    MedicalHistory = p.MedicalHistory,
+                    Gender = p.gender
+                }
+            );
+            return View(patientInfo);
+        }
+
+        [HttpPost]
+        public IActionResult EditPatientInfo(string patientId, EditPatientInfoVM editPatientVM)
+        {
+            if (ModelState.IsValid)
+            {
+                Patient patient = PatientRepo.GetById(patientId);
+
+                patient.Email = editPatientVM.Email;
+                patient.FirstName = editPatientVM.FirstName;
+                patient.LastName = editPatientVM.LastName;
+                patient.DateOfBirth = editPatientVM.DateOfBirth;
+                patient.EmergencyContact = editPatientVM.EmergencyContact;
+                patient.gender = editPatientVM.Gender;
+                patient.MedicalHistory = editPatientVM.MedicalHistory;
+
+                PatientRepo.Update(patient);
+                return RedirectToAction("GetAllPatients");
+            }
+            else
+            {
+                return View(editPatientVM);
+            }
+        }
+
+        public IActionResult DeactivatePatientAccount(string patientId)
+        {
+            var patient = PatientRepo.GetById(patientId);   ////////////////////////////////// notification
+            if (patient != null)
+            {
+                patient.IsDeleted = true;
+                PatientRepo.Update(patient);
+                return RedirectToAction("GetAllPatients");
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        public IActionResult PatientHistory(string patientId)
+        {
+            return RedirectToAction("AppointmentsHistory", "Appointment", new { patientId });
+        }
     }
 }
