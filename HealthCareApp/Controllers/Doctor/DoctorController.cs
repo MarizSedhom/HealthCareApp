@@ -3,9 +3,13 @@ using HealthCareApp.RepositoryServices;
 using HealthCareApp.Service;
 using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
+using HealthCareApp.ViewModel.Patient;
 using HealthCareApp.ViewModel.Review;
 
 using Microsoft.AspNetCore.Mvc;
+
+using Stripe;
+
 using System.Linq;
 using System.Security.Claims;
 
@@ -20,9 +24,10 @@ namespace HealthCareApp.Controllers.Doctor
         private IGenericRepoServices<Models.Review> ReviewRepository { get; }
         private IGenericRepoServices<Appointment> AppointmentRepository { get; }
         public IAvailabilityRepository AvailabilityRepository { get; }
-
         private IGenericRepoServices<SubSpecialization> SubSpecializationRepository { get; }
-        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository, IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository, IAvailabilityRepository AvailabilityRepository, IGenericRepoServices<Appointment> AppointmentRepository)
+        NotificationService notificationService;
+
+        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository, IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository, IAvailabilityRepository AvailabilityRepository, NotificationService notificationService, IGenericRepoServices<Appointment> AppointmentRepository)
         {
             this.DoctorRepository = DectorRepository;
             specializationRepository = SpecializationRepository;
@@ -30,6 +35,7 @@ namespace HealthCareApp.Controllers.Doctor
             this.fileService = fileService;
             this.ReviewRepository = ReviewRepository;
             this.AvailabilityRepository = AvailabilityRepository;
+            this.notificationService = notificationService;
             this.AppointmentRepository = AppointmentRepository;
         }
         
@@ -74,10 +80,37 @@ namespace HealthCareApp.Controllers.Doctor
 
         //doctor pending page
         [HttpGet]
-        public IActionResult ApproveDoctor(string doctorId,VerificationStatus isApproved)
+        public IActionResult ApproveDoctor(string doctorId , VerificationStatus isApproved)
         {
             Models.Doctor doctor = DoctorRepository.GetById(doctorId);
             doctor.verificationStatus = isApproved;
+            /****************Notifications*************************/
+            //notification for dr
+            if (isApproved== VerificationStatus.Accepted)
+            {
+                var notificationDr = new Notification
+                {
+                    UserId = doctorId,
+                    Message = $"Your Account as a Doctor as been Approved by admin, You can start using our services.",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.ApproveAccount,
+                };
+
+                notificationService.Notify(notificationDr);
+            }
+            else if (isApproved == VerificationStatus.Rejected)
+            {
+                var notificationDr = new Notification
+                {
+                    UserId = doctorId,
+                    Message = $"Your Account as a Doctor as been Rejected by admin, Complete your profile and provide verifications files .",
+                    CreatedDate = DateTime.Now,
+                    notificationType = NotificationType.ApproveAccount,
+                };
+
+                notificationService.Notify(notificationDr);
+            }
+
             DoctorRepository.SaveChanges();
             return RedirectToAction(nameof(ViewPendingDoctorForAdmin));
         }
