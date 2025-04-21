@@ -37,7 +37,7 @@
                 </td>
 
                 <td>
-                    @Html.ActionLink("Update", "ApproveDoctor", new { doctorId = item.DoctorId}) |
+                    @Html.ActionLink("Update", "UpdateDoctorAdmin", new { doctorId = item.DoctorId }) |
                     @Html.ActionLink("Clinics", "GetDoctorClinics", "Clinic", new { doctorId = item.DoctorId }) |
                     @Html.ActionLink("Availability", "GetAvailabilitiesForDr", "DoctorAvailability", new { doctorId = item.DoctorId }) |
                     @Html.ActionLink("Upcoming Appoinments", "DisplayUpcomingAppoinments", "Appointment", new { doctorId = item.DoctorId }) |

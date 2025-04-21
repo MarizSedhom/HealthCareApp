@@ -38,7 +38,11 @@ namespace HealthCareApp.ViewModel.Doctor
         [DisplayName("Profile Picture")]
         public IFormFile? ProfilePicture { get; set; }
         public string? CurrentPicturePath { get; set; }
+
         public string ?ImgName {  get; set; }
+        public string? CurrentVerficationFilePath { get; set; }
+        public string? VerficationFileName { get; set; }
+
         public IEnumerable<string> ?Clinics {  get; set; }
         public string ?Specialization {  get; set; }  //admin only can change that
         public IEnumerable<string>? SubSpecializations { get; set; }  //admin only can change that

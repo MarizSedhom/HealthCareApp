@@ -20,8 +20,6 @@
 
 <h1>UpdateDoctorAdmin</h1>
 
-<h4>AdminUpdateDrVM</h4>
-<hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="UpdateDoctorAdmin" enctype="multipart/form-data">
@@ -68,7 +66,7 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="gender" class="control-label"></label>
-                    <select asp-for="gender" class="form-control" asp-items="@(new SelectList(GenderList,"patientId","Name"))">
+                    <select asp-for="gender" class="form-control" asp-items="@(new SelectList(GenderList,"Id","Name"))">
                         <option value="">select gender</option>
                     </select>
                     <span asp-validation-for="Title" class="text-danger"></span>
@@ -88,21 +86,21 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Title" class="control-label"></label>
-                    <select asp-for="Title" class="form-control" asp-items="@(new SelectList(TitleList,"patientId","Name"))">
+                    <select asp-for="Title" class="form-control" asp-items="@(new SelectList(TitleList,"Id","Name"))">
                         <option value="">select Title</option>
                     </select>
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="SelectedSpecialization" class="control-label"></label>
-                    <select asp-for="SelectedSpecialization" class="form-control" asp-items="@(new SelectList(Model.Specializations,"patientId","Name"))">
+                    <select asp-for="SelectedSpecialization" class="form-control" asp-items="@(new SelectList(Model.Specializations,"Id","Name"))">
                         <option value="">select Specialization</option>
                     </select>
                     <span asp-validation-for="SelectedSpecialization" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="SelectedSubSpecializations" class="control-label"></label>
-                    <select asp-for="SelectedSubSpecializations" class="form-control" asp-items="@(new SelectList(Model.SubSpecializationsList,"patientId","Name"))">
+                    <select asp-for="SelectedSubSpecializations" class="form-control" asp-items="@(new SelectList(Model.SubSpecializationsList,"Id","Name"))">
                     </select>
                     <span asp-validation-for="SelectedSubSpecializations" class="text-danger"></span>
                 </div>
@@ -129,10 +127,11 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="ViewApprovedDoctorsAdmin">Back to Doctor List</a>
 </div>
 
-@section Scripts {
+@section Scripts
+{
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -197,4 +196,5 @@
             });
         });
     </script>
+
 }
