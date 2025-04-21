@@ -272,12 +272,16 @@
                                     <td>@Html.DisplayFor(modelItem => item.ClinicPhoneNumber)</td>
                                     <td style="text-align: end;">
                                         <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                            <a asp-controller="Clinic" asp-action="DetailsByID" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action( "GetDoctorClinics", "Clinic")" class=" btn action-button">
+                                                <i class="fas fa-info-circle mr-1 me-2"></i>
+                                                    Details
+                                                </a>
                                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn action-button">
-                                                <i class="fas fa-edit mr-1"></i>
+                                                <i class="fas fa-edit mr-1 me-2"></i>
                                                 Edit
                                             </a>
                                             <a asp-action="Delete" asp-route-id="@item.Id" class=" btn cancel-button">
-                                                <i class="fas fa-trash-alt mr-1"></i>
+                                                <i class="fas fa-trash-alt  m-2"></i>
                                                 Delete
                                             </a>
                                         </div>

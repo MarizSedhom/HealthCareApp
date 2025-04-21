@@ -1,15 +1,21 @@
 ﻿@model HealthCareApp.ViewModel.Doctor.DrProfileForPatientVM
 @using System.Security.Claims
+@{
+    var time = TimeOnly.FromDateTime(DateTime.Now);
+}
 
 <style>
     :root {
         --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
         --dark-blue: #223249;
         --patient-green: #34a853;
+        --patient-light-green: #ade1bb;
         --light-green: #D0E8C5;
         --white: #ffffff;
         --light-gray: #f8f9fa;
         --gray: #6c757d;
+        --button-gradient: linear-gradient(135deg, var(--patient-light-green), var(--patient-green));
+        --button-gradient-reverse: linear-gradient(135deg, var(--patient-green), var(--patient-light-green));
     }
 
     .doctor-gradient-header {
@@ -185,23 +191,24 @@
         border-bottom: 2px solid var(--light-green);
     }
 
-    .cta-button {
-        background: var(--patient-green);
-        color: var(--white);
-        border-radius: 30px;
-        padding: 1rem 2rem;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(52, 168, 83, 0.3);
-        transition: all 0.3s ease;
-        border: none;
-        font-size: 1.1rem;
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        color: var(--patient-green);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
     }
 
-        .cta-button:hover {
-            background: #2d9349;
-            color: var(--white);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(52, 168, 83, 0.4);
+        .back-link:hover {
+            background-color: var(--patient-light-green);
+            transform: translateX(-5px);
+            text-decoration: none;
+            color:white;
         }
 
     .empty-state {
@@ -360,9 +367,26 @@
 .clinic-item {
     transition: transform 0.3s ease;
 }
+    
+    .text-blue,
+    .card-body,
+    .review-card,
+    .availability-date-header h4,
+    .availability-date-header p,
+    .time-slot-booked,
+    .empty-state h3,
+    .empty-state p {
+        color: var(--dark-blue);
+    }
+
+    .shadow-name
+    {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
 </style>
 
-<div class="container py-5">
+<div class="container">
     <!-- Doctor Header -->
     <div class="doctor-gradient-header">
         <div class="d-flex flex-column flex-md-row align-items-center gap-4">
@@ -371,7 +395,7 @@
                  alt="Doctor profile"
                  onerror="this.onerror=null;this.src='/images/default-avatar.png';">
             <div class="mt-3 mt-md-0">
-                <h1 class="display-5 fw-bold mb-3">
+                <h1 class="display-5 fw-bold mb-3 text-white shadow-name">
                     @Model?.Doctor?.Title @Model?.Doctor?.FirstName @Model?.Doctor?.LastName
                 </h1>
                 <div class="d-flex align-items-center flex-wrap gap-3">
@@ -501,7 +525,7 @@
                             @foreach (var clinic in Model?.Doctor?.Clinics ?? Enumerable.Empty<Clinic>())
                             {
                                 <div class="clinic-item mb-2">
-                                    <a asp-controller="Clinic" asp-action="DetailsByID" asp-route-id="@clinic.Id"
+                                    <a asp-controller="Clinic" asp-action="DetailsByID" asp-route-id="@clinic.Id" asp-route-returnUrl="@Url.Action( "ViewDoctorDetails", "Doctor",new {doctorId = Model.Doctor.Id})"
                                        class="clinic-link d-flex align-items-center p-1 rounded-3">
                                         <div class="clinic-icon">
                                             <i class="fas fa-hospital-alt"></i>
@@ -572,7 +596,7 @@
                                                 <div class="slot-container">
                                                     @foreach (var slot in availability.Slots)
                                                     {
-                                                        @if (slot.IsBooked)
+                                                        @if (slot.IsBooked || slot.StartTime <= time)
                                                         {
                                                             <div class="time-slot time-slot-booked">
                                                                 <i class="fas fa-times-circle me-2"></i>
@@ -692,9 +716,9 @@
 
     <!-- Booking CTA -->
     <div class="text-center mt-5 mb-4">
-        <a href="#" class="btn cta-button">
-            <i class="fas fa-calendar-check me-2"></i>
-            Book Consultation
+        <a asp-Controller="Doctor" asp-action="GetAllDoctorsInfo" class="btn back-link">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back to Main Page
         </a>
     </div>
 </div>
