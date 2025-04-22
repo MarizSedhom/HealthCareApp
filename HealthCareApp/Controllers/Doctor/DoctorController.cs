@@ -250,24 +250,24 @@ namespace HealthCareApp.Controllers.Doctor
 
         [HttpGet]
         // DoctorController.cs
-        public IActionResult ViewDoctorDetails(string doctorId)
+        public IActionResult ViewDoctorDetails(string DoctorId)
         {
-            if (string.IsNullOrEmpty(doctorId))
+            if (string.IsNullOrEmpty(DoctorId))
             {
                 return NotFound();
             }
-            var doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations, d => d.Clinics);
+            var doctor = DoctorRepository.Find(d => d.Id == DoctorId, d => d.Specialization, d => d.SubSpecializations, d => d.Clinics);
 
             if (doctor == null)
             {
                 return NotFound();
             }
-            var reviews = ReviewRepository.FindAll(r => r.DoctorId == doctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
-            var approvedReviews = reviews.Where(r => r.IsApproved).ToList();
+            var reviews = ReviewRepository.FindAll(r => r.DoctorId == DoctorId && !r.IsDeleted, r => r.Patient, r => r.Doctor).ToList();
+            var approvedReviews = reviews.ToList();
 
             // Get doctor availabilities
             IEnumerable<AvailabilityWithSlotVM> drAvailabilities = AvailabilityRepository.FindAllWithSelect(
-                v => v.DoctorId == doctorId,
+                v => v.DoctorId == DoctorId,
                 v => new AvailabilityWithSlotVM()
                 {
                     AvailabilityDate = v.Date,
@@ -293,10 +293,14 @@ namespace HealthCareApp.Controllers.Doctor
                     ReviewText = r.ReviewText,
                     ReviewDate = r.ReviewDate,
                     PatientName = $"{r.Patient.FirstName} {r.Patient.LastName}",
-                    Age = DateOnly.FromDateTime(DateTime.Now).Year - r.Patient.DateOfBirth.Year
+                    Age = DateOnly.FromDateTime(DateTime.Now).Year - r.Patient.DateOfBirth.Year,
+                    IsApproved = r.IsApproved,
+                    IsDeleted = r.IsDeleted,
+                    IsEdited = r.IsEdited,
+                    PatientId = r.PatientId
                 }).ToList(),
-                AverageRating = approvedReviews.Any() ? approvedReviews.Average(r => r.Rating) : 0.0,
-                ReviewsCount = approvedReviews.Count(),
+                AverageRating = approvedReviews.Where(r => r.IsApproved).Any() ? approvedReviews.Where(r => r.IsApproved).Average(r => r.Rating) : 0.0,
+                ReviewsCount = approvedReviews.Where(r => r.IsApproved).Count(),
                 Availabilities = drAvailabilities.ToList()
             };
             return View(viewModel);
