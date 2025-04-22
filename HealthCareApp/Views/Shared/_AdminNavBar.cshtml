@@ -72,7 +72,7 @@
             </div>
 
             <div id="doctorProfile" class="doctor-profile ">
-                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("GetAllDoctorsInfo", "Doctor", new { area = "" })">
 					<button type="submit" class="nav-link btn btn-link text-white"><i class="fas fa-sign-out-alt"></i>Logout</button>
                 </form>
             </div>

@@ -21,6 +21,7 @@
             --gray: #f5f5f5;
             --dark-gray: #757575;
             --border-color: #ddd;
+            --google-color:#223249;
         }
 
         * {
@@ -47,21 +48,28 @@
             padding: 30px 0;
         }
 
-        .logo {
+        .logo-reg {
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
         }
 
-            .logo i {
+            .logo-reg i {
                 font-size: 2.5rem;
                 color: var(--dark-blue);
                 margin-right: 15px;
                 animation: pulse 2s infinite;
             }
 
-            .logo h1 {
+            logo-pulse{
+            font-size: 2.5rem;
+            color: var(--dark-blue);
+            margin-right: 15px;
+            animation: pulse 2s infinite;
+            }
+
+            .logo-reg h1 {
                 font-size: 2.2rem;
                 color: var(--dark-blue);
                 font-weight: 700;
@@ -402,6 +410,76 @@
                 text-decoration: none;
             }
 
+        .external-auth-section {
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(110deg, #C5D3E8 0%, #34a853 30%, #223249 100%);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .external-auth-title {
+            text-align: center;
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .external-auth-providers {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-external {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: 2px solid var(--google-color);
+            border-radius: 8px;
+            background: var(--white);
+            color: var(--google-color);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .btn-external:hover {
+                transform: translateY(-2px);
+                border-color: #34a853;
+                color: #34a853;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+
+            .btn-external i {
+                margin-right: 10px;
+                font-size: 1.2rem;
+            }
+
+
+        .btn-facebook {
+            color: #1877F2;
+        }
+
+        .btn-microsoft {
+            color: #00A4EF;
+        }
+
+        .btn-twitter {
+            color: #1DA1F2;
+        }
+
+        .no-external-warning {
+            text-align: center;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+            .no-external-warning a {
+                color: var(--dark-blue);
+                text-decoration: none;
+                font-weight: 600;
+            }
         @@keyframes pulse {
             0%
 
@@ -453,8 +531,8 @@
 <body>
     <div class="container">
         <header>
-            <div class="logo">
-                <i class="fas fa-heartbeat"></i>
+            <div class="logo-reg">
+				<i class="fas fa-heartbeat  3x logo-pulse-" style="display: inline-block"></i>
                 <h1>MedConnect</h1>
             </div>
             <p class="tagline">Bridging the gap between doctors and patients for better healthcare</p>
@@ -620,6 +698,39 @@
                     By joining, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
                     <p>MedConnect follows HIPAA compliance standards.</p>
                 </div>
+            </div>
+        </div>
+
+        <div class="external-auth-section">
+            <h1 class="external-auth-title">Quick Sign Up With</h1>
+            <div class="external-auth-providers">
+                @{
+                    if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                    {
+                        <div class="no-external-warning">
+                            <p>
+                                There are no external authentication services configured. See this
+                                <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article</a>.
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="d-flex justify-content-center">
+                            @foreach (var provider in Model.ExternalLogins!)
+                            {
+                                <button type="submit"
+                                        class="btn-external @($"btn-{provider.Name.ToLower()}")"
+                                        name="provider"
+                                        value="@provider.Name"
+                                        title="Register using your @provider.DisplayName account">
+                                    <i class="fab fa-@(provider.Name.ToLower())"></i>
+                                    Continue with @provider.DisplayName
+                                </button>
+                            }
+                        </form>
+                    }
+                }
             </div>
         </div>
     </div>

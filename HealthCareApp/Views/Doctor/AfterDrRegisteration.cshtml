@@ -4,11 +4,153 @@
     ViewData["Title"] = "Complete Your Profile";
 }
 
+<style>
+    :root {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #4A90E2;
+        --bg-color-1: #f8f9fa;
+        --bg-color-2: #f0f8ff;
+        --bg-color-3: #f5fff0;
+        --bg-color-4: #fff0f5;
+    }
+
+    body {
+        background-color: var(--bg-color-2);
+    }
+
+    .card {
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border: none;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: var(--doctor-gradient);
+        border-radius: 1rem 1rem 0 0 !important;
+        padding: 1.5rem;
+        border-bottom: none;
+    }
+
+        .card-header h2 {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .form-label {
+        color: var(--dark-blue);
+        font-weight: 600 !important;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--highlight-blue);
+            box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+        }
+
+        .form-control:read-only {
+            background-color: var(--light-gray);
+        }
+
+    .profile-picture-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-picture-preview {
+        transition: all 0.3s ease;
+        background: var(--light-gray);
+        border: 2px dashed #C5D3E8 !important;
+    }
+
+    label[for="ProfilePicture"]:hover .profile-picture-preview {
+        transform: scale(1.03);
+        border: 2px solid var(--highlight-blue) !important;
+        box-shadow: 0 5px 15px rgba(74, 144, 226, 0.2);
+    }
+
+    .btn-primary {
+        background: var(--doctor-gradient);
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(34, 50, 73, 0.2);
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(34, 50, 73, 0.3);
+        }
+
+    .btn-outline-secondary {
+        color: var(--dark-blue);
+        border-color: var(--dark-blue);
+        border-radius: 0.5rem;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--dark-blue);
+            color: var(--white);
+        }
+
+    .input-group-text {
+        background-color: var(--dark-blue);
+        color: var(--white);
+        border: none;
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    /* File upload styling */
+    input[type="file"] {
+        padding: 0.75rem;
+        border: 1px dashed #C5D3E8;
+        border-radius: 0.5rem;
+        background-color: var(--light-gray);
+        width: 100%;
+    }
+
+    .fa-user-md {
+        color: var(--dark-blue);
+    }
+
+    /* Section dividers */
+    .section-divider {
+        position: relative;
+        margin: 1.5rem 0;
+        height: 1px;
+        background: linear-gradient(to right, transparent, #C5D3E8, transparent);
+    }
+</style>
+
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card shadow">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header text-white">
                     <h2 class="mb-0 text-center">Complete Your Professional Profile</h2>
                 </div>
                 <div class="card-body">
@@ -19,22 +161,12 @@
                         <div class="row mb-4 justify-content-center">
                             <div class="col-md-6 text-center">
                                 <div class="form-group">
-                                    <label class="form-label fw-bold">Profile Picture</label>
+                                    <label class="form-label">Profile Picture</label>
                                     <div class="profile-picture-container mb-2">
                                         <label for="ProfilePicture" style="cursor: pointer;">
-                                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto profile-picture-preview"
-                                                 style="width: 150px; height: 150px; border: 2px dashed #adb5bd;">
-                                                <i class="fas fa-user-md fa-3x text-secondary"></i>
-
-                                                @* @if (Model.PictureReativeUrl == null) *@
-                                                @* { *@
-                                                @*     <i class="fas fa-camera fa-2x text-secondary"></i> *@
-                                                @* } *@
-                                                @* else *@
-                                                @* { *@
-                                                @*     <img src="@Model.PictureReativeUrl" *@
-                                                @*          style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" /> *@
-                                                @* } *@
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto profile-picture-preview"
+                                                 style="width: 150px; height: 150px;">
+                                                <i class="fas fa-user-md fa-3x"></i>
                                             </div>
                                             <input type="file" asp-for="ProfilePicture" id="ProfilePicture" class="d-none" accept="image/*" />
                                         </label>
@@ -45,63 +177,68 @@
                             </div>
                         </div>
 
+                        <div class="section-divider"></div>
+
                         <!-- Specialization Info -->
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label asp-for="Specialization" class="form-label fw-bold">Primary Specialization</label>
-                                    <input asp-for="Specialization" class="form-control bg-light" readonly />
+                                    <label asp-for="Specialization" class="form-label">Primary Specialization</label>
+                                    <input asp-for="Specialization" class="form-control" readonly />
                                     <span asp-validation-for="Specialization" class="text-danger small"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label asp-for="SelectedSubSpecializations" class="form-label fw-bold">Sub-Specialization</label>
+                                    <label asp-for="SelectedSubSpecializations" class="form-label">Sub-Specialization</label>
                                     <select asp-for="SelectedSubSpecializations" asp-items="@(new SelectList(Model.SubSpecialization,"Id","Name"))" class="form-select">
-@*                                         <option value="">Select Sub-Specialization</option>
- *@                                    </select>
+                                    </select>
                                     <span asp-validation-for="SelectedSubSpecializations" class="text-danger small"></span>
                                 </div>
                             </div>
                         </div>
 
+                        <div class="section-divider"></div>
+
                         <!-- Fees && waiting time -->
-                        <div class="form-group mb-3">
-                            <label asp-for="WaitingTimeInMinutes" class="form-label fw-bold"></label>
+                        <div class="form-group mb-4">
+                            <label asp-for="WaitingTimeInMinutes" class="form-label">Waiting Time</label>
                             <div class="input-group">
-                                <input asp-for="WaitingTimeInMinutes" class="form-control"  />
+                                <input asp-for="WaitingTimeInMinutes" class="form-control" placeholder="Enter average waiting time" />
                                 <span class="input-group-text">minutes</span>
                             </div>
                             <span asp-validation-for="WaitingTimeInMinutes" class="text-danger small"></span>
                         </div>
-                        <div class="form-group mb-3">
-                            <label asp-for="Fees" class="form-label fw-bold"></label>
+                        <div class="form-group mb-4">
+                            <label asp-for="Fees" class="form-label">Consultation Fees</label>
                             <div class="input-group">
                                 <span class="input-group-text">LE</span>
-                                <input asp-for="Fees" class="form-control"  />
+                                <input asp-for="Fees" class="form-control" placeholder="Enter your consultation fee" />
                             </div>
                             <span asp-validation-for="Fees" class="text-danger small"></span>
                         </div>
-                        <!--doctor files -->
 
+                        <div class="section-divider"></div>
+
+                        <!--doctor files -->
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group mb-3">
-                                    <label asp-for="doctorVerificationFile" class="form-label fw-bold"></label>
-                                    <input asp-for="doctorVerificationFile" class="fa-file-upload" accept=".pdf">
+                                <div class="form-group mb-4">
+                                    <label asp-for="doctorVerificationFile" class="form-label">Verification Documents</label>
+                                    <div class="custom-file-upload">
+                                        <input asp-for="doctorVerificationFile" class="form-control" accept=".pdf">
+                                    </div>
+                                    <small class="text-muted">Please upload your medical license or certification (PDF format only)</small>
                                     <span asp-validation-for="doctorVerificationFile" class="text-danger small"></span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Submit Section -->
-                        <div class="form-group mt-4 text-center">
-                            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">
+                        <div class="form-group mt-5 text-center">
+                            <button type="submit" class="btn btn-primary px-5 py-2">
                                 <i class="fas fa-check-circle me-2"></i>Complete Registration
                             </button>
-@*                             <a asp-action="Index" class="btn btn-outline-secondary ms-2 px-4 py-2">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                            </a> *@
                         </div>
                         <div>
                             <input asp-for="DoctorId" hidden />
@@ -127,20 +264,19 @@
                     const reader = new FileReader();
 
                     reader.onload = function(event) {
-                        if (profilePicturePreview.tagName === 'IMG') {
-                            profilePicturePreview.src = event.target.result;
-                        } else {
-                            // Replace the placeholder div with an img element
-                            const img = document.createElement('img');
-                            img.src = event.target.result;
-                            img.className = 'rounded-circle mx-auto profile-picture-preview';
-                            img.style.width = '150px';
-                            img.style.height = '150px';
-                            img.style.objectFit = 'cover';
-                            img.style.border = '2px solid var(--bs-primary)';
+                        // Remove existing content
+                        profilePicturePreview.innerHTML = '';
 
-                            profilePicturePreview.replaceWith(img);
-                        }
+                        // Create and append new image
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '50%';
+
+                        profilePicturePreview.appendChild(img);
+                        profilePicturePreview.style.border = '2px solid var(--highlight-blue)';
                     };
 
                     reader.readAsDataURL(e.target.files[0]);
@@ -149,31 +285,3 @@
         });
     </script>
 }
-
-<style>
-    .profile-picture-preview {
-        transition: all 0.3s ease;
-    }
-
-    label[for="ProfilePicture"]:hover .profile-picture-preview {
-        transform: scale(1.03);
-        border-color: var(--bs-primary) !important;
-    }
-
-    .card {
-        border-radius: 0.5rem;
-    }
-
-    .card-header {
-        border-radius: 0.5rem 0.5rem 0 0 !important;
-    }
-
-    .form-label {
-        color: #495057;
-        margin-bottom: 0.3rem;
-    }
-
-    .form-control:read-only {
-        background-color: #f8f9fa;
-    }
-</style>

@@ -67,7 +67,7 @@
 
             <div class="profile-dropdown" id="profileDropdown">
                 <a asp-controller="Patient" asp-action="GetPatientProfile"><i class="fas fa-user"></i> My Profile</a>
-                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("GetAllDoctorsInfo", "Doctor", new { area = "" })">
                     <button type="submit" class="nav-link btn btn-link text-dark"><i class="fas fa-sign-out-alt"></i>Logout</button>
                 </form>
             </div>
