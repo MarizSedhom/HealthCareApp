@@ -42,7 +42,6 @@ namespace HealthCareApp
             builder.Services.AddScoped<NotificationService>();
             builder.Services.AddScoped<INotificationObserver, AppNotificationObserver>();
 
-
             // builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             //.AddEntityFrameworkStores<ApplicationDbContext>();
 
