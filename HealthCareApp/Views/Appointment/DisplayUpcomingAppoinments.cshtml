@@ -12,6 +12,12 @@
                 ? item.Mode.ToString().Equals("Online", StringComparison.OrdinalIgnoreCase)
                 : item.Mode.ToString().Equals("Offline", StringComparison.OrdinalIgnoreCase)
           ).ToList();
+
+    var admin = false;
+    if(User.IsInRole("Admin"))
+    {
+        admin = true;
+    }
 }
 
 <style>
@@ -44,6 +50,19 @@
     padding: 24px;
     margin-bottom: 24px;
     background: var(--doctor-gradient);
+    }
+
+    .healthcare-header-admin {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        margin-bottom: 24px;
+        background: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+    }
+
+    .card-admin{
+        background: #C5D3E8 !important;
     }
 
     .filter-tabs {
@@ -251,11 +270,33 @@
     padding-top: 0;
     background-color: var(--bg-color-2);
     }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        color: var(--patient-green);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 2px #223249 solid;
+    }
+
+        .back-link:hover {
+            background-color: #D0E8C5;
+            transform: translateX(-5px);
+            text-decoration: none;
+            color: var(--dark-blue);
+            border: none;
+        }
 </style>
 
 <div class="healthcare-container">
     <div class="container mx-auto py-8 px-4 md:px-8 max-w-7xl">
-        <header class="healthcare-header mt-4">
+		<header class=" mt-4 healthcare-header@(admin?"-admin":"")">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center text-white">
                 <div>
                     <div class="d-flex justify-content-between">
@@ -271,7 +312,7 @@
             </div>
         </header>
 
-        <div class="card shadow rounded-4 border-0 mt-4" style="background-color: #96a5ba;">
+		<div class=" shadow rounded-4 border-0 mt-4 card@(admin?"-admin":"")" style="background-color: #96a5ba;">
             <div class="card-body">
                 <div class="text-white p-3">
                     <h5 class="card-title text-start text-white">Your Schedule</h5>
@@ -396,12 +437,14 @@
             </div>
         </div>
         @if (User.IsInRole("Admin"))
-        {
+        {<div class="text-center">
             <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
                class="back-link">
                 <i class="fas fa-arrow-left"></i>
                 Back to Doctor List
             </a>
+
+        </div>
           }
     </div>
 </div>

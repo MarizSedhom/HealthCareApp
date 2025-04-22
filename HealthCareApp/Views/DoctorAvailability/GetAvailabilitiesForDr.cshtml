@@ -14,6 +14,12 @@
                 : item.type.ToString().Equals("Offline", StringComparison.OrdinalIgnoreCase)
           ).ToList();
     int num = 0;
+    var admin = false;
+    if(User.IsInRole("Admin"))
+    {
+        admin = true;
+    }
+
 }
 
 <style>
@@ -252,6 +258,21 @@
         background: var(--doctor-gradient);
     }
 
+    .healthcare-header-admin {
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        margin-bottom: 24px;
+        background: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+    }
+
+    .big-card{
+        background-color: #96a5ba;
+    }
+
+    .big-card-admin {
+        background-color: #C5D3E8;
+    }
     .real-time-clock {
         background: rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(5px);
@@ -259,13 +280,34 @@
         padding: 8px 16px;
     }
 
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        color: var(--patient-green);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 2px #223249 solid;
+    }
+
+        .back-link:hover {
+            background-color: #D0E8C5;
+            transform: translateX(-5px);
+            text-decoration: none;
+            color: var(--dark-blue);
+            border: none;
+        }
 
 </style>
 
 
 <div class="availability-container">
     <div class="container py-8 px-4 md:px-8 max-w-7xl mx-auto">
-    <header class="healthcare-header mt-4">
+		<header class="mt-4 healthcare-header@(admin? "-admin":"")">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center text-white">
             <div>
                 <div class="d-flex justify-content-between">
@@ -284,7 +326,7 @@
         <a asp-action="AddAvailability" asp-controller="DoctorAvailability" asp-route-id="@ViewBag.DoctorId" class="add-availability-btn mb-3">
             <i class="fas fa-plus"></i> Add New Availability
         </a>
-        <div class="header-container" style="background-color: #96a5ba;">
+        <div class="header-container big-card@(admin?"-admin":"")">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div class="text-white">
                     <h4 class="text-3xl font-bold text-[#223249] tracking-tight">Your Availabilities</h4>
@@ -425,11 +467,14 @@
         </div>
         @if (User.IsInRole("Admin"))
         {
-            <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
-               class="back-link" stu>
-                <i class="fas fa-arrow-left"></i>
-                Back to Doctor List
-            </a>
+            <div class="text-center">
+
+                <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
+                   class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Doctor List
+                </a>
+            </div>
 
         }
     </div>

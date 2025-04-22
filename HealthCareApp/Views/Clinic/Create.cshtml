@@ -4,8 +4,11 @@
 
 @{
     ViewData["Title"] = "Create";
-
-
+    var admin = false;
+    if(User.IsInRole("Admin"))
+    {
+        admin = true;
+    }
 }
 
 <style>
@@ -25,10 +28,11 @@
     .form-card {
         background: white;
         border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         padding: 2rem;
-        max-width: 600px;
+        max-width: 650px;
         margin: 0 auto;
+        width: 100%;
     }
 
     .form-header {
@@ -37,7 +41,16 @@
         padding: 1.5rem;
         border-radius: 0.5rem 0.5rem 0 0;
         margin: -2rem -2rem 2rem -2rem;
-        text-align:center;
+        text-align: center;
+    }
+
+    .form-header-admin {
+        background: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem 0.5rem 0 0;
+        margin: -2rem -2rem 2rem -2rem;
+        text-align: center;
     }
 
     .form-label {
@@ -61,8 +74,33 @@
             outline: none;
         }
 
+    .map-container {
+        margin: 1.5rem 0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        border: 2px solid var(--light-blue);
+    }
+
+    #map {
+        height: 400px;
+        width: 100%;
+    }
+
     .btn-primary-custom {
         background: linear-gradient(to right, var(--dark-blue), #3a4d6d);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.375rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .btn-primary-custom-admin {
+        background: linear-gradient(to right, #D0E8C5, #C5D3E8);
         color: white;
         padding: 0.75rem 1.5rem;
         border: none;
@@ -79,11 +117,17 @@
             transform: translateY(-1px);
         }
 
+    .btn-primary-custom-admin:hover {
+        background: var(--dark-blue);
+        color:white;
+        transform: translateY(-1px);
+    }
+
     .back-link {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        margin-top: 2rem;
+        margin-top: 1rem;
         color: var(--dark-blue);
         text-decoration: none;
         font-weight: 500;
@@ -109,12 +153,75 @@
         font-size: 0.875rem;
         margin-top: 0.25rem;
         display: block;
+        color: #dc3545;
     }
+
+    .map-instructions {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        color: #555;
+        font-style: italic;
+    }
+
+    .coordinates-display {
+        display: flex;
+        justify-content: space-between;
+        background: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    @@media (max-width: 768px) {
+        .form-card
+
+    {
+        padding: 1.5rem;
+    }
+
+    .form-header {
+        padding: 1rem;
+        margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    }
+
+        .form-header-admin {
+            padding: 1rem;
+            margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+        }
+
+    #map {
+        height: 300px;
+    }
+    }
+
+        .back-link-admin {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            color: var(--patient-green);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 2px #223249 solid;
+        }
+
+            .back-link-admin:hover {
+                background-color: #D0E8C5;
+                transform: translateX(-5px);
+                text-decoration: none;
+                color: var(--dark-blue);
+                border: none;
+            }
 </style>
 
 <div class="create-clinic-container">
     <div class="form-card">
-        <div class="form-header">
+        <div class="form-header@(admin?"-admin":"")">
             <h3 style="margin: 0; font-size: 1.5rem;">
                 <i class="fas fa-building mr-2"></i>
                 Add New Clinic
@@ -126,8 +233,7 @@
             <input type="hidden" asp-for="ClinicLocation.KeyId" />
             <input type="hidden" asp-for="ClinicLocation.X" id="lng" />
             <input type="hidden" asp-for="ClinicLocation.Y" id="lat" />
-            <div id="map" style="height: 500px; width: 600px;" class="bg-danger mt-3"></div>
-           
+
             <div class="form-group mb-4">
                 <label asp-for="Name" class="form-label">Clinic Name</label>
                 <input asp-for="Name" class="form-control-custom" placeholder="Enter clinic name" />
@@ -161,29 +267,44 @@
                 <input asp-for="ClinicPhoneNumber" class="form-control-custom" placeholder="Enter phone number" />
                 <span asp-validation-for="ClinicPhoneNumber" class="text-danger"></span>
             </div>
+
+            <div class="form-group mb-4">
+                <label class="form-label">Clinic Location</label>
+                <p class="map-instructions">Click on the map or drag the marker to set your clinic's location</p>
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+                <div class="coordinates-display">
+                    <span>Latitude: <strong id="display-lat">--</strong></span>
+                    <span>Longitude: <strong id="display-lng">--</strong></span>
+                </div>
+            </div>
+
             <input asp-for="doctorId" hidden />
 
-
             <div class="button-group">
-                <button type="submit" class="btn-primary-custom">
+                <button type="submit" class="btn-primary-custom@(admin?"-admin":"")">
                     <i class="fas fa-save"></i>
                     Create Clinic
                 </button>
             </div>
-            <a asp-action="GetDoctorClinics" asp-route-doctorId="@Model.doctorId" class="back-link">
-               <i class="fas fa-arrow-left"></i>
-                 Back to Clinic List
-            </a>
-            @if (User.IsInRole("Admin"))
-            {
-                <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin" 
-                   class="back-link">
+
+            <div class="mt-1 text-center">
+                <a asp-action="GetDoctorClinics" asp-route-doctorId="@Model.doctorId" class="back-link@(admin?"-admin":"")">
                     <i class="fas fa-arrow-left"></i>
-                    Back to Doctor List
+                    Back to Clinic List
                 </a>
 
-            }
+            </div>
         </form>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
+                       class="back-link-admin mt-2">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Doctor List
+                    </a>
+                }
     </div>
 </div>
 
@@ -193,26 +314,27 @@
     }
     <script>
         $(document).ready(function () {
+            // City-Region dependent dropdown
             $("#SelectedCityId").change(function () {
-                var CityId = $(this).val();
-                if (CityId) {
+                var cityId = $(this).val();
+                if (cityId) {
                     $.ajax({
                         url: '/Clinic/GetRegions',
                         type: 'GET',
-                        data: { CityId: CityId },
+                        data: { CityId: cityId },
                         success: function (response) {
-                            var RegionDropdown = $("#SelectedRegionId");
-                            RegionDropdown.empty();
-                            RegionDropdown.append('<option value="">Select a region</option>');
+                            var regionDropdown = $("#SelectedRegionId");
+                            regionDropdown.empty();
+                            regionDropdown.append('<option value="">Select a region</option>');
                             $.each(response, function (index, region) {
-                                RegionDropdown.append(
+                                regionDropdown.append(
                                     $('<option></option>').val(region.id).text(region.name)
                                 );
                             });
-
                         },
                         error: function (xhr, status, error) {
-                            alert("Error fetching regions: " + error);
+                            console.error("Error fetching regions:", error);
+                            alert("Error fetching regions. Please try again.");
                         }
                     });
                 } else {
@@ -221,44 +343,66 @@
             });
         });
 
+        // Google Maps integration
         function initMap() {
-            var lat = @Model.ClinicLocation.Y;
-            var lng = @Model.ClinicLocation.X;
+            var lat = Number($("#lat").val()) || 0;
+            var lng = Number($("#lng").val()) || 0;
 
-            if (lat == 0 || lng == 0) {
-                lat = 30.0444;
-                lng = 31.2357;
+            // Default to a central location if no coordinates are set
+            if (lat === 0 || lng === 0) {
+                lat = 30.0444;  // Default latitude (Cairo)
+                lng = 31.2357;  // Default longitude (Cairo)
             }
 
-            var myCenter = new google.maps.LatLng(lat, lng);
+            // Update the coordinate display
+            updateCoordinateDisplay(lat, lng);
 
-            var mapProp = {
-                center: myCenter,
+            var mapOptions = {
+                center: { lat: lat, lng: lng },
                 zoom: 12,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                mapTypeControl: true,
+                fullscreenControl: true,
+                streetViewControl: false
             };
 
-            var map = new google.maps.Map(document.getElementById("map"), mapProp);
+            var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
             var marker = new google.maps.Marker({
-                position: myCenter,
+                position: { lat: lat, lng: lng },
                 map: map,
-                draggable: true
+                draggable: true,
+                animation: google.maps.Animation.DROP
             });
 
+            // Click event on map to move marker
             google.maps.event.addListener(map, "click", function (event) {
                 marker.setPosition(event.latLng);
-                updateLatLngInputs(event.latLng);
+                updatePositionData(event.latLng);
             });
 
+            // Drag event on marker
             marker.addListener("dragend", function () {
-                updateLatLngInputs(marker.getPosition());
+                updatePositionData(marker.getPosition());
             });
 
-            function updateLatLngInputs(location) {
-                document.getElementById("lat").value = location.lat();
-                document.getElementById("lng").value = location.lng();
+            // Handle window resize to keep map responsive
+            google.maps.event.addDomListener(window, "resize", function() {
+                google.maps.event.trigger(map, "resize");
+                map.setCenter(marker.getPosition());
+            });
+
+            function updatePositionData(position) {
+                $("#lat").val(position.lat());
+                $("#lng").val(position.lng());
+                updateCoordinateDisplay(position.lat(), position.lng());
             }
+        }
+
+        function updateCoordinateDisplay(lat, lng) {
+            // Format coordinates to 6 decimal places
+            $("#display-lat").text(lat.toFixed(6));
+            $("#display-lng").text(lng.toFixed(6));
         }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=@Model.ClinicLocation.KeyId&callback=initMap" defer></script>
