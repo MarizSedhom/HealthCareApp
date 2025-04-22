@@ -15,7 +15,7 @@ namespace HealthCareApp.RepositoryServices
 
         public Availability GetAvailabilitySlotsAppointment(int availabilityId)
         {
-            return context.Availability.Include(v => v.AvailableSlots)
+            return context.Availability.Include(v=>v.Doctor).Include(v => v.AvailableSlots)
                 .ThenInclude(s => s.Appointment)
                 .FirstOrDefault(v => v.Id == availabilityId);
         }
@@ -23,6 +23,10 @@ namespace HealthCareApp.RepositoryServices
         {
             return context.Availability.Include(v => v.Doctor).ThenInclude(d => d.Specialization).Include(v => v.Clinic).ToList();
         }
-  
+        public AvailabilitySlots GetSlot(int slotId)
+        {
+            return context.AvailabilitySlots.Include(s=>s.Appointment).Include(a => a.Availability).ThenInclude(d => d.Doctor).FirstOrDefault(s => s.Id == slotId);
+        }
+
     }
 }

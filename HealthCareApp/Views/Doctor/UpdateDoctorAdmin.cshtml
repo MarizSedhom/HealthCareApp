@@ -21,8 +21,8 @@
 <style>
     :root {
         --admin-gradient: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
-        --admin-dark: #223249;
         --admin-gradient-2: linear-gradient(to right, #D0E8C5, #C5D3E8);
+        --admin-dark: #223249;
         --admin-light: #D0E8C5;
         --accent-blue: #C5D3E8;
         --success-green: #28a745;
@@ -298,27 +298,25 @@
         }
 
     @@media (max-width: 768px) {
-        .form-row
 
-    {
-        flex-direction: column;
-        gap: 0;
-    }
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
 
-    .edit-doctor-container {
-        padding: 1.5rem;
-        margin: 1rem;
-    }
+        .edit-doctor-container {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
 
-    .form-actions {
-        gap: 1rem;
-    }
+        .form-actions {
+            gap: 1rem;
+        }
 
-    .btn {
-        width: 100%;
-        justify-content: center;
-    }
-
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 
@@ -451,7 +449,7 @@
                 <div class="form-group">
                     <label asp-for="SelectedSubSpecializations" class="form-label">Sub-Specialization</label>
                     <select asp-for="SelectedSubSpecializations" class="form-select" asp-items="@(new SelectList(Model.SubSpecializationsList,"Id","Name"))">
-                        <option value="">Select sub-specialization</option>
+
                     </select>
                     <span asp-validation-for="SelectedSubSpecializations" class="validation-message"></span>
                 </div>
@@ -482,7 +480,9 @@
             </div>
         </div>
 
+
         <input asp-for="doctorId" hidden />
+
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
@@ -534,7 +534,6 @@
                 var subSpecializationsDropdown = $("#SelectedSubSpecializations");
 
                 subSpecializationsDropdown.empty();
-                subSpecializationsDropdown.append('<option value="">Select sub-specialization</option>');
 
                 if (selectedSpecialization) {
                     $.ajax({

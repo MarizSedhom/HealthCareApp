@@ -6,6 +6,8 @@ namespace HealthCareApp.RepositoryServices
     {
         Availability GetAvailabilitySlotsAppointment(int availabilityId);
         IEnumerable<Availability> GetAvailabilitiesDrInfo();
+         AvailabilitySlots GetSlot(int slotId);
+
 
     }
 }
