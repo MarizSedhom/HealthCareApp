@@ -261,8 +261,8 @@ namespace HealthCareApp.Controllers
             return View(clinic);
         }
 
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id, int page)
+      
+        public IActionResult DeleteConfirmed(int id, int? page=null)
         {
             var deletedClin = ClinicRepo.GetById(id);
             string doctorId = deletedClin.DoctorId;
