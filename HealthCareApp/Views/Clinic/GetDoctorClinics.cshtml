@@ -390,11 +390,15 @@
                                                 <i class="fas fa-edit mr-1 me-2"></i>
                                                 Edit
                                             </a>
-                                            <a asp-action="Delete" asp-controller="Clinic" asp-route-id="@item.Id" class=" btn cancel-button">
+                                            <a href="#"
+                                               class=" btn cancel-button"
+                                               title="Cancel"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#deleteModal"
+                                               data-id="@item.Id">
                                                 <i class="fas fa-trash-alt  m-2"></i>
-
-                                                Delete
                                             </a>
+
                                         </div>
                                     </td>
                                 </tr>
@@ -426,3 +430,40 @@
     </script>
 </body>
 </html>
+
+
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="DeleteConfirmed" method="get">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Cancelation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to Delete this Clinic?
+                    <input type="hidden" name="id" id="recordIdToDelete" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var input = deleteModal.querySelector('#recordIdToDelete');
+            input.value = id;
+        });
+    </script>
+
+}
