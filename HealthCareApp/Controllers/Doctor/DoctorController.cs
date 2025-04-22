@@ -484,12 +484,13 @@ namespace HealthCareApp.Controllers.Doctor
              return View(allDoctors);
          }*/
 
-        public IActionResult GetAllDoctorsInfo(string title, string gender, string availability, string price, string sortOrder)
+        public IActionResult GetAllDoctorsInfo(string title, string gender, string availability, string price, string sortOrder, string specialization)
         {
             var allDoctors = DoctorRepository.FindAllWithSelect(
                 d =>
                     (string.IsNullOrEmpty(title) || d.Title.ToString() == title) &&
                     (string.IsNullOrEmpty(gender) || d.gender.ToString() == gender) &&
+                    (string.IsNullOrEmpty(specialization) || d.Specialization.Name == specialization) &&
                     (string.IsNullOrEmpty(price) ||
                         (price == "lt100" && d.Fees < 100) ||
                         (price == "100to200" && d.Fees >= 100 && d.Fees <= 200) ||
@@ -538,10 +539,10 @@ namespace HealthCareApp.Controllers.Doctor
             };
             return View(allDoctors);
         }
-        
-      
 
-        
+
+
+
     }
 }
 
