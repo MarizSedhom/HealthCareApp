@@ -4,6 +4,156 @@
     ViewData["Title"] = "Complete Your Profile";
 }
 
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0 text-center">Complete Your Professional Profile</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AfterDrRegisteration" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Profile Picture Section -->
+                        <div class="row mb-4 justify-content-center">
+                            <div class="col-md-6 text-center">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">Profile Picture</label>
+                                    <div class="profile-picture-container mb-2">
+                                        <label for="ProfilePicture" style="cursor: pointer;">
+                                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto profile-picture-preview"
+                                                 style="width: 150px; height: 150px; border: 2px dashed #adb5bd;">
+
+                                                @if (Model.PictureReativeUrl == null)
+                                                {
+                                                    <i class="fas fa-camera fa-2x text-secondary"></i>
+                                                }
+                                                else
+                                                {
+                                                    <img src="@Model.PictureReativeUrl" *@
+                                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                                                }
+                                            </div>
+                                            <input type="file" asp-for="ProfilePicture" id="ProfilePicture" class="d-none" accept="image/*" />
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Click to upload profile picture</small>
+                                    <span asp-validation-for="ProfilePicture" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Specialization Info -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Specialization" class="form-label fw-bold">Primary Specialization</label>
+                                    <input asp-for="Specialization" class="form-control bg-light" readonly />
+                                    <span asp-validation-for="Specialization" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="SelectedSubSpecializations" class="form-label fw-bold">Sub-Specialization</label>
+                                    <select asp-for="SelectedSubSpecializations" asp-items="@(new SelectList(Model.SubSpecialization,"Id","Name"))" class="form-select">
+                                        @*                                         <option value="">Select Sub-Specialization</option>
+ *@                                    </select>
+                                    <span asp-validation-for="SelectedSubSpecializations" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fees && waiting time -->
+                        <div class="form-group mb-3">
+                            <label asp-for="WaitingTimeInMinutes" class="form-label fw-bold"></label>
+                            <div class="input-group">
+                                <input asp-for="WaitingTimeInMinutes" class="form-control" />
+                                <span class="input-group-text">minutes</span>
+                            </div>
+                            <span asp-validation-for="WaitingTimeInMinutes" class="text-danger small"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Fees" class="form-label fw-bold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">LE</span>
+                                <input asp-for="Fees" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Fees" class="text-danger small"></span>
+                        </div>
+                        <!--doctor files -->
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-3">
+                                    <label asp-for="doctorVerificationFile" class="form-label fw-bold"></label>
+                                    <input asp-for="doctorVerificationFile" class="fa-file-upload" accept=".pdf">
+                                    <span asp-validation-for="doctorVerificationFile" class="text-danger small"></span>
+
+                                </div>
+                                <div>
+                                    <a href="@Model.CurrrentverificationPath" target="_blank">Verification File</a>
+                                    <input asp-for="CurrrentverificationPath" hidden />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Section -->
+                        <div class="form-group mt-4 text-center">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">
+                                <i class="fas fa-check-circle me-2"></i>Complete Registration
+                            </button>
+                            @*                             <a asp-action="Index" class="btn btn-outline-secondary ms-2 px-4 py-2">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a> *@
+                        </div>
+                        <div>
+                            <input asp-for="DoctorId" hidden />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profilePictureInput = document.getElementById('ProfilePicture');
+            const profilePicturePreview = document.querySelector('.profile-picture-preview');
+
+            profilePictureInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+
+                    reader.onload = function(event) {
+                        if (profilePicturePreview.tagName === 'IMG') {
+                            profilePicturePreview.src = event.target.result;
+                        } else {
+                            // Replace the placeholder div with an img element
+                            const img = document.createElement('img');
+                            img.src = event.target.result;
+                            img.className = 'rounded-circle mx-auto profile-picture-preview';
+                            img.style.width = '150px';
+                            img.style.height = '150px';
+                            img.style.objectFit = 'cover';
+                            img.style.border = '2px solid var(--bs-primary)';
+
+                            profilePicturePreview.replaceWith(img);
+                        }
+                    };
+
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        });
+    </script>
+}
+
 <style>
     :root {
         --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
@@ -123,7 +273,6 @@
         font-size: 0.85rem;
         margin-top: 0.25rem;
     }
-
     /* File upload styling */
     input[type="file"] {
         padding: 0.75rem;
@@ -136,7 +285,6 @@
     .fa-user-md {
         color: var(--dark-blue);
     }
-
     /* Section dividers */
     .section-divider {
         position: relative;
@@ -145,143 +293,3 @@
         background: linear-gradient(to right, transparent, #C5D3E8, transparent);
     }
 </style>
-
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header text-white">
-                    <h2 class="mb-0 text-center">Complete Your Professional Profile</h2>
-                </div>
-                <div class="card-body">
-                    <form asp-action="AfterDrRegisteration" enctype="multipart/form-data">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-                        <!-- Profile Picture Section -->
-                        <div class="row mb-4 justify-content-center">
-                            <div class="col-md-6 text-center">
-                                <div class="form-group">
-                                    <label class="form-label">Profile Picture</label>
-                                    <div class="profile-picture-container mb-2">
-                                        <label for="ProfilePicture" style="cursor: pointer;">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto profile-picture-preview"
-                                                 style="width: 150px; height: 150px;">
-                                                <i class="fas fa-user-md fa-3x"></i>
-                                            </div>
-                                            <input type="file" asp-for="ProfilePicture" id="ProfilePicture" class="d-none" accept="image/*" />
-                                        </label>
-                                    </div>
-                                    <small class="text-muted">Click to upload profile picture</small>
-                                    <span asp-validation-for="ProfilePicture" class="text-danger small"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="section-divider"></div>
-
-                        <!-- Specialization Info -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label asp-for="Specialization" class="form-label">Primary Specialization</label>
-                                    <input asp-for="Specialization" class="form-control" readonly />
-                                    <span asp-validation-for="Specialization" class="text-danger small"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label asp-for="SelectedSubSpecializations" class="form-label">Sub-Specialization</label>
-                                    <select asp-for="SelectedSubSpecializations" asp-items="@(new SelectList(Model.SubSpecialization,"Id","Name"))" class="form-select">
-                                    </select>
-                                    <span asp-validation-for="SelectedSubSpecializations" class="text-danger small"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="section-divider"></div>
-
-                        <!-- Fees && waiting time -->
-                        <div class="form-group mb-4">
-                            <label asp-for="WaitingTimeInMinutes" class="form-label">Waiting Time</label>
-                            <div class="input-group">
-                                <input asp-for="WaitingTimeInMinutes" class="form-control" placeholder="Enter average waiting time" />
-                                <span class="input-group-text">minutes</span>
-                            </div>
-                            <span asp-validation-for="WaitingTimeInMinutes" class="text-danger small"></span>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label asp-for="Fees" class="form-label">Consultation Fees</label>
-                            <div class="input-group">
-                                <span class="input-group-text">LE</span>
-                                <input asp-for="Fees" class="form-control" placeholder="Enter your consultation fee" />
-                            </div>
-                            <span asp-validation-for="Fees" class="text-danger small"></span>
-                        </div>
-
-                        <div class="section-divider"></div>
-
-                        <!--doctor files -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group mb-4">
-                                    <label asp-for="doctorVerificationFile" class="form-label">Verification Documents</label>
-                                    <div class="custom-file-upload">
-                                        <input asp-for="doctorVerificationFile" class="form-control" accept=".pdf">
-                                    </div>
-                                    <small class="text-muted">Please upload your medical license or certification (PDF format only)</small>
-                                    <span asp-validation-for="doctorVerificationFile" class="text-danger small"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Submit Section -->
-                        <div class="form-group mt-5 text-center">
-                            <button type="submit" class="btn btn-primary px-5 py-2">
-                                <i class="fas fa-check-circle me-2"></i>Complete Registration
-                            </button>
-                        </div>
-                        <div>
-                            <input asp-for="DoctorId" hidden />
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const profilePictureInput = document.getElementById('ProfilePicture');
-            const profilePicturePreview = document.querySelector('.profile-picture-preview');
-
-            profilePictureInput.addEventListener('change', function(e) {
-                if (e.target.files && e.target.files[0]) {
-                    const reader = new FileReader();
-
-                    reader.onload = function(event) {
-                        // Remove existing content
-                        profilePicturePreview.innerHTML = '';
-
-                        // Create and append new image
-                        const img = document.createElement('img');
-                        img.src = event.target.result;
-                        img.style.width = '100%';
-                        img.style.height = '100%';
-                        img.style.objectFit = 'cover';
-                        img.style.borderRadius = '50%';
-
-                        profilePicturePreview.appendChild(img);
-                        profilePicturePreview.style.border = '2px solid var(--highlight-blue)';
-                    };
-
-                    reader.readAsDataURL(e.target.files[0]);
-                }
-            });
-        });
-    </script>
-}
