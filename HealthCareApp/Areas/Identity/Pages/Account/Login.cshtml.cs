@@ -140,6 +140,10 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                             return RedirectToAction("DisplayPageForPendingDoctors", "Doctor");
                         }
                     }
+                    if(roles.Contains("Admin"))
+                    {
+                        return RedirectToAction("DisplayDashboard", "Admin");
+                    }
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

@@ -15,10 +15,6 @@ namespace HealthCareApp.Controllers
 
         public IActionResult Index()
         {
-            if(User.IsInRole("Doctor"))
-            {
-
-            }
             return View();
         }
 

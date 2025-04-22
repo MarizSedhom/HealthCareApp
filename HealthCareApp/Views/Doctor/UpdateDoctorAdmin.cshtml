@@ -298,6 +298,7 @@
         }
 
     @@media (max-width: 768px) {
+
         .form-row {
             flex-direction: column;
             gap: 0;
@@ -448,7 +449,7 @@
                 <div class="form-group">
                     <label asp-for="SelectedSubSpecializations" class="form-label">Sub-Specialization</label>
                     <select asp-for="SelectedSubSpecializations" class="form-select" asp-items="@(new SelectList(Model.SubSpecializationsList,"Id","Name"))">
-                
+
                     </select>
                     <span asp-validation-for="SelectedSubSpecializations" class="validation-message"></span>
                 </div>
@@ -479,7 +480,9 @@
             </div>
         </div>
 
+
         <input asp-for="doctorId" hidden />
+
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
@@ -531,7 +534,6 @@
                 var subSpecializationsDropdown = $("#SelectedSubSpecializations");
 
                 subSpecializationsDropdown.empty();
-                // subSpecializationsDropdown.append('<option value="">Select sub-specialization</option>');
 
                 if (selectedSpecialization) {
                     $.ajax({

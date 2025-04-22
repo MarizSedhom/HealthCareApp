@@ -1,55 +1,56 @@
 ﻿@model HealthCareApp.ViewModel.Review.DoctorReviewsVM
+@using System.Security.Claims
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 @{
     ViewData["Title"] = "Doctor Reviews";
-    var approvedReviews = Model.Reviews.Where(r => r.IsApproved).OrderByDescending(r => r.ReviewDate).ToList();
+    var approvedReviews = Model.Reviews.OrderByDescending(r => r.ReviewDate).ToList();
     var doctorName = @Model.DoctorName.Split(" ");
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     var currentDate = DateTime.Now;
-
 }
-
 
 <style>
     :root {
-    --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
-    --white: #ffffff;
-    --light-gray: #f5f5f5;
-    --dark-blue: #223249;
-    --highlight-blue: #26364d;
-    --bg-color-1: #f8f9fa;
-    --bg-color-2: #f0f8ff;
-    --bg-color-3: #f5fff0;
-    --bg-color-4: #fff0f5;
-    --virtual-blue: #4e7dc5;
-    --danger-red: #dc3545;
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+        --bg-color-1: #f8f9fa;
+        --bg-color-2: #f0f8ff;
+        --bg-color-3: #f5fff0;
+        --bg-color-4: #fff0f5;
+        --virtual-blue: #4e7dc5;
+        --danger-red: #dc3545;
     }
 
     .bg-doctor-gradient {
-    background: var(--doctor-gradient);
+        background: var(--doctor-gradient);
     }
 
     .bg-color-1 {
-    background-color: var(--bg-color-1);
+        background-color: var(--bg-color-1);
     }
 
     .bg-color-2 {
-    background-color: var(--bg-color-2);
+        background-color: var(--bg-color-2);
     }
 
     .text-dark-blue {
-    color: var(--dark-blue);
+        color: var(--dark-blue);
     }
 
     .text-virtual-blue {
-    color: var(--virtual-blue);
+        color: var(--virtual-blue);
     }
 
     .border-highlight-blue {
-    border-color: var(--highlight-blue);
+        border-color: var(--highlight-blue);
     }
 
     .hover-scale:hover {
-    transform: scale(1.02);
-    transition: transform 0.3s ease;
+        transform: scale(1.02);
+        transition: transform 0.3s ease;
     }
 
     .star-filled {
@@ -58,12 +59,11 @@
     }
 
     .star-empty {
-    color: rgba(56, 51, 51, 0.3);
+        color: rgba(56, 51, 51, 0.3);
     }
 
     .availability-container {
         min-height: 100vh;
-        /* background: linear-gradient(to bottom, var(--light-gray), var(--bg-color-2)); */
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
@@ -76,7 +76,6 @@
         background: var(--doctor-gradient);
     }
 
-
     .badge {
         display: inline-flex;
         align-items: center;
@@ -86,7 +85,7 @@
         font-weight: 500;
     }
 
-    .no-reviews{
+    .no-reviews {
         background: var(--bg-color-2);
         color: var(--dark-blue);
     }
@@ -103,6 +102,7 @@
         border-radius: 12px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         transition: transform 0.2s ease;
+        position: relative;
     }
 
     .hover-scale:hover {
@@ -126,10 +126,14 @@
         background: var(--light-gray);
     }
 
-     .bg-light-blue{
+    .bg-light-blue {
         background: #C5D3E8;
+    }
 
-     }
+    .bg-pending {
+        background: rgba(156, 156, 156, 0.2);
+        opacity: 0.8;
+    }
 
     .review-avatar {
         width: 40px;
@@ -154,16 +158,45 @@
     }
 
         .gradient-button:hover {
-            background: var(--doctor-gradient-reverse);
-            color: white;
+            opacity: 0.9;
         }
+
+    .pending-badge {
+        background-color: #f8d7da;
+        color: #842029;
+        font-size: 0.8rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+    }
+
+    .edited-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #e2e3e5;
+        color: #41464b;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .badge-container {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 8px;
+    }
 </style>
 
 <div class="availability-container">
     <div class="container py-8 px-4 md:px-8 max-w-7xl mx-auto">
 
         <h3 class="text-center text-dark-blue fw-bold display-4 mb-5 pt-4 mt-2">
-            @doctorName[0]. @doctorName[1] @doctorName[2]
+            @Model.DoctorName
         </h3>
         <header class="healthcare-header mt-4">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center text-white">
@@ -171,80 +204,82 @@
                     <div class="d-flex justify-content-between">
                         <h2 class="text-white fs-2 fw-semibold m-0">Patients' Reviews</h2>
 
-                          
-
                         <h3 class="text-2xl font-bold text-white mb-1">
-                            
                             <span class="badge no-reviews">
-                                @approvedReviews.Count
-
+                                @Model.ReviewsCount
                             </span>
                         </h3>
                     </div>
                     <div class="mt-2 flex items-center space-x-4">
-                        <p id="currentDate">@currentDate.ToString("dddd, MMMM dd, yyyy")</p>
+                        <p id="currentDateTime">@DateTime.Now.ToString("dddd, MMMM dd, yyyy - hh:mm tt")</p>
                     </div>
-                <div class="text-center stars">
-                    <div class="d-flex justify-content-center gap-2 mb-2">
-                        @for (int i = 1; i <= 5; i++)
-                        {
-                            if (i <= Model.TotalRating)
+                    <div class="text-center stars">
+                        <div class="d-flex justify-content-center gap-2 mb-2">
+                            @for (int i = 1; i <= 5; i++)
                             {
-                                <i class="fas fa-star star-filled" style="font-size: 24px;"></i>
+                                if (i <= Model.TotalRating)
+                                {
+                                    <i class="bi bi-star-fill star-filled" style="font-size: 24px;"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star star-empty" style="font-size: 24px;"></i>
+                                }
                             }
-                            else
-                            {
-                                <i class="far fa-star star-empty" style="font-size: 24px;"></i>
-                            }
-                        }
-
+                        </div>
+                        <p class="fs-5 mb-0" style="color:rgba(56, 51, 51,0.7)">Overall Rating</p>
                     </div>
-                        <p class=" fs-5 mb-0" style="color:rgba(56, 51, 51,0.7)">Overall Rating</p>
-                </div>
                 </div>
             </div>
         </header>
 
-
-
         <div class="header-container">
             <div class="vstack gap-4">
-                @if (approvedReviews.Any())
+                @if (Model.Reviews.Any())
                 {
                     <div class="row">
-                        @foreach (var review in approvedReviews)
+                        @foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
                         {
                             <div class="col-md-6 mb-4">
-                                <div class="review-card bg-white border-highlight-blue hover-scale">
+                                <div class="review-card @(review.IsApproved ? "bg-white" : "bg-pending") border-highlight-blue hover-scale">
+                                    <div class="badge-container">
+                                        @if (review.IsEdited)
+                                        {
+                                            <span class="edited-badge">
+                                                <i class="bi bi-pencil-square"></i> Edited
+                                            </span>
+                                        }
+                                    </div>
+
                                     <div class="review-header p-3 border-bottom">
                                         <div class="star-rating">
                                             @for (int i = 0; i < 5; i++)
                                             {
-                                                <i class="fas fa-star @(i < review.Rating ? "text-virtual-blue" : "text-light-gray")"></i>
+                                                <i class="bi bi-star@(i < review.Rating ? "-fill text-virtual-blue" : " text-light-gray")"></i>
                                             }
                                         </div>
-                                        <small class="text-dark-blue d-flex align-items-center">
-                                            <i class="fas fa-calendar-alt me-2 text-virtual-blue"></i>
-                                            @review.ReviewDate.ToString("MMMM dd, yyyy")
+                                        <small class="text-dark-blue d-flex align-items-center mt-2">
+                                            <i class="bi bi-calendar-event me-2 text-virtual-blue"></i>
+                                            @review.ReviewDate.ToString("dddd, MMMM dd, yyyy - hh:mm tt")
                                         </small>
                                     </div>
 
                                     <div class="review-body p-3">
                                         <p class="text-dark-blue mb-0">
-                                            <i class="fas fa-quote-left text-virtual-blue me-2 opacity-50"></i>
+                                            <i class="bi bi-quote text-virtual-blue me-2 opacity-50"></i>
                                             @review.ReviewText
-                                            <i class="fas fa-quote-right text-virtual-blue ms-2 opacity-50"></i>
+                                            <i class="bi bi-quote text-virtual-blue ms-2 opacity-50"></i>
                                         </p>
                                     </div>
 
-                                    <div class="review-footer bg-light-blue p-2">
-                                        <div class="review-avatar bg-virtual-blue text-white">
-                                            <i class="fas fa-user-md text-dark-blue"></i>
+                                    <div class="review-footer bg-light-blue p-3 d-flex align-items-center gap-3">
+                                        <div class="review-avatar bg-virtual-blue text-white d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-person-circle text-dark-blue"></i>
                                         </div>
                                         <div>
                                             <div class="fw-semibold text-dark-blue">@review.PatientName</div>
                                             <div class="text-dark-blue small d-flex align-items-center">
-                                                <i class="fas fa-heartbeat me-2 text-virtual-blue"></i>
+                                                <i class="bi bi-heart-pulse me-2 text-virtual-blue"></i>
                                                 @review.Age years old
                                             </div>
                                         </div>
@@ -252,21 +287,6 @@
                                 </div>
                             </div>
                         }
-                    </div>
-                }
-                else
-                {
-                    <div class="empty-state text-center py-5">
-                        <div class="empty-state-icon bg-light-gray virtual-blue rounded-circle p-4 mb-3">
-                            <i class="fas fa-comment-medical fa-3x text-virtual-blue"></i>
-                        </div>
-                        <h3 class="h5 text-dark-blue mb-2">No Reviews Yet</h3>
-                        <p class="text-muted mb-4">Be the first to share your experience with Dr. [Doctor Name]</p>
-                        <a asp-controller="Review" asp-action="AddReview" asp-route-doctorId="@Model.DoctorId"
-                           class="btn gradient-button">
-                            <i class="fas fa-edit me-2"></i>
-                            Write a Review
-                        </a>
                     </div>
                 }
             </div>

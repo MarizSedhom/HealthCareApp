@@ -5,6 +5,11 @@
     var ReturnUrl = ViewBag.clinics;
     int num1 = 0;
     int num2 = 1;
+    var admin = false;
+    if(User.IsInRole("Admin"))
+    {
+        admin = true;
+    }
 }
 
 <!DOCTYPE html>
@@ -22,10 +27,12 @@
         --highlight-blue: #26364d;
         --danger-red: #dc3545;
         --bg-color-2: #f0f8ff;
+            --admin-gradient: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+            --admin-dark: #223249;
+            --admin-gradient-2: linear-gradient(to right, #D0E8C5, #C5D3E8);
         }
 
         body {
-        background-color: var(--light-gray);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
         padding: 0;
@@ -54,11 +61,23 @@
         border-radius: 0.375rem 0.375rem 0 0;
         }
 
+        .header-gradient-admin {
+            background:  linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+            height: 0.5rem;
+            border-radius: 0.375rem 0.375rem 0 0;
+        }
         .availability-table {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
         table-layout: auto;
+        }
+
+        .availability-table-admin {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: auto;
         }
 
         .availability-table thead th {
@@ -70,9 +89,22 @@
         top: 0;
         }
 
+        .availability-table-admin thead th {
+            color: white;
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+        }
+
         .availability-table thead {
         background: var(--doctor-gradient);
         }
+
+            .availability-table-admin thead {
+                background: var(--admin-gradient);
+            }
 
         .availability-table tbody tr {
         transition: all 0.2s ease;
@@ -94,23 +126,68 @@
         vertical-align: middle;
         }
 
-        .btn-primary {
-        background: linear-gradient(to right, #223249, #3a4d6d);
-        color: white;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 0.25rem;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
+
+        .availability-table-admin tbody tr {
+            transition: all 0.2s ease;
         }
 
-        .btn-primary:hover {
-        background: linear-gradient(to right, #3a4d6d, #223249);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            .availability-table-admin tbody tr:nth-child(odd) {
+                background-color: white;
+            }
+
+            .availability-table-admin tbody tr:hover {
+                background-color: rgba(232, 239, 248, 0.5);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+        .availability-table-admin td {
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            vertical-align: middle;
         }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #223249, #3a4d6d);
+            border: none;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+        .btn-primary-admin {
+            background: var(--admin-dark);
+            color: white;
+            box-shadow: 0 4px 6px rgba(34, 50, 73, 0.2);
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(to right, #3a4d6d, #223249);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(34, 50, 73, 0.2);
+            }
+            .btn-primary-admin:hover {
+                background: var(--admin-gradient-2);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 10px rgba(34, 50, 73, 0.3);
+                color: var(--admin-dark);
+            }
+
+
+   
 
         .btn-danger {
         background: linear-gradient(to right, #dc3545, #c82333);
@@ -162,6 +239,12 @@
         padding: 0.5rem;
         font-size: 0.875rem;
         }
+
+            .availability-table-admin td,
+            .availability-table-admin th {
+                padding: 0.5rem;
+                font-size: 0.875rem;
+            }
 
         .btn-primary, .btn-danger, .btn-outline {
         padding: 0.375rem 0.75rem;
@@ -230,28 +313,33 @@
         }
 
         .back-link {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             margin-top: 2rem;
-            color: var(--dark-blue);
+            color: var(--patient-green);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s;
             padding: 0.5rem 1rem;
             border-radius: 8px;
-            border: 1px solid var(--dark-blue)
+            border: 2px #223249 solid;
         }
 
             .back-link:hover {
-                background-color: rgba(197, 211, 232, 0.3);
+                background-color: #D0E8C5;
                 transform: translateX(-5px);
                 text-decoration: none;
+                color: var(--dark-blue);
+                border: none;
             }
+
     </style>
 </head>
 <body>
     <div class="min-h-screen bg-gradient-to-b py-4 px-2">
         <div class="container-card">
-            <div class="header-gradient"></div>
+            <div class="header-gradient@(admin?"-admin":"")"></div>
 
             <div class="text-center" style="padding: 2rem 0 1rem 0;">
                 <h1 style="font-size: 2rem; color: var(--dark-blue); font-weight: 700;">
@@ -264,14 +352,14 @@
 
             <div style="padding: 0 1.5rem;">
                 <div style="display: flex; justify-content: flex-start; padding-bottom: 1rem;">
-                    <a asp-action="Create" asp-controller="Clinic" asp-route-doctorId="@ViewBag.DoctorId" asp-route-returnUrl="@ReturnUrl" class="btn-primary">
+                    <a asp-action="Create" asp-controller="Clinic" asp-route-doctorId="@ViewBag.DoctorId" asp-route-returnUrl="@ReturnUrl" class="btn btn-primary@(admin?"-admin":"")">
                         <i class="fas fa-plus-circle mr-4 p-2"></i>
                         Create New Clinic
                     </a>
                 </div>
 
                 <div style="overflow-x: auto; border-radius: 0.375rem; border: 1px solid rgba(197, 211, 232, 0.3);">
-                    <table class="availability-table">
+                    <table class="availability-table@(admin?"-admin":"")">
                         <thead>
                             <tr>
                                 <th>@Html.DisplayNameFor(model => model.Name)</th>
@@ -294,7 +382,7 @@
                                     <td style="text-align: end;">
                                         <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
 
-                                            <a asp-controller="Clinic" asp-action="DetailsByID" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action( "GetDoctorClinics", "Clinic")" class=" btn action-button">
+                                            <a asp-controller="Clinic" asp-action="DetailsByID" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action( "GetDoctorClinics", "Clinic", new{doctorId = item.doctorId})" class=" btn action-button">
                                                 <i class="fas fa-info-circle mr-1 me-2"></i>
                                                 Details
                                             </a>
@@ -317,17 +405,19 @@
 
                 </div>
             </div>
-            @if (User.IsInRole("Admin"))
-            {
-                <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
-                class="back-link">
-                    <i class="fas fa-arrow-left"></i>
-                    Back to Doctor List
-                </a>
-
-            }
           
         </div>
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="text-center">
+                    <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
+                    class="back-link">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Doctor List
+                    </a>
+                </div>
+
+            }
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
