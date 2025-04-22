@@ -240,7 +240,7 @@ namespace HealthCareApp.Controllers.Doctor
                 }
 
                 DoctorRepository.Update(doctor);
-                return RedirectToAction(nameof(UpdateDoctorAdmin), new { doctorId = doctorVM.doctorId });
+                return RedirectToAction(nameof(ViewApprovedDoctorsAdmin), new { doctorId = doctorVM.doctorId });
             }
 
             return RedirectToAction(nameof(UpdateDoctorAdmin), new { doctorId = doctorVM.doctorId });
@@ -357,20 +357,33 @@ namespace HealthCareApp.Controllers.Doctor
 
         }      
         
-        public IActionResult AfterDrRegisteration()
+        public IActionResult AfterDrRegisteration(string DoctorId=null)
         {
-            string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(DoctorId==null)
+                DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             //string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             AfterDrRegisterationVM AfterDrRegisteration = DoctorRepository.FindWithSelect(d => d.Id == DoctorId,
                 d => new AfterDrRegisterationVM()
                 {
-                    Specialization = d.Specialization.Name,
-                    SubSpecialization = d.Specialization.SubSpecialization.Select(s=>new Item<int, string>() { Id = s.Id , Name = s.Name}),
-                     DoctorId = d.Id,
-                    
-                }
-                );    
+                    Specialization = d.Specialization.Name??"",
+                    SubSpecialization = d.Specialization.SubSpecialization.Select(s => new Item<int, string>() { Id = s.Id, Name = s.Name }),
+                    DoctorId = d.Id,
+                    WaitingTimeInMinutes = d.WaitingTimeInMinutes,
+                    Fees = d.Fees,
+                    verificationFileName = d.verificationFileName,
+                    ImgName = d.ProfilePicture,
+                    SelectedSubSpecializations = d.SubSpecializations.Select(s => s.Id )
 
+                }
+            );
+
+            if (AfterDrRegisteration.ImgName != null)
+                AfterDrRegisteration.PictureReativeUrl = FilePaths.DrImgPathRelative + AfterDrRegisteration.ImgName;
+            if (AfterDrRegisteration.verificationFileName != null)
+            {
+                AfterDrRegisteration.CurrrentverificationPath = FilePaths.DrVerificationRelative + AfterDrRegisteration.verificationFileName;
+
+            }
             return View(AfterDrRegisteration);
         }
 
@@ -380,10 +393,14 @@ namespace HealthCareApp.Controllers.Doctor
             if (DoctorId == null) {
                  DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             }
+            //if (afterRegisteration.CurrrentverificationPath == null)
+            //    ModelState.AddModelError("", "Must enter Verification file");
 
-            Models.Doctor doctor = DoctorRepository.Find(d => d.Id == DoctorId);
+            Models.Doctor doctor = DoctorRepository.Find(d => d.Id == DoctorId,d=>d.SubSpecializations);
+
+            afterRegisteration.PictureReativeUrl = FilePaths.DrImgPathRelative + doctor.ProfilePicture;
+
             if (ModelState.IsValid) {
-
 
                 doctor.Fees= afterRegisteration.Fees;
                 doctor.WaitingTimeInMinutes= afterRegisteration.WaitingTimeInMinutes;
@@ -391,19 +408,33 @@ namespace HealthCareApp.Controllers.Doctor
                 IEnumerable<SubSpecialization> SubSpecializations = SubSpecializationRepository.FindAll(s => afterRegisteration.SelectedSubSpecializations.Contains(s.Id));
                 foreach (var sub in SubSpecializations)
                 {
-                    sub.Doctors.Add(doctor);
+                    if(!sub.Doctors.Select(d=>d.Id).Contains(DoctorId))
+                        sub.Doctors.Add(doctor);
                 }
                 if (afterRegisteration.ProfilePicture != null) 
-                {                   
-                    doctor.ProfilePicture= await fileService.uploadFileAsync(afterRegisteration.ProfilePicture,FilePaths.DrImagesPath);
-                   //afterRegisteration.PictureReativeUrl = FilePaths.DrPathRelative + doctor.ProfilePicture;
+                {
+                    if(doctor.ProfilePicture!= "DefaultFemale.png" &&  doctor.ProfilePicture!= "DefaultMale.jpg" )
+                        fileService.DeleteFile(doctor.ProfilePicture, FilePaths.DrImagesPath);
+
+                    string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", FilePaths.DrImagesPath);
+                    if (!Directory.Exists(fullPath))
+                    {
+                        Directory.CreateDirectory(fullPath);
+                    }
+
+                    string imageName = await fileService.uploadFileAsync(afterRegisteration.ProfilePicture, FilePaths.DrImagesPath);
+                    doctor.ProfilePicture = imageName;
+                    //afterRegisteration.PictureReativeUrl = FilePaths.DrPathRelative + doctor.ProfilePicture;
                 }
                 if (afterRegisteration.doctorVerificationFile != null)
                 {
+                    if(doctor.verificationFileName!= null)
+                        fileService.DeleteFile(doctor.verificationFileName, FilePaths.DrVerificationPath);
+
                     doctor.verificationFileName = await fileService.uploadFileAsync(afterRegisteration.doctorVerificationFile, FilePaths.DrVerificationPath);
                 }
-                DoctorRepository.SaveChanges();
 
+                DoctorRepository.SaveChanges();
                 return RedirectToAction("DisplayPageForPendingDoctors", "Doctor");
             }
             else

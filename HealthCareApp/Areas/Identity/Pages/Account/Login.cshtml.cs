@@ -137,7 +137,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                         }
                         else
                         {
-                            return RedirectToAction("AfterDrRegisteration", "Doctor");
+                            return RedirectToAction("DisplayPageForPendingDoctors", "Doctor");
                         }
                     }
                     return LocalRedirect(returnUrl);
