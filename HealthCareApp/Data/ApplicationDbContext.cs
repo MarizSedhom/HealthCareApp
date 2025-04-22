@@ -22,6 +22,8 @@ namespace HealthCareApp.Data
         public virtual DbSet<MedicalRecord> MedicalRecords { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<Appointment> Appointments { get; set; }
+        public virtual DbSet<City> Cities { get; set; }
+        public virtual DbSet<Region> Regions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

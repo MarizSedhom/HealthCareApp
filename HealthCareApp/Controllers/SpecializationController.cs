@@ -21,6 +21,21 @@ namespace HealthCareApp.Controllers
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                var resultItems = result.Select(r => new {
+                    id = r.Id,
+                    name = r.Name
+                }).ToList();
+
+                return Json(new
+                {
+                    items = resultItems,
+                    currentPage = page,
+                    totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+                });
+            }
+
             return View(result);
         }
 
@@ -86,10 +101,13 @@ namespace HealthCareApp.Controllers
             {
                 SpecializationRepo.UpdateNoTracking(specialization);
                 SpecializationRepo.Save();
-                return RedirectToAction(nameof(Index), new {page});
+                return RedirectToAction(nameof(Index), new { page });
             }
             else
+            {
+                ViewBag.CurrentPage = page;
                 return View(specialization);
+            }
         }
 
         [HttpGet]

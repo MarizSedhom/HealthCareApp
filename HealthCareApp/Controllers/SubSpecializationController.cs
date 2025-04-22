@@ -104,6 +104,7 @@ namespace HealthCareApp.Controllers
             else
             {
                 ViewBag.Specializations = SpecializationRepo.GetAllNoTracking();
+                ViewBag.CurrentPage = page;
                 return View(subSpecialization);
             }
         }
@@ -111,8 +112,8 @@ namespace HealthCareApp.Controllers
             [HttpGet]
         public IActionResult Delete(int id, int page = 1)
         {
-            ViewBag.CurrentPage = page;
             var editedObj = SubSpecializationRepo.Find(sspec => sspec.Id == id, sspec => sspec.Specialization);
+            ViewBag.CurrentPage = page;
             return View(editedObj);
         }
 

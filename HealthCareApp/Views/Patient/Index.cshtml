@@ -1,4 +1,4 @@
-﻿@model DoctorPatientsVM
+﻿@model List<PatientVM>
 
 @{
     ViewData["Title"] = "Index";
@@ -51,8 +51,9 @@
             }
         });
     }
+</script>
 
-    /*function search(patientId, doctorId) {
+@*  function search(patientId, doctorId) {
         const targetBodyId = `#medicalRecordsBody_${patientId}`;
         const modalElement = document.querySelector(`#medicalRecordsModal_${patientId}`);
         const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
@@ -88,6 +89,5 @@
                 $(targetBodyId).html('<div class="text-danger">An error occurred: ' + xhr.responseText + '</div>');
             }
         });
-    }*/
-</script>
+    } *@
 

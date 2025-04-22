@@ -1,7 +1,5 @@
-﻿using HealthCareApp.Models;
-using HealthCareApp.RepositoryServices;
+﻿using HealthCareApp.RepositoryServices;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
@@ -17,39 +15,6 @@ namespace HealthCareApp.Controllers
             this.PatientRepo = PatientRepo;
             this.MedicalRepo = MedicalRepo;
             this.AppointmentRepo = AppointmentRepo;
-        }
-
-        public IActionResult Index(int page = 1, int pageSize = 6)
-        {
-            int skip = (page - 1) * pageSize;
-            var result = PatientRepo.FindAllForSearch(p => true, skip, pageSize, ["MedicalRecords"]);
-
-            List<PatientVM> vm = new List<PatientVM>();
-            foreach (var item in result)
-            {
-                PatientVM patient = new PatientVM()
-                {
-                    Id = item.Id,
-                    FullName = item.FirstName + " " + item.LastName,
-
-                    Age = DateTime.Today.Year - item.DateOfBirth.Year -
-                    (item.DateOfBirth > new DateOnly(DateTime.Today.Year, item.DateOfBirth.Month, item.DateOfBirth.Day) ? 1 : 0),
-
-                    EmergencyContact = item.EmergencyContact,
-                    MedicalHistory = item.MedicalHistory,
-                };
-                vm.Add(patient);
-            }
-
-            var totalCount = PatientRepo.Count();
-
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-            string doctorId = "d1";
-            //= User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            ViewBag.DoctorId = doctorId;
-
-            return View(vm);
         }
 
         public IActionResult DetailsByName(string name, int page = 1, int pageSize = 6)
@@ -115,41 +80,7 @@ namespace HealthCareApp.Controllers
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             ViewBag.DoctorId = doctorId;
 
-            var doctorPatientsVM = new DoctorPatientsVM
-            {
-                Patients = patientVMs
-            };
-
-            return PartialView("_DetailsByName", doctorPatientsVM);
-        }
-
-        public ActionResult DisplayPatientInfoForDoctor(string patientId)
-        {
-            var patientInfo = PatientRepo.FindWithSelect(p => p.Id == patientId,
-                p => new PatientVM
-                {
-                    FullName = $"{p.FirstName} {p.LastName}",
-                    Age = DateTime.Now.Year - p.DateOfBirth.Year,
-                    MedicalHistory = p.MedicalHistory
-                });
-
-            return View(patientInfo);
-        }
-
-        public IActionResult SearchForMedicalRecords(string patientId, string doctorId)
-        {
-            var medicalRecords = MedicalRepo.FindAll(mr => mr.PatientId == patientId && mr.DoctorId == doctorId);
-
-            if (medicalRecords != null && medicalRecords.Any())
-            {
-                // Tell JS to redirect if there are medical records
-                return PartialView("_MedicalRecordsDisplayButton");
-            }
-            else
-            {
-                // Return a partial view (No records found)
-                return PartialView("_MedicalRecordsAddButton");
-            }
+            return PartialView("_DetailsByName", patientVMs);
         }
 
         public IActionResult GetDoctorPatients(int page = 1, int pageSize = 6)
@@ -190,17 +121,44 @@ namespace HealthCareApp.Controllers
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             ViewBag.DoctorId = doctorId;
 
-            var doctorPatientsVM = new DoctorPatientsVM
-            {
-                Patients = patientVMs
-                // IsFirst removed, now handled per-patient
-            };
-
-            return View(nameof(Index), doctorPatientsVM);
+            return View(nameof(Index), patientVMs);
         }
 
     }
 }
+
+//public IActionResult Index(int page = 1, int pageSize = 6)
+//{
+//    int skip = (page - 1) * pageSize;
+//    var result = PatientRepo.FindAllForSearch(p => true, skip, pageSize, ["MedicalRecords"]);
+
+//    List<PatientVM> vm = new List<PatientVM>();
+//    foreach (var item in result)
+//    {
+//        PatientVM patient = new PatientVM()
+//        {
+//            Id = item.Id,
+//            FullName = item.FirstName + " " + item.LastName,
+
+//            Age = DateTime.Today.Year - item.DateOfBirth.Year -
+//            (item.DateOfBirth > new DateOnly(DateTime.Today.Year, item.DateOfBirth.Month, item.DateOfBirth.Day) ? 1 : 0),
+
+//            EmergencyContact = item.EmergencyContact,
+//            MedicalHistory = item.MedicalHistory,
+//        };
+//        vm.Add(patient);
+//    }
+
+//    var totalCount = PatientRepo.Count();
+
+//    ViewBag.CurrentPage = page;
+//    ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+//    string doctorId = "d1";
+//    //= User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+//    ViewBag.DoctorId = doctorId;
+
+//    return View(vm);
+//}
 
 //public IActionResult DetailsByName(string name, int page = 1, int pageSize = 6)
 //{
@@ -253,4 +211,20 @@ namespace HealthCareApp.Controllers
 //    ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
 //    return PartialView("_DetailsByName", vm);
+//}
+
+//public IActionResult SearchForMedicalRecords(string patientId, string doctorId)
+//{
+//    var medicalRecords = MedicalRepo.FindAll(mr => mr.PatientId == patientId && mr.DoctorId == doctorId);
+
+//    if (medicalRecords != null && medicalRecords.Any())
+//    {
+//        // Tell JS to redirect if there are medical records
+//        return PartialView("_MedicalRecordsDisplayButton");
+//    }
+//    else
+//    {
+//        // Return a partial view (No records found)
+//        return PartialView("_MedicalRecordsAddButton");
+//    }
 //}

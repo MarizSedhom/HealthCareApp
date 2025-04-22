@@ -1,9 +1,9 @@
-﻿@model DoctorPatientsVM
+﻿@model List<PatientVM>
 
 <style>
     button:focus:not(:focus-visible) {
-        outline: none;
-        box-shadow: none;
+    outline: none;
+    box-shadow: none;
     }
 
 </style>
@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
-    @foreach (var item in Model.Patients)
+    @foreach (var item in Model)
     {
         <div class="col">
             <div class="card h-100 shadow-sm">
@@ -23,16 +23,37 @@
                     <p class="card-text"><strong>Emergency Contact:</strong> @item.EmergencyContact</p>
 
                     <div class="d-flex justify-content-between mt-4">
-                        <!-- Medical History Button -->
+
                         <button type="button"
-                                class="btn btn-outline-info btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#medicalModal_@item.Id"
-                                title="View Medical History">
+                        class="btn btn-outline-info btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#medicalModal_@item.Id"
+                        title="View Medical History">
                             <i class="fas fa-file-medical-alt"></i> History
                         </button>
 
-                        <div id="RenderDisplayBtn_@item.Id"></div>
+                        @if (item.IsFirst == true)
+                        {
+                            <button type="button"
+                                    class="btn btn-outline-success btn-sm redirect-btn"
+                                    title="Add New Record"
+                                    data-action="Create"
+                                    data-patient-id="@item.Id"
+                                    data-doctor-id="@ViewBag.DoctorId">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button"
+                                    class="btn btn-outline-primary btn-sm redirect-btn"
+                                    title="View Records"
+                                    data-action="Index"
+                                    data-patient-id="@item.Id"
+                                    data-doctor-id="@ViewBag.DoctorId">
+                                <i class="fas fa-clipboard"></i> Records
+                            </button>
+                        }
 
                     </div>
                 </div>
@@ -132,9 +153,24 @@
     </ul>
 </nav>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.redirect-btn').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const patientId = this.getAttribute('data-patient-id');
+                const doctorId = this.getAttribute('data-doctor-id');
+                const action = this.getAttribute('data-action');
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
+                const controller = "Clinic";
+                const url = `/${controller}/${action}?patientId=${patientId}&doctorId=${doctorId}`;
+                window.location.href = url;
+            });
+        });
+    });
+</script>
+
+@*     <script>
         $(document).ready(function () {
             const doctorId = '@ViewBag.DoctorId';
 
@@ -159,31 +195,23 @@
                 });
             });
         });
-    </script>
 
-@* <!-- Medical Records Modal -->
-            <div class="modal fade" id="medicalRecordsModal_@item.Id" tabindex="-1" aria-labelledby="medicalRecordsModalLabel_@item.Id" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-scrollable modal-md">
-                    <div class="modal-content border border-primary rounded-3 shadow-sm">
-                        <div class="modal-header bg-primary bg-opacity-10 text-primary border-bottom border-primary rounded-top-3">
-                            <h5 class="modal-title fw-semibold" id="medicalRecordsModalLabel_@item.Id">
-                                <i class="fas fa-clipboard me-2"></i> Medical Records - @item.FullName
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body text-secondary small d-flex justify-content-center" id="medicalRecordsBody_@item.Id"
-                             style="min-height: 100px; max-height: 300px; overflow-y: auto;">
-                            <!-- AJAX result will be injected here -->
-                        </div>
-                        <div class="modal-footer justify-content-end py-2 px-3 border-top border-primary">
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">
-                                <i class="fas fa-times me-1"></i> Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div> *@
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.redirect-btn').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const patientId = this.getAttribute('data-patient-id');
+                const doctorId = this.getAttribute('data-doctor-id');
+                const action = this.getAttribute('data-action');
 
+                // Set the controller name here
+                const controller = "Clinic";
+
+                const url = `/${controller}/${action}`;//?patientId=${patientId}&doctorId=${doctorId}
+                window.location.href = url;
+            });
+        });
+    });
+</script> *@
 
 
 

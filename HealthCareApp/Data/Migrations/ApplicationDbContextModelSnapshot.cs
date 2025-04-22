@@ -34,7 +34,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("SubSpecializationsId");
 
-                    b.ToTable("DoctorSubSpecialization");
+                    b.ToTable("DoctorSubSpecialization", (string)null);
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.ApplicationUser", b =>
@@ -168,7 +168,7 @@ namespace HealthCareApp.Data.Migrations
                         .IsUnique()
                         .HasFilter("[SlotId] IS NOT NULL");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Availability", b =>
@@ -213,7 +213,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Availability");
+                    b.ToTable("Availability", (string)null);
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.AvailabilitySlots", b =>
@@ -246,7 +246,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("AvailabilityId");
 
-                    b.ToTable("AvailabilitySlots");
+                    b.ToTable("AvailabilitySlots", (string)null);
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Clinic", b =>
@@ -292,7 +292,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Clinics");
+                    b.ToTable("Clinics", (string)null);
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.MedicalRecord", b =>
@@ -331,7 +331,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("MedicalRecords");
+                    b.ToTable("MedicalRecords", (string)null);
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Notification", b =>
@@ -366,7 +366,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Payment", b =>
@@ -397,7 +397,7 @@ namespace HealthCareApp.Data.Migrations
                     b.HasIndex("AppointmentId")
                         .IsUnique();
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Review", b =>
@@ -438,7 +438,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Specialization", b =>
@@ -459,7 +459,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specializations");
+                    b.ToTable("Specializations", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -618,7 +618,7 @@ namespace HealthCareApp.Data.Migrations
 
                     b.HasIndex("SpecializationId");
 
-                    b.ToTable("SubSpecializations");
+                    b.ToTable("SubSpecializations", (string)null);
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Doctor", b =>

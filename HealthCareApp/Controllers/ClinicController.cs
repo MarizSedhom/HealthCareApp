@@ -92,6 +92,7 @@ namespace HealthCareApp.Controllers
             }
             else
             {
+                ViewBag.CurrentPage = page;
                 return View(clinic);
             }
         }
