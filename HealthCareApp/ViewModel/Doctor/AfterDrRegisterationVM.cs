@@ -5,10 +5,10 @@ namespace HealthCareApp.ViewModel.Doctor
 {
     public class AfterDrRegisterationVM
     {
-        [Required(ErrorMessage = "Profile picture is required")]
+        //[Required(ErrorMessage = "Profile picture is required")]
         [DataType(DataType.Upload)]
         [Display(Name = "Profile Picture")]
-        public IFormFile ProfilePicture {  get; set; }
+        public IFormFile? ProfilePicture {  get; set; }
         //public string PictureReativeUrl { get; set; }
         public string? DoctorId {  get; set; }
         public string? Specialization { get; set; }

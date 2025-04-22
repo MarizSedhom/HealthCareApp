@@ -148,28 +148,8 @@ namespace HealthCareApp.Controllers.Doctor
             return View();
         }
 
-        //[HttpGet]
-        //public IActionResult UpdateDoctorAdmin(string doctorId= "236a0bce-bf14-40ad-a62e-60e8f5e93997")
-        //{
-        //    Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
-        //    AdminUpdateDrVM doctorVM = new AdminUpdateDrVM(doctor);
-        //    Specialization specs = specializationRepository.Find(s => s.Id == doctor.SpecializationId, s => s.SubSpecialization);
-        //    doctorVM.Specializations = specializationRepository.FindAllWithSelect(null, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
-        //    doctorVM.SubSpecializationsList= specs.SubSpecialization.Select(s => new Item<int, string>
-        //    {
-        //        Id = s.Id,
-        //        Name = s.Name,
-        //    });
-        //    doctorVM.CurrentPicturePath=FilePaths.DrImgPathRelative+doctorVM.ImgName;
-        //    if (doctorVM.verificationFileName != null)
-        //    {
-        //        doctorVM.CurrrentverificationPath = FilePaths.DrVerificationRelative + doctorVM.verificationFileName;
-
-        //    }
-        //    return View(doctorVM);
-
-        //}
-        private AdminUpdateDrVM UpdateDoctorAdmin(string doctorId = "236a0bce-bf14-40ad-a62e-60e8f5e93997")
+        [HttpGet]
+        public IActionResult UpdateDoctorAdmin(string doctorId)
         {
             Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
             AdminUpdateDrVM doctorVM = new AdminUpdateDrVM(doctor);
@@ -186,9 +166,29 @@ namespace HealthCareApp.Controllers.Doctor
                 doctorVM.CurrrentverificationPath = FilePaths.DrVerificationRelative + doctorVM.verificationFileName;
 
             }
-            return doctorVM;
+            return View(doctorVM);
 
         }
+        //private AdminUpdateDrVM UpdateDoctorAdmin(string doctorId = "236a0bce-bf14-40ad-a62e-60e8f5e93997")
+        //{
+        //    Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
+        //    AdminUpdateDrVM doctorVM = new AdminUpdateDrVM(doctor);
+        //    Specialization specs = specializationRepository.Find(s => s.Id == doctor.SpecializationId, s => s.SubSpecialization);
+        //    doctorVM.Specializations = specializationRepository.FindAllWithSelect(null, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
+        //    doctorVM.SubSpecializationsList = specs.SubSpecialization.Select(s => new Item<int, string>
+        //    {
+        //        Id = s.Id,
+        //        Name = s.Name,
+        //    });
+        //    doctorVM.CurrentPicturePath = FilePaths.DrImgPathRelative + doctorVM.ImgName;
+        //    if (doctorVM.verificationFileName != null)
+        //    {
+        //        doctorVM.CurrrentverificationPath = FilePaths.DrVerificationRelative + doctorVM.verificationFileName;
+
+        //    }
+        //    return doctorVM;
+
+        //}
 
         [HttpPost]
         public async Task<IActionResult> UpdateDoctorAdmin(AdminUpdateDrVM doctorVM)
@@ -373,6 +373,7 @@ namespace HealthCareApp.Controllers.Doctor
 
             return View(AfterDrRegisteration);
         }
+
         [HttpPost]
         public async Task< IActionResult> AfterDrRegisteration( AfterDrRegisterationVM afterRegisteration, string? DoctorId = null)
         {
@@ -403,12 +404,19 @@ namespace HealthCareApp.Controllers.Doctor
                 }
                 DoctorRepository.SaveChanges();
 
-                //# need to redirect
+                return RedirectToAction("DisplayPageForPendingDoctors", "Doctor");
             }
-            afterRegisteration.SubSpecialization = SubSpecializationRepository.FindAllWithSelect(s => s.SpecializationId == doctor.SpecializationId, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
-            return View(afterRegisteration);
+            else
+            {
+                afterRegisteration.SubSpecialization = SubSpecializationRepository.FindAllWithSelect(s => s.SpecializationId == doctor.SpecializationId, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
+                return View(afterRegisteration);
+            }
         }
 
+        public IActionResult DisplayPageForPendingDoctors()
+        {
+            return View();
+        }
 
         private DrUpdateProfileVM GetDrUpdateProfileVm(string DrId)
         {
@@ -427,13 +435,14 @@ namespace HealthCareApp.Controllers.Doctor
                 Title = d.Title,
                 SubSpecializations = d.SubSpecializations.Select(s => s.Name),
                 WaitingTimeInMinutes = d.WaitingTimeInMinutes,
-                DrId = d.Id
+                DrId = d.Id,
+                VerficationFileName = d.verificationFileName
             });
             if (profileVM.ImgName != null)
                 profileVM.CurrentPicturePath = FilePaths.DrImgPathRelative + profileVM.ImgName;
             else
-                profileVM.CurrentPicturePath = null; // #default image
-
+                profileVM.CurrentPicturePath =  profileVM.gender==Gender.Male?  FilePaths.DrImgPathRelative + "DefaultFemale.png" : FilePaths.DrImgPathRelative + "DefaultMale.jpg"; // #default image
+            if(profileVM.VerficationFileName != null) profileVM.CurrentVerficationFilePath = FilePaths.DrVerificationRelative + profileVM.VerficationFileName;
             return profileVM;
         }
 

@@ -20,34 +20,36 @@ namespace HealthCareApp.Controllers.Doctor
         public IGenericRepoServices<AvailabilitySlots> SlotRepository { get; }
         int AvailabilityDays = 7;
         private readonly IGenericRepoServices<Models.Doctor> doctorRepository;
+        NotificationService notificationService;
 
-        public DoctorAvailabilityController( IAvailabilityRepository availabilityRepository, IGenericRepoServices<Clinic> ClinicRepository, IGenericRepoServices<AvailabilitySlots> SlotRepository,IGenericRepoServices<Notification>NotificationRepository , IGenericRepoServices<HealthCareApp.Models.Doctor> doctorRepository) {
+        public DoctorAvailabilityController( IAvailabilityRepository availabilityRepository, IGenericRepoServices<Clinic> ClinicRepository, IGenericRepoServices<AvailabilitySlots> SlotRepository,IGenericRepoServices<Notification>NotificationRepository , IGenericRepoServices<HealthCareApp.Models.Doctor> doctorRepository, NotificationService notificationService) {
             this.AvailabilityRepository = availabilityRepository;
             this.ClinicRepository = ClinicRepository;
             this.SlotRepository = SlotRepository;
             this.NotificationRepository = NotificationRepository;
             this.doctorRepository = doctorRepository;
+            this.notificationService = notificationService;
         }
 
-        public IActionResult DisplayDaysSlots(string DrId= "96537cdd-bddf-4f55-b6ef-ab07e2d49f11")
-        {
+        //public IActionResult DisplayDaysSlots(string DrId= "96537cdd-bddf-4f55-b6ef-ab07e2d49f11")
+        //{
 
-            IEnumerable<AvailabilityWithSlotVM> drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == DrId, v => new AvailabilityWithSlotVM()
-            {
-                AvailabilityDate = v.Date,
-                AvailabilityId = v.Id,
-                AvailabilityType = v.type,
-                ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
-                Slots = v.AvailableSlots.Select(s => new Slot()
-                {
-                   EndTime = s.EndTime,
-                   IsBooked = s.IsBooked,
-                   SlotId=s.Id,
-                   StartTime = s.StartTime
-                })
-            }).OrderBy(v=>v.AvailabilityDate);
-            return View(drAvailabilities);
-        }
+        //    IEnumerable<AvailabilityWithSlotVM> drAvailabilities = AvailabilityRepository.FindAllWithSelect(v => v.DoctorId == DrId, v => new AvailabilityWithSlotVM()
+        //    {
+        //        AvailabilityDate = v.Date,
+        //        AvailabilityId = v.Id,
+        //        AvailabilityType = v.type,
+        //        ClinicName = $"{v.Clinic.Region.City.CityNameEn} ({v.Clinic.Region.RegionNameEn})",
+        //        Slots = v.AvailableSlots.Select(s => new Slot()
+        //        {
+        //           EndTime = s.EndTime,
+        //           IsBooked = s.IsBooked,
+        //           SlotId=s.Id,
+        //           StartTime = s.StartTime
+        //        })
+        //    }).OrderBy(v=>v.AvailabilityDate);
+        //    return View(drAvailabilities);
+        //}
         
         public IActionResult GetAllAvailabilitiesForAllDr()
         {
@@ -170,6 +172,15 @@ namespace HealthCareApp.Controllers.Doctor
                 if (slot.IsBooked)
                 {
                     /////////////////////////////notification for Cancel Appointment/////////////////////////////////////////
+                    var notificationDr = new Notification
+                    {
+                        UserId = slot.Appointment.PatientId,
+                        Message = $"Dr {slot.Availability.Doctor.FirstName} {slot.Availability.Doctor.LastName} Canceled your Appointment that was in {slot.Availability.Date} from {slot.Availability.StartTime} to {slot.Availability.EndTime}.",
+                        CreatedDate = DateTime.Now,
+                        notificationType = NotificationType.ApproveAccount,
+                    };
+
+                    notificationService.Notify(notificationDr);
                     //string msg =slot.Appointment.patientId.ToString();
                 }
             }
@@ -210,7 +221,7 @@ namespace HealthCareApp.Controllers.Doctor
         {
             Availability previousAvailability = AvailabilityRepository.GetAvailabilitySlotsAppointment(previousAvailabilityId);
             
-            List<Notification>notifications = new List<Notification>();
+          //  List<Notification>notifications = new List<Notification>();
             Availability newAvailability = new Availability()
             {
                 AvailableSlots = new List<AvailabilitySlots>(),
@@ -230,12 +241,14 @@ namespace HealthCareApp.Controllers.Doctor
                 newAvailability.AvailableSlots.Add(slot);
                 if (slot.IsBooked) {
                     /////////////////////////////notification for Reschdule Appointment/////////////////////////////////////////
-                    notifications.Add(new Notification()
+                    var notificationDr = new Notification
                     {
-                        CreatedDate = todayTime,
-                        Message = "Doctor Reschedule Appointment",
-                        UserId = slot.Appointment.PatientId
-                    });
+                        UserId = slot.Appointment.PatientId,
+                        Message = $"Dr {slot.Availability.Doctor.FirstName} {slot.Availability.Doctor.LastName} Reschduled your Appointment from day {previousAvailability.Date} to Day {newAvailability.Date} from time: {slot.Availability.StartTime} to {slot.Availability.EndTime}.",
+                        CreatedDate = DateTime.Now,
+                        notificationType = NotificationType.ApproveAccount,
+                    };
+                    notificationService.Notify(notificationDr);
                 }
             }
             AvailabilityRepository.Add(newAvailability);
@@ -243,7 +256,7 @@ namespace HealthCareApp.Controllers.Doctor
             AvailabilityRepository.HardDelete(previousAvailability);
 
             //NotificationRepository.(notifications)
-            NotificationRepository.AddRange(notifications);
+            //NotificationRepository.AddRange(notifications);
 
             return RedirectToAction(nameof(GetAvailabilitiesForDr), new { doctorId = newAvailability.DoctorId });
 
@@ -343,6 +356,15 @@ namespace HealthCareApp.Controllers.Doctor
         {
             AvailabilitySlots slot = SlotRepository.Find(s => s.Id == slotId, s => s.Appointment,s=>s.Availability);
             /***************************************** Notification for patient about the cancelation ********************************************/
+            var notificationDr = new Notification
+            {
+                UserId = slot.Appointment.PatientId,
+                Message = $"Dr {slot.Availability.Doctor.FirstName} {slot.Availability.Doctor.LastName} Canceled your Appointment that was in {slot.Availability.Date} from {slot.Availability.StartTime} to {slot.Availability.EndTime}.",
+                CreatedDate = DateTime.Now,
+                notificationType = NotificationType.ApproveAccount,
+            };
+
+            notificationService.Notify(notificationDr);
             /***************************************** how dealing with digital payment ********************************************/
             if (slot != null)
                 SlotRepository.HardDelete(slot); //delete slot with appoiment 
@@ -386,6 +408,17 @@ namespace HealthCareApp.Controllers.Doctor
 
             int oldAvailbility = OldSlot.AvailabilityId;
             string drId = OldSlot.Availability.DoctorId;
+
+           //////////////////// //dr notification
+            var notificationDr = new Notification
+            {
+                UserId = OldSlot.Appointment.PatientId,
+                Message = $"Dr {OldSlot.Availability.Doctor.FirstName} {OldSlot.Availability.Doctor.LastName} Reschduled your Appointment from day {OldSlot.Availability.Date} to Day {NewSlot.Availability.Date} from time: {NewSlot.Availability.StartTime} to {NewSlot.Availability.EndTime}.",
+                CreatedDate = DateTime.Now,
+                notificationType = NotificationType.ApproveAccount,
+            };
+            notificationService.Notify(notificationDr);
+
             int CntSlots = SlotRepository.Count(s => s.AvailabilityId == oldAvailbility && s.Id!=OldSlot.Id);
             SlotRepository.HardDelete(OldSlot);
 
@@ -531,7 +564,6 @@ namespace HealthCareApp.Controllers.Doctor
                         }
                         AvailabilityRepository.SaveChanges();
                     }
-
                 }
                 return RedirectToAction(nameof(GetAvailabilitiesForDr), new { doctorId = id});
             }

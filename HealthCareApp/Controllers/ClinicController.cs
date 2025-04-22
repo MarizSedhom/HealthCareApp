@@ -145,7 +145,7 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(ClinicCreateVM clinicVM, int page)
+        public IActionResult Create(ClinicCreateVM clinicVM,  int page)
         {
             if (ModelState.IsValid)
             {
@@ -183,8 +183,9 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id, int page, string doctorId,string returnUrl = null)
+        public IActionResult Edit(int id, int page, string doctorId=null,string returnUrl = null)
         {
+
             ClinicCreateVM clinic = new ClinicCreateVM();
             clinic = ClinicRepo.FindWithSelect(c => c.Id == id, c => new ClinicCreateVM()
             {
