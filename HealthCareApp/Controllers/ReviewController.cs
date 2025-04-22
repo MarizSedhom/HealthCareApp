@@ -67,14 +67,15 @@ namespace HealthCareApp.Controllers
                 IsDeleted = r.IsDeleted
             });
 
-            if (User.IsInRole("Patient"))
-            {
-                return View(doctorReviews);
-            }
-            else
-            {
-                return View("GetReviewsForDr", doctorReviews);
-            }
+            return View(doctorReviews);
+            //if (User.IsInRole("Patient"))
+            //{
+                
+            //}
+            //else
+            //{
+            //    return View("GetReviewsForDr", doctorReviews);
+            //}
         }
 
 
@@ -133,7 +134,7 @@ namespace HealthCareApp.Controllers
             {
                 review.IsEdited = true;
                 reviewService.Update(review);
-                return RedirectToAction(nameof(GetDoctorReviews));
+                return RedirectToAction("ViewDoctorDetails", "Doctor", new { review.DoctorId });
             }
             else
             {
@@ -143,9 +144,12 @@ namespace HealthCareApp.Controllers
 
         public ActionResult DeleteReview(int id)
         {
-            reviewService.SoftDelete(reviewService.GetById(id));
+            var review = reviewService.GetById(id);
+            var DoctorId = review.DoctorId;
 
-            return RedirectToAction(nameof(GetDoctorReviews));
+            reviewService.SoftDelete(review);
+
+            return RedirectToAction("ViewDoctorDetails", "Doctor", new { DoctorId });
         }
 
 
