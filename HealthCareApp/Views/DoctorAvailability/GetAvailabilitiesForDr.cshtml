@@ -397,10 +397,15 @@
 
                                         </a>
                                     </div>
-                                    <a asp-action="DeleteAvailability" asp-controller="DoctorAvailability" asp-route-availabilityId="@availability.Id"
-                                       class="cancel-button mt-2" title="Cancel">
-                                        <i class="fas fa-times me-2"></i> Cancel
-                                    </a>
+           
+                                        <a href="#"
+                                            class="cancel-button mt-2"
+                                            title="Cancel"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal"
+                                            data-id="@availability.Id"><i class="fas fa-times me-2"></i>Cancel
+                                        </a>
+
                                 </div>
                             </div>
                         }
@@ -442,4 +447,37 @@
         if (percentage > 50) return "utilization-medium";
         return "utilization-low";
     }
+}
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="CancelDay" method="get">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Cancelation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to Cancel this Slot?
+                    <input type="hidden" name="oldAvailabilityId" id="recordIdToDelete" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var input = deleteModal.querySelector('#recordIdToDelete');
+            input.value = id;
+        });
+    </script>
+
 }

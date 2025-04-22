@@ -150,14 +150,6 @@ namespace HealthCareApp.Controllers.Doctor
             Models.Doctor doctor = new Models.Doctor();
             return drAvailabilities;
         }
-        public IActionResult DeleteAvailability(int availabilityId)
-         {
-            var drAvailabilities = GetAvailabilityForDrVM(availabilityId);
-            return View(drAvailabilities);
-
-         }
-
-
 
         ////////////////////////////////////CancelDay for Notification/////////////////////////////////////////////
         public IActionResult CancelDay(int oldAvailabilityId)
@@ -316,27 +308,6 @@ namespace HealthCareApp.Controllers.Doctor
 
             return Json(Slots);
         }
-        public IActionResult CancelSlot(int slotId)
-        {
-
-            ViewSlotVM Slot = SlotRepository.FindWithSelect(s => s.Id == slotId, s => new ViewSlotVM()
-
-            {
-                TimeRange = $"{s.StartTime} - {s.EndTime}",
-                PatientName = (s.Appointment == null) ? "-" : $"{s.Appointment.Patient.FirstName} {s.Appointment.Patient.LastName}",
-                PatientNumber = (s.Appointment == null) ? "-" : s.Appointment.Patient.PhoneNumber,
-                IsBooked = s.IsBooked,
-                Status = (s.IsBooked) ? "Booked" : "Available",
-                AppointmentId = (s.Appointment == null) ? null : s.Appointment.Id,
-                SlotId = s.Id,
-                AvailabilityId = s.AvailabilityId,
-                drId = s.Availability.DoctorId
-
-            });
-
-            return View(Slot);
-        }
-
 
         //////////////////////////// Notification for patient about the cancelation ///////////////////
         public IActionResult CancelSlotPost(int slotId)
