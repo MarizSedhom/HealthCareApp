@@ -1,59 +1,335 @@
 ﻿@model HealthCareApp.ViewModel.Patient.EditPatientInfoVM
 
 @{
-    ViewData["Title"] = "EditPatientInfo";
+    ViewData["Title"] = "Edit Patient Information";
 }
 
-<h1>EditPatientInfo</h1>
-
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditPatientInfo">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="patientId" />
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Gender" class="control-label"></label>
-                <select asp-for="Gender" class="form-control" asp-items="@Html.GetEnumSelectList(typeof(Gender))"></select>
-                <span asp-validation-for="Gender" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateOfBirth" class="control-label"></label>
-                <input asp-for="DateOfBirth" class="form-control" />
-                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmergencyContact" class="control-label"></label>
-                <input asp-for="EmergencyContact" class="form-control" />
-                <span asp-validation-for="EmergencyContact" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MedicalHistory" class="control-label"></label>
-                <input asp-for="MedicalHistory" class="form-control" />
-                <span asp-validation-for="MedicalHistory" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="GetAllPatients" class="btn btn-secondary">Back to List</a>
-            </div>
-        </form>
+<div class="edit-patient-container">
+    <div class="form-header">
+        <h1 class="form-title">
+            <i class="fas fa-user-edit icon-primary"></i>
+            Edit Patient Information
+        </h1>
     </div>
+
+    <form asp-controller="Patient" asp-action="EditPatientInfo" class="patient-form" novalidate>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger validation-summary-errors"></div>
+        <input type="hidden" asp-for="patientId" />
+
+        <div class="form-row">
+            <div class="form-column">
+                <div class="form-group">
+                    <label asp-for="FirstName" class="form-label">First Name</label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="validation-message"></span>
+                </div>
+            </div>
+
+            <div class="form-column">
+                <div class="form-group">
+                    <label asp-for="LastName" class="form-label">Last Name</label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="validation-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email" class="form-label">Email Address</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="validation-message"></span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-column">
+                <div class="form-group">
+                    <label asp-for="Gender" class="form-label">Gender</label>
+                    <select asp-for="Gender" class="form-control gender-select"
+                            asp-items="@Html.GetEnumSelectList(typeof(Gender))">
+                    </select>
+                    <span asp-validation-for="Gender" class="validation-message"></span>
+                </div>
+            </div>
+
+            <div class="form-column">
+                <div class="form-group">
+                    <label asp-for="DateOfBirth" class="form-label">Date of Birth</label>
+                    <input asp-for="DateOfBirth" type="date" class="form-control" />
+                    <span asp-validation-for="DateOfBirth" class="validation-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="EmergencyContact" class="form-label">Emergency Contact</label>
+            <input asp-for="EmergencyContact" class="form-control" />
+            <span asp-validation-for="EmergencyContact" class="validation-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="MedicalHistory" class="form-label">Medical History</label>
+            <textarea asp-for="MedicalHistory" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="MedicalHistory" class="validation-message"></span>
+        </div>
+
+        <div class="form-actions d-flex flex-column align-items-center">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+            <a asp-controller="Patient" asp-action="GetAllPatients" class="btn back-link">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </form>
 </div>
 
+<link rel="stylesheet" href="~/css/patient-forms.css" />
+
+<style>
+    /* These styles should ideally be moved to the external CSS file: ~/css/patient-forms.css */
+    :root {
+        --admin-gradient: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+        --admin-dark: #223249;
+        --admin-light: #D0E8C5;
+        --accent-blue: #C5D3E8;
+        --success-green: #28a745;
+        --error-red: #dc3545;
+        --warning-yellow: #ffc107;
+        --neutral-gray: #6c757d;
+        --focus-shadow: rgba(34, 50, 73, 0.2);
+        --border-color: #C5D3E8;
+    }
+
+    .edit-patient-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border-top: 4px solid var(--admin-dark);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        position: relative;
+    }
+
+        .form-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: var(--admin-gradient);
+            border-radius: 3px;
+        }
+
+    .form-title {
+        color: var(--admin-dark);
+        font-weight: 600;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .icon-primary {
+        color: var(--admin-dark);
+    }
+
+    .patient-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .form-column {
+        flex: 1;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--admin-dark);
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        width: 100%;
+        background-color: rgba(197, 211, 232, 0.05);
+    }
+
+        .form-control:focus {
+            border-color: var(--admin-dark);
+            box-shadow: 0 0 0 3px var(--focus-shadow);
+            outline: none;
+            background-color: white;
+        }
+
+    .gender-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23223249' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1em;
+    }
+
+    .validation-message {
+        color: var(--error-red);
+        font-size: 0.875rem;
+    }
+
+    .validation-summary-errors ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    .validation-summary-errors {
+        background-color: rgba(220, 53, 69, 0.1);
+        border: 1px solid var(--error-red);
+        border-left: 4px solid var(--error-red);
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(to right, #D0E8C5, #C5D3E8);
+        color: var(--admin-dark);
+        box-shadow: 0 4px 6px rgba(34, 50, 73, 0.2);
+    }
+
+        .btn-primary:hover {
+            background: var(--admin-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(34, 50, 73, 0.3);
+            color:white;
+        }
+
+    .btn-secondary {
+        background: var(--accent-blue);
+        color: var(--admin-dark);
+        text-decoration: none;
+        box-shadow: 0 4px 6px rgba(197, 211, 232, 0.3);
+    }
+
+        .btn-secondary:hover {
+            background: linear-gradient(to right, var(--accent-blue), #d9e4f5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(197, 211, 232, 0.4);
+        }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* Custom styling for specific status colors */
+    .status-success {
+        color: var(--success-green);
+    }
+
+    .status-error {
+        color: var(--error-red);
+    }
+
+    .status-warning {
+        color: var(--warning-yellow);
+    }
+
+    .status-neutral {
+        color: var(--neutral-gray);
+    }
+
+    @@media (max-width: 768px) {
+        .form-row
+
+    {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .edit-patient-container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        color: var(--patient-green);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 2px #223249 solid;
+    }
+
+        .back-link:hover {
+            background-color: #D0E8C5;
+            transform: translateX(-5px);
+            text-decoration: none;
+            color: var(--dark-blue);
+            border: none;
+        }
+</style>
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

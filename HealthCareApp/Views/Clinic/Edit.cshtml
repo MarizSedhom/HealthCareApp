@@ -3,8 +3,6 @@
 
 @{
     ViewData["Title"] = "Update Clinic";
-    var ReturnUrl = ViewBag.ReturnUrl as string;
-    int num = 0;
 }
 
 <style>
@@ -158,7 +156,6 @@
                 <input asp-for="ClinicPhoneNumber" class="form-control-custom" placeholder="Enter phone number" />
                 <span asp-validation-for="ClinicPhoneNumber" class="text-danger"></span>
             </div>
-            <input name="returnUrl" value="@ReturnUrl" hidden />
             <div class="button-group">
                 <button type="submit" class="btn-update-custom">
                     <i class="fas fa-save"></i>

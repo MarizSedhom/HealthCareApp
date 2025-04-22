@@ -2,21 +2,39 @@
 
 @{
     ViewData["Title"] = "Appointments History";
+
+    var admin = false;
+
+    if (User.IsInRole("Admin"))
+    {
+        admin = true;
+        
+    }
 }
 
 <style>
     :root {
-        --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
-        --dark-blue: #223249;
-        --patient-green: #34a853;
-        --light-green: #D0E8C5;
-        --white: #ffffff;
-        --light-gray: #f8f9fa;
-        --gray: #6c757d;
+    --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
+    --dark-blue: #223249;
+    --patient-green: #34a853;
+    --light-green: #D0E8C5;
+    --white: #ffffff;
+    --light-gray: #f8f9fa;
+    --gray: #6c757d;
     }
 
     .appointments-gradient-header {
-        background: var(--patient-gradient);
+    background: var(--patient-gradient);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    margin-bottom: 2rem;
+    padding: 2rem;
+    color: var(--white);
+    }
+
+
+    .appointments-gradient-header-admin {
+        background: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
         border-radius: 15px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         margin-bottom: 2rem;
@@ -25,143 +43,164 @@
     }
 
     .appointments-card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        overflow: hidden;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
     }
 
-        .appointments-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-        }
+    .appointments-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
 
     .card-header {
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        background-color: var(--white);
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    background-color: var(--white);
     }
 
     .text-blue {
-        color: var(--dark-blue) !important;
+    color: var(--dark-blue) !important;
     }
 
     .text-patient-green {
-        color: var(--patient-green) !important;
+    color: var(--patient-green) !important;
     }
 
     .table {
-        margin-bottom: 0;
-        font-size: 0.9rem;
+    margin-bottom: 0;
+    font-size: 0.9rem;
     }
 
-        .table th {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-            padding: 1rem;
-            color: var(--dark-blue);
-            border-top: none;
-            border-bottom: 2px solid var(--light-green);
-        }
+    .table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+    color: var(--dark-blue);
+    border-top: none;
+    border-bottom: 2px solid var(--light-green);
+    }
 
-        .table td {
-            padding: 1rem;
-            vertical-align: middle;
-            border-color: rgba(0,0,0,0.05);
-        }
+    .table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-color: rgba(0,0,0,0.05);
+    }
 
     .table-hover tbody tr:hover {
-        background-color: rgba(52, 168, 83, 0.05);
+    background-color: rgba(52, 168, 83, 0.05);
     }
 
     .table-striped tbody tr:nth-of-type(odd) {
-        background-color: rgba(208, 232, 197, 0.2);
+    background-color: rgba(208, 232, 197, 0.2);
     }
 
     .badge {
-        font-size: 0.75rem;
-        padding: 0.5em 0.8em;
-        font-weight: 500;
-        border-radius: 20px;
+    font-size: 0.75rem;
+    padding: 0.5em 0.8em;
+    font-weight: 500;
+    border-radius: 20px;
     }
 
     .badge-status-completed {
-        background-color: var(--patient-green);
-        color: var(--white);
+    background-color: var(--patient-green);
+    color: var(--white);
     }
 
     .badge-status-cancelled {
-        background-color: #dc3545;
-        color: var(--white);
+    background-color: #dc3545;
+    color: var(--white);
     }
 
     .badge-status-pending {
-        background-color: #ffc107;
-        color: #212529;
+    background-color: #ffc107;
+    color: #212529;
     }
 
     .badge-status-upcoming {
-        background-color: #ffc107;
-        color: #212529;
+    background-color: #ffc107;
+    color: #212529;
     }
 
     .badge-status-rescheduled {
-        background-color: #17a2b8;
-        color: var(--white);
+    background-color: #17a2b8;
+    color: var(--white);
     }
 
     .badge-payment-paid {
-        background-color: var(--patient-green);
-        color: var(--white);
+    background-color: var(--patient-green);
+    color: var(--white);
     }
 
     .badge-payment-unpaid {
-        background-color: #dc3545;
-        color: var(--white);
+    background-color: #dc3545;
+    color: var(--white);
     }
 
     .badge-payment-pending {
-        background-color: #ffc107;
-        color: #212529;
+    background-color: #ffc107;
+    color: #212529;
     }
 
     .badge-payment-refunded {
-        background-color: #17a2b8;
-        color: var(--white);
+    background-color: #17a2b8;
+    color: var(--white);
     }
 
     .empty-state {
-        background-color: var(--light-gray);
-        border-radius: 15px;
-        padding: 3rem 2rem;
-        text-align: center;
-        margin-top: 2rem;
+    background-color: var(--light-gray);
+    border-radius: 15px;
+    padding: 3rem 2rem;
+    text-align: center;
+    margin-top: 2rem;
     }
 
     .empty-state-icon {
-        font-size: 3rem;
-        color: var(--patient-green);
-        opacity: 0.8;
-        margin-bottom: 1.5rem;
+    font-size: 3rem;
+    color: var(--patient-green);
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
     }
 
     .doctor-name {
-        color: var(--dark-blue);
-        font-weight: 600;
+    color: var(--dark-blue);
+    font-weight: 600;
     }
 
-        .doctor-name:hover {
-            color: var(--patient-green);
+    .doctor-name:hover {
+    color: var(--patient-green);
+    text-decoration: none;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        color: var(--patient-green);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 2px  #223249 solid;
+    }
+
+        .back-link:hover {
+            background-color: #D0E8C5;
+            transform: translateX(-5px);
             text-decoration: none;
+            color: var(--dark-blue);
         }
 </style>
 
 <div class="container py-5">
     <!-- Appointments Header -->
-    <div class="appointments-gradient-header">
+    <div class="appointments-gradient-header@(admin ? "-admin": "")">
         <div class="d-flex align-items-center">
             <div class="me-3">
                 <i class="fas fa-calendar-check fa-2x"></i>
@@ -201,8 +240,8 @@
                                     @Html.DisplayNameFor(model => model.StartTime)
                                 </th>
                                 <th>
-                                        <i class="fas fa-user-md me-2 text-patient-green"></i>
-                                        @Html.DisplayNameFor(model => model.DoctorName)
+                                    <i class="fas fa-user-md me-2 text-patient-green"></i>
+                                    @Html.DisplayNameFor(model => model.DoctorName)
 
                                 </th>
                                 <th>
@@ -238,7 +277,7 @@
                                     <td>
                                         <a asp-controller="Doctor" asp-action="ViewDoctorDetails" asp-route-doctorId="@item.DoctorId" class="doctor-name">
 
-                                        @item.DoctorName</a>
+                                            @item.DoctorName</a>
                                     </td>
                                     <td>
                                         <span class="@GetModeIcon(item.Mode.ToString()) me-2 text-patient-green"></span>
@@ -276,6 +315,17 @@
             }
         </div>
     </div>
+
+    @if(User.IsInRole("Admin"))
+    {
+        <div class="text-center mt-5 mb-4">
+            <a asp-Controller="Patient" asp-action="GetAllPatients" class="btn back-link">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Main Page
+            </a>
+        </div>
+    }
+
 </div>
 
 @functions {

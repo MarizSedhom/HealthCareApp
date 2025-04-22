@@ -16,8 +16,8 @@
 </head>
 <style>
     body {
-        background: linear-gradient(135deg, #f8f9fa 0%, #C5D3E8 100%);
-        min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #C5D3E8 100%);
+    min-height: 100vh;
     }
 </style>
 
@@ -32,6 +32,11 @@
         else if (User.IsInRole("Patient"))
         {
             @Html.Partial("_PatientNavbar")
+        }
+        else if(User.IsInRole("Admin"))
+        {
+            @Html.Partial("_AdminNavbar")
+
         }
     }
     else

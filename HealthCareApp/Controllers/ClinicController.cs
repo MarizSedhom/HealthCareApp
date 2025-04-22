@@ -22,7 +22,7 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetDoctorClinics(string? doctorId=null)
+        public IActionResult GetDoctorClinics( string? doctorId=null)
         {
             if (doctorId == null)
                 doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

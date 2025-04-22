@@ -6,21 +6,22 @@
     <title>@Model.DoctorName - Dashboard</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #e2e8f0;
-            --accent: #3b82f6;
+            --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --dark-blue: #223249;
+            --highlight-blue: #26364d;
+            --virtual-blue: #4e7dc5;
             --text: #1e293b;
-            --light-text: #64748b;
-            --background: #f8fafc;
-            --card-bg: #ffffff;
-            --border: #e2e8f0;
+            --border: #C5D3E8;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background);
-            color: var(--text);
+            background-color: #f8fafc;
+            color: var(--dark-blue);
             margin: 0;
             padding: 0;
             line-height: 1.6;
@@ -29,122 +30,189 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1.5rem;
+            padding: 2rem 1.5rem;
+            margin-bottom: 5rem;
         }
 
         .welcome-header {
-            background-color: var(--card-bg);
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
+            background: var(--doctor-gradient);
+            border-radius: 1rem;
+            box-shadow: var(--card-shadow);
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            border-left: 4px solid var(--primary);
+            border-left: 4px solid var(--dark-blue);
+            position: relative;
+            overflow: hidden;
         }
 
+            .welcome-header::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 30%;
+                height: 100%;
+                background: linear-gradient(to left, rgba(197, 211, 232, 0.2), transparent);
+                border-radius: 0 1rem 1rem 0;
+            }
+
             .welcome-header h1 {
-                color: var(--primary-dark);
-                font-size: 2rem;
+                color: var(--dark-blue);
+                font-size: 2.25rem;
                 margin: 0 0 1rem 0;
-                border-bottom: 2px solid var(--secondary);
-                padding-bottom: 0.5rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 2px solid var(--dark-blue);
+                font-weight: 600;
+                position: relative;
             }
 
         .welcome-message {
-            color: var(--light-text);
+            color: var(--highlight-blue);
+            font-size: 1.1rem;
             margin-bottom: 1.5rem;
+            max-width: 70%;
         }
 
         .stats-container {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: nowrap; /* Ensure they stay side by side */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
         }
 
         .stat-card {
-            background-color: var(--card-bg);
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 1.5rem;
-            flex: 1;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid var(--border);
-            width: 50%; /* Each card takes up half the space */
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(197, 211, 232, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
             .stat-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                transform: translateY(-5px);
+                box-shadow: var(--hover-shadow);
+                border-color: var(--virtual-blue);
+            }
+
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: var(--doctor-gradient);
             }
 
         .stat-title {
-            color: var(--light-text);
-            font-size: 0.875rem;
+            color: var(--highlight-blue);
+            font-size: 0.95rem;
+            font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-
-        .appointments-card .stat-value {
-            color: var(--primary);
-        }
-
-        .reviews-card .stat-value {
-            color: var(--accent);
-        }
-
-        .stat-icon {
-            display: inline-block;
-            background-color: var(--secondary);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 40px;
             margin-bottom: 1rem;
         }
 
-        .appointments-card .stat-icon {
-            background-color: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
         }
 
-        .reviews-card .stat-icon {
-            background-color: rgba(59, 130, 246, 0.1);
-            color: var(--accent);
+            .stat-value::after {
+                content: '';
+                position: absolute;
+                bottom: -5px;
+                left: 0;
+                width: 40px;
+                height: 3px;
+                background: var(--virtual-blue);
+                border-radius: 3px;
+            }
+
+        .stat-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(197, 211, 232, 0.2), rgba(34, 50, 73, 0.05));
+            margin-bottom: 1.5rem;
+            color: var(--virtual-blue);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .action-link {
-            display: inline-block;
-            color: var(--primary);
-            font-size: 0.875rem;
-            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            color: var(--virtual-blue);
             font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            position: relative;
         }
 
+            .action-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: var(--virtual-blue);
+                transition: width 0.3s ease;
+            }
+
             .action-link:hover {
-                text-decoration: underline;
+                color: var(--dark-blue);
+            }
+
+                .action-link:hover::after {
+                    width: 100%;
+                }
+
+                .action-link:hover i {
+                    transform: translateX(5px);
+                }
+
+            .action-link i {
+                transition: transform 0.3s ease;
             }
 
         @@media (max-width: 768px) {
-            .stats-container
+            .container
 
         {
-            flex-direction: column;
+            padding: 1.5rem;
+            margin-bottom: 4rem;
         }
 
-        .stat-card {
-            width: 100%;
+        .welcome-header {
+            padding: 1.5rem;
         }
 
-        .welcome-header h1 {
-            font-size: 1.75rem;
+            .welcome-header::after {
+                width: 15%;
+            }
+
+            .welcome-header h1 {
+                font-size: 1.75rem;
+            }
+
+        .welcome-message {
+            max-width: 100%;
+        }
+
+        .stats-container {
+            grid-template-columns: 1fr;
         }
 
         }
@@ -152,24 +220,34 @@
 </head>
 <body>
     <div class="container">
-        <div class="welcome-header">
-            <h1>Welcome, @Model.DoctorName</h1>
-            <p class="welcome-message">Here's an overview of your schedule for today.</p>
+        <div class="welcome-header text-white">
+            <h1 class="text-white">Welcome, @Model.DoctorName</h1>
+            <p class="welcome-message text-white">Your professional dashboard for patient care management</p>
         </div>
 
-        <div class="stats-container">
-            <div class="stat-card appointments-card">
-                <div class="stat-icon">📅</div>
+        <div class="stats-container m-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check fa-lg"></i>
+                </div>
                 <div class="stat-title">Upcoming Appointments</div>
                 <div class="stat-value">@Model.TotalUpcomingAppointments</div>
-                <a asp-controller="Appointment" asp-action="DisplayUpcomingAppoinments" class="action-link">View appointment schedule →</a>
+                <a asp-controller="Appointment" asp-action="DisplayUpcomingAppoinments" class="action-link">
+                    View Schedule
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
 
-            <div class="stat-card reviews-card">
-                <div class="stat-icon">📋</div>
-                <div class="stat-title">All Reviews</div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-medical fa-lg"></i>
+                </div>
+                <div class="stat-title">Patient Reviews</div>
                 <div class="stat-value">@Model.TotalReviews</div>
-                <a asp-controller="Review" asp-action="GetDoctorReviews" class="action-link">Review patient cases →</a>
+                <a asp-controller="Review" asp-action="GetDoctorReviews" class="action-link">
+                    Review Cases
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
         </div>
     </div>

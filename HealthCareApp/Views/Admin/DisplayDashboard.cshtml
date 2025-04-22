@@ -6,15 +6,37 @@
     <title>Healthcare Admin Dashboard</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-light: #3b82f6;
-            --secondary: #10b981;
+            /* Admin color palette - combining doctor and patient colors */
+            --admin-gradient: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+            --admin-primary: #4A6596;
+            --admin-secondary: #34a853;
+            --admin-accent: #4A90E2;
+            --admin-light: #E8F0F5;
+            /* Doctor colors */
+            --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+            --doctor-blue: #C5D3E8;
+            --dark-blue: #223249;
+            --highlight-blue: #4A90E2;
+            /* Patient colors */
+            --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
+            --patient-green: #34a853;
+            --patient-light: #D0E8C5;
+            /* Common colors */
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --gray: #6b7280;
+            --dark-gray: #4b5563;
+            --border-color: #e5e7eb;
+            /* Status colors */
             --danger: #ef4444;
             --warning: #f59e0b;
             --success: #10b981;
             --info: #3b82f6;
-            --gray: #6b7280;
-            --light-gray: #f3f4f6;
+            /* Dashboard section backgrounds */
+            --bg-color-1: #f8f9fa;
+            --bg-color-2: #f0f8ff;
+            --bg-color-3: #f5fff0;
+            --bg-color-4: #fff0f5;
         }
 
         * {
@@ -30,25 +52,94 @@
         }
 
         .dashboard-container {
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0;
         }
+
+        /* Admin navbar */
+        .admin-navbar {
+            background: var(--admin-gradient);
+            color: var(--white);
+            padding: 15px 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+            .navbar-brand i {
+                font-size: 26px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                width: 45px;
+                height: 45px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+        .navbar-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .navbar-btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .navbar-btn:hover {
+                background-color: rgba(255, 255, 255, 0.25);
+                transform: translateY(-2px);
+            }
 
         .dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e5e7eb;
+            padding: 0 25px;
         }
 
         .dashboard-title {
-            font-size: 24px;
+            font-size: 44px;
             font-weight: 600;
-            color: #111827;
+            color: var(--dark-blue);
+            position: relative;
+            padding-bottom: 8px;
         }
+
+            .dashboard-title:after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 80px;
+                height: 3px;
+                background: var(--admin-gradient);
+                border-radius: 10px;
+            }
 
         .dashboard-actions {
             display: flex;
@@ -56,121 +147,233 @@
         }
 
         .btn {
-            padding: 8px 16px;
-            border-radius: 6px;
+            padding: 10px 18px;
+            border-radius: 8px;
             border: none;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-light);
-        }
-
-        .dashboard-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .dashboard-section {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #111827;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .section-title i {
-            color: var(--primary);
+        .btn-primary {
+            background: var(--admin-gradient);
+            color: white;
+            box-shadow: 0 4px 10px rgba(74, 101, 150, 0.25);
         }
+
+            .btn-primary:hover {
+                box-shadow: 0 6px 14px rgba(74, 101, 150, 0.35);
+                transform: translateY(-2px);
+            }
+
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 0 25px 25px;
+        }
+
+        .dashboard-section {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            border-top: 5px solid transparent;
+        }
+
+            .dashboard-section:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            }
+
+        /* Section-specific styling */
+        .patients-section {
+            border-top-color: var(--info);
+            background: linear-gradient(to bottom right, var(--white), var(--bg-color-2));
+        }
+
+        .doctors-section {
+            border-top-color: var(--admin-primary);
+            background: linear-gradient(to bottom right, var(--white), var(--bg-color-4));
+        }
+
+        .appointments-section {
+            border-top-color: var(--warning);
+            background: linear-gradient(to bottom right, var(--white), var(--bg-color-1));
+        }
+
+        .reviews-section {
+            border-top-color: var(--success);
+            background: linear-gradient(to bottom right, var(--white), var(--bg-color-3));
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark-blue);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+            .section-title i {
+                font-size: 22px;
+                background: var(--admin-gradient);
+                color: var(--white);
+                width: 38px;
+                height: 38px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+            }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 15px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
-            padding: 15px;
-            border-radius: 8px;
-            background-color: var(--light-gray);
-            transition: transform 0.2s, box-shadow 0.2s;
+            padding: 18px;
+            border-radius: 12px;
+            background-color: var(--white);
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-left: none;
+            border-bottom: 4px solid transparent;
+            text-align: center;
         }
 
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .stat-title {
-            font-size: 12px;
-            color: var(--gray);
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            font-size: 22px;
-            font-weight: 700;
-            color: #111827;
-        }
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            }
 
         .patients-section .stat-card {
-            border-left: 4px solid var(--primary);
+            border-bottom-color: var(--info);
         }
 
         .doctors-section .stat-card {
-            border-left: 4px solid var(--secondary);
+            border-bottom-color: var(--admin-primary);
         }
 
         .appointments-section .stat-card {
-            border-left: 4px solid var(--warning);
+            border-bottom-color: var(--warning);
         }
 
         .reviews-section .stat-card {
-            border-left: 4px solid var(--info);
+            border-bottom-color: var(--success);
+        }
+
+        .stat-title {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-blue);
         }
 
         .chart-container {
-            height: 250px;
+            height: 280px;
             margin-top: 20px;
-            border-radius: 8px;
-            background-color: var(--light-gray);
-            padding: 10px;
+            border-radius: 12px;
+            background-color: var(--white);
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Badge styling for status indicators */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge-success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .badge-info {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--info);
         }
 
         /* Responsive adjustments */
+        @@media (max-width: 1200px) {
+            .dashboard-content
+
+        {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        }
+
         @@media (max-width: 768px) {
-            .dashboard-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .dashboard-content
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .navbar-brand span {
+            display: none;
+        }
+
+        }
+
+        @@media (max-width: 480px) {
+            .stats-grid
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        .navbar-actions {
+            display: none;
+        }
+
         }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <div class="dashboard-header">
-            <h1 class="dashboard-title">Healthcare Admin Dashboard</h1>
+
+        <div class="dashboard-header mt-4">
+            <h1 class="dashboard-title">Analytics Dashboard</h1>
+            <div class="dashboard-actions">
+                <button class="btn btn-primary">
+                    <i class="fas fa-download"></i>
+                    Export Report
+                </button>
+            </div>
         </div>
 
         <div class="dashboard-content">
@@ -178,6 +381,7 @@
             <div class="dashboard-section patients-section">
                 <h2 class="section-title">
                     <i class="fas fa-user-injured"></i> Patients Overview
+                    <span class="badge badge-info">Active</span>
                 </h2>
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -218,6 +422,7 @@
             <div class="dashboard-section doctors-section">
                 <h2 class="section-title">
                     <i class="fas fa-user-md"></i> Doctors Overview
+                    <span class="badge badge-success">Verified</span>
                 </h2>
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -254,6 +459,7 @@
             <div class="dashboard-section doctors-section">
                 <h2 class="section-title">
                     <i class="fas fa-user-tag"></i> Doctor Roles
+                    <span class="badge badge-info">Distribution</span>
                 </h2>
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -282,6 +488,7 @@
             <div class="dashboard-section appointments-section">
                 <h2 class="section-title">
                     <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge badge-warning">Upcoming</span>
                 </h2>
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -314,6 +521,7 @@
             <div class="dashboard-section reviews-section">
                 <h2 class="section-title">
                     <i class="fas fa-star"></i> Reviews & Payments
+                    <span class="badge badge-success">Active</span>
                 </h2>
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -343,14 +551,14 @@
     <!-- Include required libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    
+
     <!-- Initialize Charts -->
     <script>
         // Set default font for all charts
         Chart.defaults.font.family = "'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif";
         Chart.defaults.font.size = 12;
         Chart.defaults.color = '#6b7280';
-        
+
         // ===== Patient Demographics Chart =====
         const patientCtx = document.getElementById('patientDemographicsChart').getContext('2d');
         const patientChart = new Chart(patientCtx, {
@@ -359,7 +567,7 @@
                 labels: ['Male', 'Female'],
                 datasets: [{
                     data: [@Model.TotalMalePatients, @Model.TotalFemalePatients],
-                    backgroundColor: ['#3b82f6', '#ec4899'],
+                    backgroundColor: ['#4A6596', '#34a853'],
                     borderWidth: 1,
                     borderColor: '#ffffff'
                 }]
@@ -401,7 +609,7 @@
                 labels: ['Male', 'Female'],
                 datasets: [{
                     data: [@Model.TotalMaleDoctors, @Model.TotalFemaleDoctors],
-                    backgroundColor: ['#3b82f6', '#ec4899'],
+                    backgroundColor: ['#4A6596', '#34a853'],
                     borderWidth: 1,
                     borderColor: '#ffffff'
                 }]
@@ -443,16 +651,16 @@
                 labels: ['Professors', 'Lecturers', 'Consultants', 'Specialists'],
                 datasets: [{
                     data: [
-                        @Model.TotalProfessors, 
-                        @Model.TotalLecturers, 
-                        @Model.TotalConsultants, 
-                        @Model.TotalSpecialists
+        @Model.TotalProfessors,
+        @Model.TotalLecturers,
+        @Model.TotalConsultants,
+        @Model.TotalSpecialists
                     ],
                     backgroundColor: [
                         '#10b981', // green
-                        '#3b82f6', // blue
+                        '#4A6596', // admin blue
                         '#f59e0b', // amber
-                        '#8b5cf6'  // purple
+                        '#6366f1'  // indigo
                     ],
                     borderWidth: 1,
                     borderColor: '#ffffff'
@@ -496,20 +704,21 @@
                 datasets: [{
                     label: 'Appointments',
                     data: [
-                        @Model.TotalUpcomingAppointments, 
-                        @Model.TotalRescheduledAppointments, 
-                        @Model.TotalCancelledAppointments, 
-                        @Model.TotalCompletedAppointments,
-                        @Model.MaxAppointmentsNumThisMonth
+        @Model.TotalUpcomingAppointments,
+        @Model.TotalRescheduledAppointments,
+        @Model.TotalCancelledAppointments,
+        @Model.TotalCompletedAppointments,
+        @Model.MaxAppointmentsNumThisMonth
                     ],
                     backgroundColor: [
-                        '#3b82f6',  // blue
+                        '#4A6596',  // admin blue
                         '#f59e0b',  // amber
                         '#ef4444',  // red
                         '#10b981',  // green
-                        '#8b5cf6'   // purple
+                        '#6366f1'   // indigo
                     ],
                     borderWidth: 1,
+                    borderRadius: 8,
                     borderColor: '#ffffff'
                 }]
             },
@@ -534,6 +743,16 @@
                         beginAtZero: true,
                         ticks: {
                             precision: 0
+                        },
+                        grid: {
+                            display: true,
+                            drawBorder: false,
+                            color: 'rgba(107, 114, 128, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
                         }
                     }
                 }
@@ -548,9 +767,9 @@
                 labels: ['Pending', 'Approved', 'Rejected'],
                 datasets: [{
                     data: [
-                        @Model.TotalPendingReviews, 
-                        @Model.TotalApprovedReviews, 
-                        @Model.TotalRejectedReviews
+        @Model.TotalPendingReviews,
+        @Model.TotalApprovedReviews,
+        @Model.TotalRejectedReviews
                     ],
                     backgroundColor: [
                         '#f59e0b',  // amber
