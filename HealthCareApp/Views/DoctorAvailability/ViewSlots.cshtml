@@ -185,6 +185,28 @@
         box-shadow: none;
         transition: none;            
     }
+
+    .back-link-admin {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        color: var(--patient-green);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 2px #223249 solid;
+    }
+
+        .back-link-admin:hover {
+            background-color: #D0E8C5;
+            transform: translateX(-5px);
+            text-decoration: none;
+            color: var(--dark-blue);
+            border: none;
+        }
 </style>
 
 <div class="card-container">
@@ -259,19 +281,19 @@
                    class="btn btn-outline gap-2">
                     <i class="fas fa-arrow-left"></i> Back to List
                 </a>
+
+            </div>
+        </div>
+    </div>
                 @if (User.IsInRole("Admin"))
                 {
                     <a asp-controller="doctor" asp-action="ViewApprovedDoctorsAdmin"
-                       class="back-link">
+                       class="back-link-admin text-center">
                         <i class="fas fa-arrow-left"></i>
                         Back to Doctor List
                     </a>
 
                 }
-
-            </div>
-        </div>
-    </div>
 </div>
 
 
