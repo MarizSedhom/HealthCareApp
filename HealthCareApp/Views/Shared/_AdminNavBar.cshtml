@@ -52,9 +52,13 @@
                        asp-action="ViewApprovedDoctorsAdmin"
                        class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" && 
                          ViewContext.RouteData.Values["Action"].ToString() == "ViewApprovedDoctorsAdmin" ? "active" : "")"
-                       data-bg="var(--bg-color-2)">Doctors</a> 
+                       data-bg="var(--bg-color-2)">Doctors</a>
 
-
+                    <a asp-controller="Review"
+                       asp-action="DisplayPendingReviews"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Review" &&
+                         ViewContext.RouteData.Values["Action"].ToString() == "DisplayPendingReviews" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Pending Reviews</a>
 
                     @* <a asp-controller="Review" *@
                     @*    asp-action="GetDoctorReviews" *@

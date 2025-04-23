@@ -1,6 +1,37 @@
-﻿<div style="padding: 20px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404;">
-    <strong>Notice:</strong> Your account is currently under review.
-      Please wait for the admin to verify your documents and activate your account.
+﻿<div style="padding: 1.5rem;
+            background: var(--bg-color-2);
+            border: 1px solid var(--highlight-blue);
+            color: var(--dark-blue);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 1rem 0;">
+    <strong style="color: var(--highlight-blue);
+                  display: block;
+                  margin-bottom: 0.5rem;
+                  font-size: 1.1rem;">
+        <i class="fas fa-hourglass-half" style="margin-right: 0.5rem;"></i>
+        Account Review Status
+    </strong>
+    <p style="margin: 0; line-height: 1.6;">
+        Your medical practitioner account is currently under verification.
+        Please allow 24-48 hours for our team to review your credentials and
+        activate your account. You will receive a notification once approved.
+    </p>
 </div>
 
-<a asp-action="AfterDrRegisteration">go to edit your info</a>
+<a asp-action="AfterDrRegisteration"
+   style="display: inline-flex;
+          align-items: center;
+          padding: 0.75rem 1.5rem;
+          background: var(--white);
+          color: var(--highlight-blue);
+          border: 1px solid var(--highlight-blue);
+          border-radius: 6px;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          margin-top: 1rem;
+          gap: 0.5rem;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <i class="fas fa-edit"></i>
+    Update Medical Profile
+</a>
