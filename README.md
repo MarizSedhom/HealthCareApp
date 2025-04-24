@@ -98,11 +98,4 @@ The following design patterns were used:
   - Payment success/failure
   - Admin approval status
 
----
 
-## ⚙️ Setup & Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/yourusername/medconnect.git
-   cd medconnect
