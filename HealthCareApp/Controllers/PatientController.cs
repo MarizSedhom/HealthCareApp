@@ -351,7 +351,7 @@ namespace HealthCareApp.Controllers
                     EmergencyContact = p.Patient.EmergencyContact,
                     MedicalHistory = p.Patient.MedicalHistory
                 },
-                p => p.Patient).DistinctBy(p => p.PatientId).ToList();
+                p => p.Patient).ToList();
                 
                 foreach(var patient in patients)
             {

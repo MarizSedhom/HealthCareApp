@@ -4,133 +4,393 @@
     ViewData["Title"] = "Register";
 }
 
-<h1>@ViewData["Title"]</h1>
-<h2 id="external-login-title">Associate your @Model.ProviderDisplayName account.</h2>
-<hr />
+<style>
+    :root {
+        --primary-blue: #A6AEBF;
+        --dark-blue: #223249;
+        --patient-green: #34a853;
+        --doctor-blue: #C5D3E8;
+        --white: #ffffff;
+        --gray: #f5f5f5;
+        --dark-gray: #757575;
+        --border-color: #ddd;
+    }
 
-<p id="external-login-description" class="text-info">
-    You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.
-    Please enter an email address for this site below and click the Register button to finish
-    logging in.
-</p>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email."/>
-                <label asp-for="Input.Email" class="form-label"></label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
+    body {
+        background-color: var(--gray);
+        color: #333;
+        line-height: 1.6;
+    }
 
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-            <!--------------------------------------------------------------------->
-            <div class="form-group mb-3">
-                <label asp-for="Input.FirstName"></label>
-                <input asp-for="Input.FirstName" class="form-control" />
-                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Input.LastName"></label>
-                <input asp-for="Input.LastName" class="form-control" />
-                <span asp-validation-for="Input.LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Input.DateOfBirth"></label>
-                <input asp-for="Input.DateOfBirth" class="form-control" />
-                <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Input.Gender"></label>
-                <select asp-for="Input.Gender" class="form-control">
-                    <option value="0">Male</option>
-                    <option value="1">Female</option>
-                </select>
-                <span asp-validation-for="Input.Gender" class="text-danger"></span>
-            </div>
+    header {
+        text-align: center;
+        padding: 30px 0;
+    }
 
-            <!-- User Type Selection -->
-            <div class="form-group mb-3">
-                <label asp-for="Input.UserType"></label>
-                <div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="Input.UserType" id="patientRadio" value="Patient" checked>
-                        <label class="form-check-label" for="patientRadio">Patient</label>
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--dark-blue);
+            margin-right: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        .logo h1 {
+            font-size: 2.2rem;
+            color: var(--dark-blue);
+            font-weight: 700;
+        }
+
+    .tagline {
+        font-size: 1.2rem;
+        color: var(--dark-gray);
+        margin-bottom: 30px;
+    }
+
+    .registration-container {
+        display: flex;
+        background-color: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .illustration-side {
+        flex: 1;
+        background: linear-gradient(135deg, var(--doctor-blue), var(--dark-blue));
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: var(--white);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.5s ease;
+    }
+
+        .illustration-side.patient-mode {
+            background: linear-gradient(135deg, var(--patient-green), #D0E8C5);
+        }
+
+        .illustration-side::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M30,50 Q50,30 70,50 T90,50" fill="none" stroke="white" stroke-width="2" stroke-opacity="0.1"/></svg>');
+            background-size: 100px 100px;
+            opacity: 0.3;
+        }
+
+        .illustration-side h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .illustration-side p {
+            margin-bottom: 30px;
+            text-align: center;
+            z-index: 1;
+            font-size: 1rem;
+        }
+
+    .form-side {
+        flex: 2;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--dark-blue);
+            font-size: 0.9rem;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: var(--dark-blue);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+            outline: none;
+        }
+
+    .form-check-input {
+        margin-right: 5px;
+    }
+
+    .form-check-label {
+        font-weight: normal;
+    }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.8rem;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 12px;
+        background: linear-gradient(to right, var(--dark-blue), #3a4d6d);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        width: 100%;
+    }
+
+        .btn:hover {
+            background: linear-gradient(to right, #C5D3E8, var(--dark-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+    .patient-mode + .form-side .btn:hover {
+        background: linear-gradient(to right, #D0E8C5, var(--dark-blue));
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    @@keyframes pulse {
+        0%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .registration-container
+
+    {
+        flex-direction: column;
+    }
+
+    .illustration-side {
+        padding: 25px 15px;
+    }
+
+    .form-side {
+        padding: 25px 15px;
+    }
+
+    }
+</style>
+
+<div class="container">
+    <header>
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            <h1>Health Connect</h1>
+        </div>
+        <p class="tagline">Connecting patients and doctors for better healthcare</p>
+    </header>
+
+    <div class="registration-container">
+        <div class="illustration-side" id="illustrationSide">
+            <h2>Welcome to Health Connect</h2>
+            <p>You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>. Complete your registration to continue.</p>
+            <div class="stats">
+                <p>Join thousands of users who trust our platform for their healthcare needs.</p>
+            </div>
+        </div>
+
+        <div class="form-side">
+            <h2>Associate your @Model.ProviderDisplayName account</h2>
+            <p class="text-info mb-4">
+                Please enter your information below to finish logging in.
+            </p>
+
+            <div class="form-content">
+                <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                    <div class="form-group">
+                        <label asp-for="Input.Email">Email</label>
+                        <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Enter your email" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="Input.UserType" id="doctorRadio" value="Doctor">
-                        <label class="form-check-label" for="doctorRadio">Doctor</label>
+
+                    <div class="form-group">
+                        <label asp-for="Input.FirstName">First Name</label>
+                        <input asp-for="Input.FirstName" class="form-control" placeholder="Enter your first name" />
+                        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
                     </div>
-                </div>
-                <span asp-validation-for="Input.UserType" class="text-danger"></span>
+
+                    <div class="form-group">
+                        <label asp-for="Input.LastName">Last Name</label>
+                        <input asp-for="Input.LastName" class="form-control" placeholder="Enter your last name" />
+                        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Input.DateOfBirth">Date of Birth</label>
+                        <input asp-for="Input.DateOfBirth" class="form-control" type="date" />
+                        <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Input.Gender">Gender</label>
+                        <select asp-for="Input.Gender" class="form-control">
+                            <option value="0">Male</option>
+                            <option value="1">Female</option>
+                        </select>
+                        <span asp-validation-for="Input.Gender" class="text-danger"></span>
+                    </div>
+
+                    <!-- User Type Selection -->
+                    <div class="form-group">
+                        <label asp-for="Input.UserType">I am a:</label>
+                        <div class="role-selection">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="Input.UserType" id="patientRadio" value="Patient" checked>
+                                <label class="form-check-label" for="patientRadio">Patient</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="Input.UserType" id="doctorRadio" value="Doctor">
+                                <label class="form-check-label" for="doctorRadio">Doctor</label>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Input.UserType" class="text-danger"></span>
+                    </div>
+
+                    <!-- Patient-specific Fields -->
+                    <div id="patientFields">
+                        <div class="form-group">
+                            <label asp-for="Input.PhoneNumber">Phone Number</label>
+                            <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Enter your phone number" />
+                            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Input.EmergencyContact">Emergency Contact</label>
+                            <input asp-for="Input.EmergencyContact" class="form-control" placeholder="Emergency contact person and number" />
+                            <span asp-validation-for="Input.EmergencyContact" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Input.MedicalHistory">Medical History</label>
+                            <textarea asp-for="Input.MedicalHistory" class="form-control" rows="3" placeholder="Brief overview of your medical history"></textarea>
+                            <span asp-validation-for="Input.MedicalHistory" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Doctor-specific Fields -->
+                    <div id="doctorFields" style="display: none;">
+                        <div class="form-group">
+                            <label asp-for="Input.Title">Professional Title</label>
+                            <select asp-for="Input.Title" class="form-control" asp-items="@Html.GetEnumSelectList<Title>()">
+                                <option value="">-- Select Title --</option>
+                            </select>
+                            <span asp-validation-for="Input.Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Input.Description">Professional Description</label>
+                            <textarea asp-for="Input.Description" class="form-control" rows="3" placeholder="Brief description of your practice"></textarea>
+                            <span asp-validation-for="Input.Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Input.ExperienceYears">Years of Experience</label>
+                            <input asp-for="Input.ExperienceYears" class="form-control" type="number" placeholder="Years of professional experience" />
+                            <span asp-validation-for="Input.ExperienceYears" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Input.SpecializationId">Specialization</label>
+                            <select asp-for="Input.SpecializationId" asp-items="Model.Specializations" class="form-control">
+                                <option value="">-- Select Specialization --</option>
+                            </select>
+                            <span asp-validation-for="Input.SpecializationId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn mt-4">Complete Registration</button>
+
+                    <div class="terms mt-3">
+                        By registering, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                    </div>
+                </form>
             </div>
-
-            <!-- Patient-specific Fields -->
-            <div id="patientFields">
-                <div class="form-group mb-3">
-                    <label asp-for="Input.PhoneNumber"></label>
-                    <input asp-for="Input.PhoneNumber" class="form-control" />
-                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Input.EmergencyContact"></label>
-                    <input asp-for="Input.EmergencyContact" class="form-control" />
-                    <span asp-validation-for="Input.EmergencyContact" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Input.MedicalHistory"></label>
-                    <textarea asp-for="Input.MedicalHistory" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="Input.MedicalHistory" class="text-danger"></span>
-                </div>
-
-            </div>
-
-            <!-- Doctor-specific Fields -->
-            <div id="doctorFields" style="display: none;">
-                <div class="form-group mb-3">
-                    <label asp-for="Input.Title"></label>
-                    <select asp-for="Input.Title" class="form-control" asp-items="@Html.GetEnumSelectList<Title>()">
-                        <option value="">-- Select Title --</option>
-                    </select>
-                    <span asp-validation-for="Input.Title" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Input.Description"></label>
-                    <textarea asp-for="Input.Description" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="Input.Description" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Input.ExperienceYears"></label>
-                    <input asp-for="Input.ExperienceYears" class="form-control" />
-                    <span asp-validation-for="Input.ExperienceYears" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Input.SpecializationId"></label>
-                    <select asp-for="Input.SpecializationId" asp-items="Model.Specializations" class="form-control">
-                        <option value="">-- Select Specialization --</option>
-                    </select>
-                    <span asp-validation-for="Input.SpecializationId" class="text-danger"></span>
-                </div>
-            </div>
-            <!--------------------------------------------->
-
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
     <script>
         $(document).ready(function() {
             $('input[name="Input.UserType"]').change(function() {
                 if ($(this).val() === 'Patient') {
                     $('#patientFields').show();
                     $('#doctorFields').hide();
+                    $('#illustrationSide').addClass('patient-mode');
                 } else {
                     $('#patientFields').hide();
                     $('#doctorFields').show();
+                    $('#illustrationSide').removeClass('patient-mode');
                 }
             });
         });
