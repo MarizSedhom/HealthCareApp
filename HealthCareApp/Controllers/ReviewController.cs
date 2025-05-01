@@ -133,6 +133,7 @@ namespace HealthCareApp.Controllers
             if (ModelState.IsValid)
             {
                 review.IsEdited = true;
+                review.IsApproved = false;
                 reviewService.Update(review);
                 return RedirectToAction("ViewDoctorDetails", "Doctor", new { review.DoctorId });
             }

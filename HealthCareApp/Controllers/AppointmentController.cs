@@ -334,6 +334,20 @@ namespace HealthCareApp.Controllers
             if(doctorId == null)
                 doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+
+            IEnumerable<Appointment> DrAppointments = appointmentService.FindAll(app => app.AvailableSlot.Availability.DoctorId == doctorId && !app.IsDeleted, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.AvailableSlot.Availability.Doctor, app => app.AvailableSlot.Availability.Doctor.Specialization, app => app.AvailableSlot.Availability.Clinic);
+            //// check date and mark appointments as completed and payment status as paid
+            foreach (var app in DrAppointments)
+            {
+                if (DateOnly.FromDateTime(DateTime.Now) > app.AvailableSlot.Availability.Date || (DateOnly.FromDateTime(DateTime.Now) == app.AvailableSlot.Availability.Date && TimeOnly.FromDateTime(DateTime.Now) > app.AvailableSlot.EndTime))
+                {
+                    app.Status = Status.Completed;
+                    app.PaymentStatus = PaymentStatus.Paid;
+
+                    appointmentService.Update(app);
+                }
+            }
+
             var upcomingAppointments = appointmentService.FindAllWithSelect(app => app.AvailableSlot.Availability.DoctorId == doctorId && app.Status == Status.Upcoming
             , app => new UpcomingAppointmentsVM
             {
