@@ -1,5 +1,5 @@
-﻿using HealthCareApp.Models;
-using HealthCareApp.RepositoryServices;
+﻿using HealthCare.BLL.Interface.Repository;
+using HealthCare.DAL.Models;
 using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +10,11 @@ namespace HealthCareApp.Controllers
 {
     public class ClinicController : Controller
     {
-        private readonly IGenericRepoServices<Clinic> ClinicRepo;
-        private readonly IGenericRepoServices<City> CityRepository;
+        private readonly IGenericRepo<Clinic> ClinicRepo;
+        private readonly IGenericRepo<City> CityRepository;
         private readonly IConfiguration Configuration;
 
-        public ClinicController(IGenericRepoServices<Clinic> ClinicRepo , IGenericRepoServices<City>CityRepository, IConfiguration configuration)
+        public ClinicController(IGenericRepo<Clinic> ClinicRepo , IGenericRepo<City>CityRepository, IConfiguration configuration)
         {
             this.ClinicRepo = ClinicRepo;
             this.CityRepository = CityRepository;
@@ -196,6 +196,7 @@ namespace HealthCareApp.Controllers
                 ClinicAddress = c.ClinicAddress,
                 SelectedCityId=c.Region.City.Id,
                 SelectedRegionId=c.RegionId,
+                ClinicLocation=c.ClinicLocation,
                 regions=c.Region.City.Regions.Select(r=>new Item<int, string>() { Id = r.Id , Name=r.RegionNameEn }),
             });
             clinic.regions = clinic.regions.OrderBy(r => r.Name);
@@ -220,6 +221,7 @@ namespace HealthCareApp.Controllers
                 oldClinic.Name = clinicVM.Name;
                 oldClinic.RegionId = clinicVM.SelectedRegionId;
                  oldClinic.ClinicAddress = clinicVM.ClinicAddress;
+                oldClinic.ClinicLocation = clinicVM.ClinicLocation;
                 ClinicRepo.Update(oldClinic);
                 //ClinicRepo.UpdateNoTracking(clinicVM);
                 // ClinicRepo.Save();

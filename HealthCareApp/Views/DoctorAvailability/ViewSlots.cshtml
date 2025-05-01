@@ -207,6 +207,14 @@
             color: var(--dark-blue);
             border: none;
         }
+
+    .disabled-row {
+        pointer-events: none; 
+        opacity: 0.6; 
+        background-color: #f5f5f5; 
+        cursor: not-allowed; 
+    }
+
 </style>
 
 <div class="card-container">
@@ -217,7 +225,7 @@
         <div class="card-content">
             <table>
                 <thead>
-                    <tr>
+                    <tr >
                         <th>Time Range</th>
                         <th>Status</th>
                         <th>Patient Name</th>
@@ -230,7 +238,7 @@
                 <tbody>
                     @foreach (var slot in Model)
                     {
-                        <tr>
+                        <tr class=@(slot.startTime<=TimeOnly.FromDateTime(DateTime.Now)?"disabled-row":"")>
                             <td>@slot.TimeRange</td>
                             <td>
                                 @if (slot.Status == "Available")
@@ -248,29 +256,46 @@
                             </td>
                             <td>@(slot.PatientName ?? "N/A")</td>
                             <td>@(slot.PatientNumber ?? "N/A")</td>
-                            <td>
-                                @if (slot.Status != "Cancelled")
-                                {
-                                    <a href="#"
-                                       class="btn btn-destructive"
-                                       title="Cancel Slot"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#deleteModal"
-                                       data-id="@slot.SlotId"> × Cancel</a>
-                                }
-                            </td>
-                            <td>
-                                @if(slot.IsBooked){
-                                    <a asp-action="RescheduleAppointment" class="btn btn-destructive" asp-route-slotId="@slot.SlotId">
-                                        Reschedule Slot
-                                    </a>
-                                }
-                                else{
+                            @if(slot.startTime>TimeOnly.FromDateTime(DateTime.Now)){
+                                <td>
+                                    @if (slot.Status != "Cancelled")
+                                    {
+                                        <a href="#"
+                                           class="btn btn-destructive"
+                                           title="Cancel Slot"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#deleteModal"
+                                           data-id="@slot.SlotId"> × Cancel</a>
+                                    }
+                                </td>
+                                <td>
+                                    @if (slot.IsBooked)
+                                    {
+                                        <a asp-action="RescheduleAppointment" class="btn btn-destructive" asp-route-slotId="@slot.SlotId">
+                                            Reschedule Slot
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-destructive blocked-button text-muted">
+                                            Reschedule Slot
+                                        </button>
+                                    }
+                                </td>
+                            }
+                            else{
+                                <td>
                                     <button class="btn btn-destructive blocked-button text-muted">
                                         Reschedule Slot
                                     </button>
-                                }
-                            </td>
+                                </td>
+                                <td>
+                                    <button class="btn btn-destructive blocked-button text-muted">
+                                        Reschedule Slot
+                                    </button>
+                                </td>
+                            }
+
                         </tr>
                     }
                 </tbody>

@@ -16,7 +16,7 @@ namespace HealthCareApp.ViewModel.Appointment
         [Display(Name = "Doctor")]
         public string DoctorId { get; set; }
         public string DoctorName { get; set; }
-        public Models.Type Mode { get; set; }
+        public HealthCare.DAL.Models.Type Mode { get; set; }
         public string Clinic { get; set; }
 
         [Display(Name = "Payment Status")]

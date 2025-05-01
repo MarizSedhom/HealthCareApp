@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCareApp", "HealthCareApp\HealthCareApp.csproj", "{F01299E2-97D8-4267-B6DE-1594E5200668}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare.PL", "HealthCareApp\HealthCare.PL.csproj", "{F01299E2-97D8-4267-B6DE-1594E5200668}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare.DAL", "DAL\HealthCare.DAL.csproj", "{808985CB-5B1D-46CF-A5AC-C80D50417D2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare.BLL", "BLL\HealthCare.BLL.csproj", "{C362D080-66AE-4CC5-8A42-089502C38881}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{F01299E2-97D8-4267-B6DE-1594E5200668}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F01299E2-97D8-4267-B6DE-1594E5200668}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F01299E2-97D8-4267-B6DE-1594E5200668}.Release|Any CPU.Build.0 = Release|Any CPU
+		{808985CB-5B1D-46CF-A5AC-C80D50417D2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{808985CB-5B1D-46CF-A5AC-C80D50417D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{808985CB-5B1D-46CF-A5AC-C80D50417D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{808985CB-5B1D-46CF-A5AC-C80D50417D2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C362D080-66AE-4CC5-8A42-089502C38881}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C362D080-66AE-4CC5-8A42-089502C38881}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C362D080-66AE-4CC5-8A42-089502C38881}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C362D080-66AE-4CC5-8A42-089502C38881}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

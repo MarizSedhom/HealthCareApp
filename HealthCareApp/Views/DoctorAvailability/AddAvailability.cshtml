@@ -283,7 +283,7 @@
                                     </td>
 
                                     <td>
-                                        <select asp-for="@Model.DrAvailability[i].mode" asp-items="@(Html.GetEnumSelectList<HealthCareApp.Models.Type>())"
+                                        <select asp-for="@Model.DrAvailability[i].mode" asp-items="@(Html.GetEnumSelectList<HealthCare.DAL.Models.Type>())"
                                                 class="table-select @disabledClass" disabled="@(!isAvailable)">
                                             <option value="">Select Mode</option>
                                         </select>

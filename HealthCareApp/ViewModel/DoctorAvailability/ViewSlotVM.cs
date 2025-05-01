@@ -1,5 +1,4 @@
-﻿using HealthCareApp.Models;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace HealthCareApp.ViewModel.Doctor
 {

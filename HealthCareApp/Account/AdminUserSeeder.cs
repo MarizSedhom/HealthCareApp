@@ -1,4 +1,4 @@
-﻿using HealthCareApp.Models;
+﻿
 using Microsoft.AspNetCore.Identity;
 
 namespace HealthCareApp.Account

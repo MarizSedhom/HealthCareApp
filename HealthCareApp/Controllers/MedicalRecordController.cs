@@ -1,9 +1,6 @@
 ﻿using System.Security.Claims;
-using HealthCareApp.Models;
-using HealthCareApp.RepositoryServices;
-using HealthCareApp.ViewModel.Patient;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+using HealthCare.BLL.Interface.Repository;
+using HealthCare.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +12,12 @@ namespace HealthCareApp.Controllers
     public class MedicalRecordController : Controller
     {
 
-        public IGenericRepoServices<MedicalRecord> _medicalRecordService {  get; set; }
-        public IGenericRepoServices<Patient> _patientService { get; set; }
-        public IGenericRepoServices<HealthCareApp.Models.Doctor> _doctorService { get; set; }
+        public IGenericRepo<MedicalRecord> _medicalRecordService {  get; set; }
+        public IGenericRepo<Patient> _patientService { get; set; }
+        public IGenericRepo<HealthCare.DAL.Models.Doctor> _doctorService { get; set; }
 
 
-        public MedicalRecordController(IGenericRepoServices<MedicalRecord> medicalRecordService, IGenericRepoServices<HealthCareApp.Models.Doctor> doctorService, IGenericRepoServices<Patient> patientService)
+        public MedicalRecordController(IGenericRepo<MedicalRecord> medicalRecordService, IGenericRepo<HealthCare.DAL.Models.Doctor> doctorService, IGenericRepo<Patient> patientService)
         {
             _medicalRecordService = medicalRecordService;
             _doctorService = doctorService;

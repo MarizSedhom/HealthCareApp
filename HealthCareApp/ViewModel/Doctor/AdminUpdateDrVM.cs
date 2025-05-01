@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
-
+using HealthCare.DAL.Models;
 namespace HealthCareApp.ViewModel.Doctor
 {
     public class AdminUpdateDrVM
@@ -59,11 +59,11 @@ namespace HealthCareApp.ViewModel.Doctor
             {
                 
             }
-            public AdminUpdateDrVM(Models.Doctor doctor)
+            public AdminUpdateDrVM(HealthCare.DAL.Models.Doctor doctor)
             {
                 SetDataFromDoctor(doctor);
             }
-            public void SetDataFromDoctor(Models.Doctor doctor)
+            public void SetDataFromDoctor(HealthCare.DAL.Models.Doctor doctor)
             {
                 doctorId = doctor.Id;
                 FirstName = doctor.FirstName;

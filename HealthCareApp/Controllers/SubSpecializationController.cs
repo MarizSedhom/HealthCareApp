@@ -1,13 +1,14 @@
-﻿using HealthCareApp.RepositoryServices;
+﻿using HealthCare.BLL.Interface.Repository;
+using HealthCare.DAL.Models;
 using HealthCareApp.ViewModel.Doctor;
 using Microsoft.AspNetCore.Mvc;
 namespace HealthCareApp.Controllers
 {
     public class SubSpecializationController : Controller
     {
-        private readonly IGenericRepoServices<Specialization> SpecializationRepo;
-        private readonly IGenericRepoServices<SubSpecialization> SubSpecializationRepo;
-        public SubSpecializationController(IGenericRepoServices<Specialization> SpecializationRepo, IGenericRepoServices<SubSpecialization> SubSpecializationRepo, IGenericRepoServices<SubSpecialization> SupSpecializationRepo)
+        private readonly IGenericRepo<Specialization> SpecializationRepo;
+        private readonly IGenericRepo<SubSpecialization> SubSpecializationRepo;
+        public SubSpecializationController(IGenericRepo<Specialization> SpecializationRepo, IGenericRepo<SubSpecialization> SubSpecializationRepo, IGenericRepo<SubSpecialization> SupSpecializationRepo)
         {
             this.SpecializationRepo = SpecializationRepo;
             this.SubSpecializationRepo = SubSpecializationRepo;

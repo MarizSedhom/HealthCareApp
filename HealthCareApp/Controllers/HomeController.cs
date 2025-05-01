@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using HealthCareApp.Models;
+using HealthCare.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareApp.Controllers

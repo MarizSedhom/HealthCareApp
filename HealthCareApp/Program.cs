@@ -1,13 +1,15 @@
 using HealthCareApp.Account;
-using HealthCareApp.Data;
-using HealthCareApp.Models;
-using HealthCareApp.RepositoryServices;
-using HealthCareApp.Service;
+using HealthCare.DAL.Repository;
+using HealthCare.DAL.Data;
+using HealthCare.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
 using Microsoft.AspNetCore.Authentication.Google;
+using HealthCare.BLL.Interface.Repository;
+using HealthCare.BLL.Interface.Service;
+using HealthCare.BLL.Service;
 
 namespace HealthCareApp
 {
@@ -34,10 +36,10 @@ namespace HealthCareApp
             // builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
             //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            builder.Services.AddScoped(typeof(IGenericRepoServices<>), typeof(GenericRepo<>));
+            builder.Services.AddScoped(typeof(IGenericRepo<>), typeof(GenericRepo<>));
             builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
 
-            builder.Services.AddScoped<IFileService, Service.FileService>();
+            builder.Services.AddScoped<IFileService, HealthCare.BLL.Service.FileService>();
 
             builder.Services.AddScoped<NotificationService>();
             builder.Services.AddScoped<INotificationObserver, AppNotificationObserver>();
@@ -46,7 +48,7 @@ namespace HealthCareApp
             //.AddEntityFrameworkStores<ApplicationDbContext>();
 
             //allowing sending emails
-            builder.Services.AddTransient<IEmailSender, HealthCareApp.Service.EmailSender>();
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             builder.Services.AddDefaultIdentity<ApplicationUser>(
                 options => options.SignIn.RequireConfirmedAccount = true)

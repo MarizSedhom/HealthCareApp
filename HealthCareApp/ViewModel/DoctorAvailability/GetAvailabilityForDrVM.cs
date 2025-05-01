@@ -1,5 +1,4 @@
-﻿using HealthCareApp.Models;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthCareApp.ViewModel.Doctor
@@ -21,7 +20,7 @@ namespace HealthCareApp.ViewModel.Doctor
         public int Duration { get; set; }
         [DisplayName("Type")]
 
-        public Models.Type type { get; set; }
+        public HealthCare.DAL.Models.Type type { get; set; }
         [DisplayName("Slots")]
         public int AvailableSlotsCnt { get; set; }
 

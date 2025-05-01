@@ -1,5 +1,4 @@
-﻿using HealthCareApp.RepositoryServices;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
@@ -22,7 +21,7 @@ public class UniqueAttribute<T> : ValidationAttribute where T : class
     {
         if (value == null) return ValidationResult.Success;
 
-        var repo = validationContext.GetService<IGenericRepoServices<T>>();
+        var repo = validationContext.GetService<IGenericRepo<T>>();
         if (repo == null)
             throw new InvalidOperationException($"Repository for {typeof(T).Name} is not available.");
 
