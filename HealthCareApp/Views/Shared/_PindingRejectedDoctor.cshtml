@@ -35,6 +35,15 @@
                 <h1>MedConnect</h1>
             </div>
         </div>
+        <div class="nav-links">
+            <div class="d-flex gap-3 link-container" style="margin-left: -470px">
+                <a asp-controller="Doctor"
+                   asp-action="DisplayPageForPendingDoctors"
+                   class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "DisplayPageForPendingDoctors" ? "active" : "")"
+                   data-bg="var(--bg-color-2)">Home</a>
+            </div>
+        </div>
 
         <div class="nav-right">
             <div class="notification">
