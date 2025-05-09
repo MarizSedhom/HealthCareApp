@@ -2,6 +2,8 @@
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
+    int i = 0;
+    i = 1;
 }
 
 <!DOCTYPE html>
@@ -526,6 +528,8 @@
         }
 
         }
+
+
     </style>
 </head>
 <body>
@@ -557,15 +561,15 @@
 
             <div class="form-side">
                 <div class="form-content">
-                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                        <div asp-validation-summary="All" class="validation-summary-errors" role="alert"></div>
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" enctype="multipart/form-data" method="post">
+                        <div asp-validation-summary="All" class="validation-summary-errors text-danger" role="alert" ></div>
 
                         <div class="role-selection">
                             <div class="role-option selected" data-role="patient" id="patientRoleOption">
                                 <i class="fas fa-user"></i>
                                 <h3>I'm a Patient</h3>
                                 <p>Looking for healthcare services</p>
-                                <input type="radio" name="Input.UserType" id="patientRadio" value="Patient" checked style="display: none;">
+                                <input type="radio" name="Input.UserType" id="patientRadio" value="Patient"  style="display: none;">
                             </div>
                             <div class="role-option" data-role="doctor" id="doctorRoleOption">
                                 <i class="fas fa-user-md"></i>
@@ -686,6 +690,41 @@
                                         </select>
                                         <span asp-validation-for="Input.SpecializationId" class="text-danger"></span>
                                     </div>
+                                    <div class="form-group">
+                                        <label asp-for="Input.SubSpecializationId"></label>
+                                        <select asp-for="Input.SubSpecializationId" class="form-control">
+                                            <option value="">-- Select SubSpecialization --</option>
+                                        </select>
+                                        <span asp-validation-for="Input.SubSpecializationId" class="text-danger"></span>
+                                    </div>
+                                    <!-- Fees && waiting time -->
+                                    <div class="form-group mb-3">
+                                        <label asp-for="Input.WaitingTimeInMinutes" class="form-label fw-bold"></label>
+                                        <div class="input-group">
+                                            <input asp-for="Input.WaitingTimeInMinutes" class="form-control" />
+                                            <span class="input-group-text">mins</span>
+                                        </div>
+                                        <span asp-validation-for="Input.WaitingTimeInMinutes" class="text-danger small"></span>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label asp-for="Input.Fees" class="form-label fw-bold"></label>
+                                        <div class="input-group">
+                                            <input asp-for="Input.Fees" class="form-control" />
+                                            <span class="input-group-text">LE</span>
+                                        </div>
+                                        <span asp-validation-for="Input.Fees" class="text-danger small"></span>
+                                    </div>
+                                    <!--doctor files -->
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-3">
+                                                <label asp-for="Input.doctorVerificationFile" class="form-label fw-bold"></label>
+                                                <input asp-for="Input.doctorVerificationFile" class="form-control" accept=".pdf">
+                                                <span asp-validation-for="Input.doctorVerificationFile" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -739,7 +778,8 @@
         <partial name="_ValidationScriptsPartial" />
         <script>
             // Role selection functionality
-            const roleOptions = document.querySelectorAll('.role-option');
+             document.addEventListener("DOMContentLoaded", function () {
+                       const roleOptions = document.querySelectorAll('.role-option');
             const patientFields = document.getElementById('patientFields');
             const doctorFields = document.getElementById('doctorFields');
             const patientRadio = document.getElementById('patientRadio');
@@ -798,6 +838,36 @@
                 strengthMeter.style.backgroundColor = colors[strength - 1] || '#ff0000';
                 strengthText.textContent = `Password strength: ${messages[strength - 1] || 'Very Weak'}`;
             }
+
+             $("#Input_SpecializationId").change(function() {
+                var selectedSpecialization = $(this).val();
+                var subSpecializationsDropdown = $("#Input_SubSpecializationId");
+
+                subSpecializationsDropdown.empty();
+
+                if (selectedSpecialization) {
+                    $.ajax({
+                        url: '/SubSpecialization/GetSubSpecialization',
+                        type: 'GET',
+                        data: { SelectedSpecialization: selectedSpecialization },
+                        success: function(response) {
+                            $.each(response, function(index, subSpecialization) {
+                                subSpecializationsDropdown.append(
+                                    $('<option></option>')
+                                        .val(subSpecialization.id)
+                                        .text(subSpecialization.name)
+                                );
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error fetching sub-specializations:", error);
+                        }
+                    });
+                }
+            });
+                       
+             });
+  
         </script>
     }
 </body>

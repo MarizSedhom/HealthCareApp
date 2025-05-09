@@ -1,4 +1,5 @@
-﻿using HealthCareApp.RepositoryServices;
+﻿using HealthCare.BLL.Interface.Repository;
+using HealthCare.DAL.Models;
 using HealthCareApp.ViewModel.Admin;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,14 +8,14 @@ namespace HealthCareApp.Controllers
 {
     public class AdminController : Controller
     {
-        private IGenericRepoServices<Patient> patientRepo;
-        private IGenericRepoServices<Models.Doctor> doctorRepo;
-        private IGenericRepoServices<Appointment> appointmentRepo;
-        private IGenericRepoServices<Review> reviewRepo;
-        private IGenericRepoServices<Clinic> clinicRepo;
+        private IGenericRepo<Patient> patientRepo;
+        private IGenericRepo<HealthCare.DAL.Models.Doctor> doctorRepo;
+        private IGenericRepo<Appointment> appointmentRepo;
+        private IGenericRepo<Review> reviewRepo;
+        private IGenericRepo<Clinic> clinicRepo;
 
-        public AdminController(IGenericRepoServices<Patient> _patientRepo,IGenericRepoServices<Models.Doctor> _doctorRepo,
-            IGenericRepoServices<Appointment> _appointmentRepo,IGenericRepoServices<Review> _reviewRepo,IGenericRepoServices<Clinic> _clinicRepo)
+        public AdminController(IGenericRepo<Patient> _patientRepo,IGenericRepo<HealthCare.DAL.Models.Doctor> _doctorRepo,
+            IGenericRepo<Appointment> _appointmentRepo,IGenericRepo<Review> _reviewRepo,IGenericRepo<Clinic> _clinicRepo)
         {
             patientRepo = _patientRepo;
             doctorRepo = _doctorRepo;

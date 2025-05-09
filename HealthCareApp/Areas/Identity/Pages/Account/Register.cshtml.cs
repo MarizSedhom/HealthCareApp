@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using HealthCareApp.Models;
+using HealthCare.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,14 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using HealthCareApp.Data;
+using HealthCare.DAL.Data;
+using System.Numerics;
+using HealthCare.BLL.Interface.Service;
+using HealthCare.BLL.Interface.Repository;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using HealthCareApp.Custom_Validation;
+
 
 namespace HealthCareApp.Areas.Identity.Pages.Account
 {
@@ -34,8 +41,9 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;
-
+        private readonly IFileService _fileService;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IGenericRepo<SubSpecialization> subSpecializationRepository;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
@@ -43,8 +51,9 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-
+            IFileService fileService,
             RoleManager<IdentityRole> roleManager,
+            IGenericRepo<SubSpecialization>subSpecializationRepository,
             ApplicationDbContext context)
         {
             _userManager = userManager;
@@ -55,7 +64,9 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
             _emailSender = emailSender;
 
             _roleManager = roleManager;
+            this.subSpecializationRepository = subSpecializationRepository;
             _context = context;
+            _fileService = fileService;
         }
 
         /// <summary>
@@ -124,7 +135,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
             // Selection for user type
             [Required]
             [Display(Name = "Register as")]
-            public string UserType { get; set; } // This will be "Patient" or "Doctor"
+            public string UserType { get; set; } = "Patient";// This will be "Patient" or "Doctor"
 
             // Patient-specific fields
             [RegularExpression(@"^\d{11}$", ErrorMessage = "Mobile Number must be exactly 11 digits.")]
@@ -149,10 +160,26 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
             public string Description { get; set; }
 
             [Display(Name = "Years of Experience")]
-            public int? ExperienceYears { get; set; }
+            [Range(0, double.MaxValue, ErrorMessage = "Experience Years shouldn't be Negative value")]
+
+            public int? ExperienceYears { get; set; } 
 
             [Display(Name = "Specialization")]
-            public int? SpecializationId { get; set; }
+            public int? SpecializationId { get; set; } 
+
+            [Display(Name = "SubSpecialization")]
+            public int? SubSpecializationId {  get; set; }
+
+            [Display(Name = "Waiting Time")]
+
+            [Range(0, double.MaxValue, ErrorMessage = "Waiting Time shouldn't be Negative value")]
+            public int? WaitingTimeInMinutes { get; set; }
+
+            [Range(1, double.MaxValue , ErrorMessage = "Fees should be greater than Zero")]
+            public decimal? Fees {  get; set; }
+
+            [Display(Name ="Verification File")]
+            public IFormFile? doctorVerificationFile { get; set; }
         }
 
 
@@ -160,6 +187,17 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
         public List<SelectListItem> Specializations { get; set; }
         public async Task OnGetAsync(string returnUrl = null)
         {
+            if(Input!=null && Input.UserType=="Doctor")
+
+                Input = new InputModel
+                {
+                UserType = "Doctor" // Ensure this is explicitly set
+                };
+            else
+                Input = new InputModel
+                {
+                    UserType = "Doctor" // Ensure this is explicitly set
+                };
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
@@ -177,8 +215,61 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            if (Input.UserType == "Patient")
+            {
+                if (Input.PhoneNumber.IsNullOrEmpty())
+                {
+                    ModelState.AddModelError("Input.PhoneNumber", "PhoneNumber is Required");
+                }
+                if (Input.EmergencyContact.IsNullOrEmpty())
+                {
+                    ModelState.AddModelError("Input.EmergencyContact", "Emergency Contact is Required");
+                }
+                if (Input.MedicalHistory.IsNullOrEmpty())
+                {
+                    ModelState.AddModelError("Input.MedicalHistory", "Medical History is Required");
+                }
+            }
+            else if(Input.UserType == "Doctor") {
+
+                if (Input.ExperienceYears==null)
+                {
+                    ModelState.AddModelError("Input.ExperienceYears", "Experience Years is Required");
+                }
+                if (Input.SpecializationId==null)
+                {
+                    ModelState.AddModelError("Input.SpecializationId", "Specialization is Required");
+                }
+                if (Input.SubSpecializationId==null)
+                {
+                    ModelState.AddModelError("Input.SubSpecializationId", "Subspecialization is Required");
+                }
+                if (Input.WaitingTimeInMinutes == null)
+                {
+                    ModelState.AddModelError("Input.WaitingTimeInMinutes", "Waiting Time is Required");
+                }
+                if (Input.Fees == null)
+                {
+                    ModelState.AddModelError("Input.Fees", "Fees is Required");
+                }
+                if (Input.Title == null)
+                {
+                    ModelState.AddModelError("Input.Title", "Title is Required");
+                }
+                if (Input.doctorVerificationFile == null)
+                {
+                    ModelState.AddModelError("Input.doctorVerificationFile", "Verification File is Required");
+                }
+                if (Input.Description == null)
+                {
+                    ModelState.AddModelError("Input.Description", "Description is Required");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 //var user = CreateUser();
@@ -189,6 +280,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
 
                 if (Input.UserType == "Patient")
                 {
+                 
                     var user = new Patient
                     {
                         UserName = Input.Email,
@@ -267,6 +359,7 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                 }
                 else if (Input.UserType == "Doctor")
                 {
+
                     var user = new Doctor
                     {
                         UserName = Input.Email,
@@ -279,11 +372,24 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                         Title = Input.Title,
                         Description = Input.Description,
                         ExperienceYears = Input.ExperienceYears ?? 0,
-                        SpecializationId = Input.SpecializationId ?? 0, 
+                        Fees = Input.Fees ?? 0, ///
+                        WaitingTimeInMinutes = Input.WaitingTimeInMinutes ??0,///
+                        SpecializationId = Input.SpecializationId ?? 0,    
                         verificationStatus = VerificationStatus.Pinding,
                         ProfilePicture= Input.Gender == Gender.Male ? "DefaultMale.jpg" :"DefaultFemale.png",
                     };
 
+
+                    string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", FilePaths.DrVerificationPath);
+                    if (!Directory.Exists(fullPath))
+                    {
+                        Directory.CreateDirectory(fullPath);
+                    }
+                    string verificationFileName = await _fileService.uploadFileAsync(Input.doctorVerificationFile, FilePaths.DrVerificationPath);
+                    user.verificationFileName = verificationFileName;
+
+                    user.SubSpecializations.Add(subSpecializationRepository.Find(ss => ss.Id == Input.SubSpecializationId));
+                   
                     var result = await _userManager.CreateAsync(user, Input.Password);
                     if (result.Succeeded)
                     {
@@ -347,7 +453,6 @@ namespace HealthCareApp.Areas.Identity.Pages.Account
                 }
 
             }
-
             // If we got this far, something failed, redisplay form
             return Page();
         }

@@ -1,5 +1,5 @@
 ﻿using HealthCareApp.CustomValidation;
-using HealthCareApp.Models;
+using HealthCare.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.ComponentModel.DataAnnotations;
@@ -23,7 +23,7 @@ namespace HealthCareApp.ViewModel.Doctor
 
         [Range(0, int.MaxValue  , ErrorMessage ="Waiting Time must be positive ")]
         public int Duration { get; set; }
-        public Models.Type mode { get; set; }
+        public HealthCare.DAL.Models.Type mode { get; set; }
         public int ClinicId { get; set; }
         public string ?DrId {  get; set; } 
     

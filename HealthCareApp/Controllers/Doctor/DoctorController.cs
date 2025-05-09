@@ -1,7 +1,7 @@
 ﻿using AspNetCoreGeneratedDocument;
-using HealthCareApp.Models;
-using HealthCareApp.RepositoryServices;
-using HealthCareApp.Service;
+using HealthCare.BLL.Interface.Service;
+using HealthCare.DAL.Models;
+using HealthCare.BLL.Interface.Repository;
 using HealthCareApp.ViewModel.Appointment;
 using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
@@ -14,27 +14,28 @@ using Stripe;
 
 using System.Linq;
 using System.Security.Claims;
+using HealthCare.BLL.Service;
 
 namespace HealthCareApp.Controllers.Doctor
 {
     public class DoctorController : Controller
     {
-        private readonly IGenericRepoServices<Specialization> specializationRepository;
+        private readonly IGenericRepo<Specialization> specializationRepository;
         private readonly IFileService fileService;
 
-        private IGenericRepoServices<Models.Doctor> DoctorRepository { get; }
-        private IGenericRepoServices<Models.Review> ReviewRepository { get; }
-        private IGenericRepoServices<Appointment> AppointmentRepository { get; }
+        private IGenericRepo<HealthCare.DAL.Models.Doctor> DoctorRepository { get; }
+        private IGenericRepo<HealthCare.DAL.Models.Review> ReviewRepository { get; }
+        private IGenericRepo<Appointment> AppointmentRepository { get; }
         public IAvailabilityRepository AvailabilityRepository { get; }
-        private IGenericRepoServices<SubSpecialization> SubSpecializationRepository { get; }
+        private IGenericRepo<SubSpecialization> SubSpecializationRepository { get; }
         NotificationService notificationService;
 
 
 
 
-        public DoctorController(IGenericRepoServices<Models.Doctor> DectorRepository, IGenericRepoServices<Specialization> SpecializationRepository,
-        IGenericRepoServices<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepoServices<Models.Review> ReviewRepository,
-        IAvailabilityRepository AvailabilityRepository, NotificationService notificationService, IGenericRepoServices<Appointment> AppointmentRepository)
+        public DoctorController(IGenericRepo<HealthCare.DAL.Models.Doctor> DectorRepository, IGenericRepo<Specialization> SpecializationRepository,
+        IGenericRepo<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepo<HealthCare.DAL.Models.Review> ReviewRepository,
+        IAvailabilityRepository AvailabilityRepository, NotificationService notificationService, IGenericRepo<Appointment> AppointmentRepository)
         {
             this.DoctorRepository = DectorRepository;
             specializationRepository = SpecializationRepository;
@@ -73,7 +74,7 @@ namespace HealthCareApp.Controllers.Doctor
         [HttpGet]
         public IActionResult ViewPendingDoctorForAdmin()
         {
-            IEnumerable<Models.Doctor> doctors = DoctorRepository.FindAll(d => d.verificationStatus == VerificationStatus.Pinding,d=>d.Specialization).OrderBy(d=>d.CreatedAt);
+            IEnumerable<HealthCare.DAL.Models.Doctor> doctors = DoctorRepository.FindAll(d => d.verificationStatus == VerificationStatus.Pinding,d=>d.Specialization).OrderBy(d=>d.CreatedAt);
             IEnumerable<DoctorIdxPendingVM> doctorsVM = doctors.Select(d => new DoctorIdxPendingVM()
             {
                 doctorId = d.Id,
@@ -91,7 +92,7 @@ namespace HealthCareApp.Controllers.Doctor
         [HttpGet]
         public IActionResult ApproveDoctor(string doctorId , VerificationStatus isApproved)
         {
-            Models.Doctor doctor = DoctorRepository.GetById(doctorId);
+            HealthCare.DAL.Models.Doctor doctor = DoctorRepository.GetById(doctorId);
             doctor.verificationStatus = isApproved;
             /****************Notifications*************************/
             //notification for dr
@@ -127,7 +128,7 @@ namespace HealthCareApp.Controllers.Doctor
         [HttpGet]
         public IActionResult ViewApprovedDoctorsAdmin()
         {
-            IEnumerable<Models.Doctor> doctors = DoctorRepository.FindAll(d => d.verificationStatus == VerificationStatus.Accepted,d=>d.Specialization);
+            IEnumerable<HealthCare.DAL.Models.Doctor> doctors = DoctorRepository.FindAll(d => d.verificationStatus == VerificationStatus.Accepted,d=>d.Specialization);
             IEnumerable<DoctorIdxVM> doctorsVm = doctors.Select(  d => new DoctorIdxVM()
             {
                 DoctorId = d.Id,
@@ -151,7 +152,7 @@ namespace HealthCareApp.Controllers.Doctor
         [HttpGet]
         public IActionResult UpdateDoctorAdmin(string doctorId)
         {
-            Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
+            HealthCare.DAL.Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
             AdminUpdateDrVM doctorVM = new AdminUpdateDrVM(doctor);
             Specialization specs = specializationRepository.Find(s => s.Id == doctor.SpecializationId, s => s.SubSpecialization);
             doctorVM.Specializations = specializationRepository.FindAllWithSelect(null, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
@@ -169,33 +170,13 @@ namespace HealthCareApp.Controllers.Doctor
             return View(doctorVM);
 
         }
-        //private AdminUpdateDrVM UpdateDoctorAdmin(string doctorId = "236a0bce-bf14-40ad-a62e-60e8f5e93997")
-        //{
-        //    Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorId, d => d.Specialization, d => d.SubSpecializations);
-        //    AdminUpdateDrVM doctorVM = new AdminUpdateDrVM(doctor);
-        //    Specialization specs = specializationRepository.Find(s => s.Id == doctor.SpecializationId, s => s.SubSpecialization);
-        //    doctorVM.Specializations = specializationRepository.FindAllWithSelect(null, s => new Item<int, string>() { Id = s.Id, Name = s.Name });
-        //    doctorVM.SubSpecializationsList = specs.SubSpecialization.Select(s => new Item<int, string>
-        //    {
-        //        Id = s.Id,
-        //        Name = s.Name,
-        //    });
-        //    doctorVM.CurrentPicturePath = FilePaths.DrImgPathRelative + doctorVM.ImgName;
-        //    if (doctorVM.verificationFileName != null)
-        //    {
-        //        doctorVM.CurrrentverificationPath = FilePaths.DrVerificationRelative + doctorVM.verificationFileName;
-
-        //    }
-        //    return doctorVM;
-
-        //}
 
         [HttpPost]
         public async Task<IActionResult> UpdateDoctorAdmin(AdminUpdateDrVM doctorVM)
         {
             if (ModelState.IsValid)
             {
-                Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorVM.doctorId, d => d.SubSpecializations);
+                HealthCare.DAL.Models.Doctor doctor = DoctorRepository.Find(d => d.Id == doctorVM.doctorId, d => d.SubSpecializations);
                 doctor.FirstName = doctorVM.FirstName;
                 doctor.LastName = doctorVM.LastName;
                 // doctor.PhoneNumber = profileVM.PhoneNumber;
@@ -331,7 +312,7 @@ namespace HealthCareApp.Controllers.Doctor
         public async Task< IActionResult> UpdateDoctorProfile(DrUpdateProfileVM profileVM)
         {
             if (ModelState.IsValid) {
-                Models.Doctor doctor = DoctorRepository.GetById(profileVM.DrId);
+                HealthCare.DAL.Models.Doctor doctor = DoctorRepository.GetById(profileVM.DrId);
                 doctor.FirstName = profileVM.FirstName;
                 doctor.LastName = profileVM.LastName;
                // doctor.PhoneNumber = profileVM.PhoneNumber;
@@ -400,7 +381,7 @@ namespace HealthCareApp.Controllers.Doctor
             //if (afterRegisteration.CurrrentverificationPath == null)
             //    ModelState.AddModelError("", "Must enter Verification file");
 
-            Models.Doctor doctor = DoctorRepository.Find(d => d.Id == DoctorId,d=>d.SubSpecializations);
+            HealthCare.DAL.Models.Doctor doctor = DoctorRepository.Find(d => d.Id == DoctorId,d=>d.SubSpecializations);
 
             afterRegisteration.PictureReativeUrl = FilePaths.DrImgPathRelative + doctor.ProfilePicture;
 
@@ -480,40 +461,6 @@ namespace HealthCareApp.Controllers.Doctor
             if(profileVM.VerficationFileName != null) profileVM.CurrentVerficationFilePath = FilePaths.DrVerificationRelative + profileVM.VerficationFileName;
             return profileVM;
         }
-
-        /* public IActionResult GetAllDoctorsInfo()
-         {
-             var allDoctors = DoctorRepository.FindAllWithSelect
-             (
-                 null,
-                 d => new DoctorInfoVM
-                 {
-                     DoctorId = d.Id,
-                     Title = d.Title.ToString(),
-                     FirstName = d.FirstName,
-                     LastName = d.LastName,
-                     Specialization = d.Specialization.Name,
-                     Rate = d.Reviews.Count(r => r.IsApproved && !r.IsDeleted) > 0 ? d.Reviews.Where(r => r.IsApproved && !r.IsDeleted).Average(r => r.Rating) : 0.0,
-                     Description = d.Description,
-                     Fees = d.Fees,
-                     ExperienceYears = d.ExperienceYears,
-                     WaitingTimeInMinutes = d.WaitingTimeInMinutes,
-                     ProfilePicture = d.ProfilePicture,
-                     SubSpecializations = d.SubSpecializations.Select(s => s.Name).ToList(),
-                     Clinics = d.Clinics.Select(c => new ClinicInfoVM
-                     {
-                         Id = c.Id,
-                         Name = c.Name,
-                         ClinicRegion = c.Region.RegionNameEn,
-                         ClinicAddress = c.ClinicAddress,
-                         ClinicPhoneNumber = c.ClinicPhoneNumber,
-                         ClinicCity = c.Region.City.CityNameEn,
-                     }).ToList()
-                 }
-             );
-
-             return View(allDoctors);
-         }*/
 
         public IActionResult GetAllDoctorsInfo(string title, string gender, string availability, string price, string sortOrder, string specialization)
         {

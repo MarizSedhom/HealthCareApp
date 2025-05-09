@@ -1,5 +1,4 @@
-﻿using HealthCareApp.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HealthCareApp.ViewModel.Appointment
 {
@@ -22,7 +21,7 @@ namespace HealthCareApp.ViewModel.Appointment
 
         [Display(Name = "Patient Phone")]
         public string? PatientPhone { get; set; }
-        public Models.Type Mode { get; set; }
+        public HealthCare.DAL.Models.Type Mode { get; set; }
         public string? Specialization { get; set; }
         public string? DoctorDescription { get; set; }
         public string? Clinic { get; set; }

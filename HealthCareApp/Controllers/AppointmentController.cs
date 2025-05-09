@@ -1,4 +1,5 @@
-﻿using HealthCareApp.RepositoryServices;
+﻿using HealthCare.BLL.Interface.Repository;
+using HealthCare.DAL.Models;
 using HealthCareApp.ViewModel.Appointment;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,11 +13,11 @@ namespace HealthCareApp.Controllers
 {
     public class AppointmentController : Controller
     {
-        IGenericRepoServices<Appointment> appointmentService;
-        IGenericRepoServices<AvailabilitySlots> slotService;
-        IGenericRepoServices<Patient> patientService;
+        IGenericRepo<Appointment> appointmentService;
+        IGenericRepo<AvailabilitySlots> slotService;
+        IGenericRepo<Patient> patientService;
         NotificationService notificationService;
-        public AppointmentController(IGenericRepoServices<Appointment> _appointmentService, IGenericRepoServices<AvailabilitySlots> _slotService, IGenericRepoServices<Patient> _patientService, NotificationService notificationService)
+        public AppointmentController(IGenericRepo<Appointment> _appointmentService, IGenericRepo<AvailabilitySlots> _slotService, IGenericRepo<Patient> _patientService, NotificationService notificationService)
         {
             appointmentService = _appointmentService;
             slotService = _slotService;
@@ -44,7 +45,7 @@ namespace HealthCareApp.Controllers
 
             var upcomingAppVM = appointmentService.FindAllWithSelect
             (
-                app => app.PatientId == patientId && app.Status == Status.Upcoming,
+                app => app.PatientId == patientId && (app.Status == Status.Upcoming || app.Status == Status.Rescheduled),
                 app => new PatientUpcomingAppointmentsVM
                 {
                     Id = app.Id,
@@ -171,7 +172,7 @@ namespace HealthCareApp.Controllers
                 var notificationDr = new Notification
                 {
                     UserId = reservedSlot.Availability.DoctorId,
-                    Message = $"An Appointment has been reserved on day {reservedSlot.Availability.Date} from time: {reservedSlot.Availability.StartTime} to {reservedSlot.Availability.EndTime}.",
+                    Message = $"An Appointment has been reserved on day {reservedSlot.Availability.Date} from time: {reservedSlot.StartTime} to {reservedSlot.EndTime}.",
                     CreatedDate = DateTime.Now,
                     notificationType = NotificationType.AppointmentReminder,
                 };
@@ -181,7 +182,7 @@ namespace HealthCareApp.Controllers
                 var notificationPatientAppointment = new Notification
                 {
                     UserId = appointment.PatientId,
-                    Message = $"An Appointment has been reserved Successfully on day {reservedSlot.Availability.Date} from time: {reservedSlot.Availability.StartTime} to {reservedSlot.Availability.EndTime}.",
+                    Message = $"An Appointment has been reserved Successfully on day {reservedSlot.Availability.Date} from time: {reservedSlot.StartTime} to {reservedSlot.EndTime}.",
                     CreatedDate = DateTime.Now,
                     notificationType = NotificationType.AppointmentReminder,
                 };
@@ -227,7 +228,7 @@ namespace HealthCareApp.Controllers
                 var notificationDr = new Notification
                 {
                     UserId = reservedSlot.Availability.DoctorId,
-                    Message = $"An Appointment has been reserved on day {reservedSlot.Availability.Date} from time: {reservedSlot.Availability.StartTime} to {reservedSlot.Availability.EndTime}.",
+                    Message = $"An Appointment has been reserved on day {reservedSlot.Availability.Date} from time: {reservedSlot.StartTime} to {reservedSlot.EndTime}.",
                     CreatedDate = DateTime.Now,
                     notificationType = NotificationType.AppointmentReminder,
                 };
@@ -237,7 +238,7 @@ namespace HealthCareApp.Controllers
                 var notificationPatientAppointment = new Notification
                 {
                     UserId = appointment.PatientId,
-                    Message = $"An Appointment has been reserved Successfully on day {reservedSlot.Availability.Date} from time: {reservedSlot.Availability.StartTime} to {reservedSlot.Availability.EndTime} with Dr.{reservedSlot.Availability.Doctor.FirstName} {reservedSlot.Availability.Doctor.LastName}.",
+                    Message = $"An Appointment has been reserved Successfully on day {reservedSlot.Availability.Date} from time: {reservedSlot.StartTime} to {reservedSlot.EndTime} with Dr.{reservedSlot.Availability.Doctor.FirstName} {reservedSlot.Availability.Doctor.LastName}.",
                     CreatedDate = DateTime.Now,
                     notificationType = NotificationType.AppointmentReminder,
                 };
@@ -300,7 +301,7 @@ namespace HealthCareApp.Controllers
                 var notificationDr = new Notification
                 {
                     UserId = slot.Availability.DoctorId,
-                    Message = $"An Appointment has been Cancelled on day {slot.Availability.Date} from time: {slot.Availability.StartTime} to {slot.Availability.EndTime}.",
+                    Message = $"An Appointment has been Cancelled on day {slot.Availability.Date} from time: {slot.StartTime} to {slot.EndTime}.",
                     CreatedDate = DateTime.Now,
                     notificationType = NotificationType.AppointmentCancellation,
                 };
@@ -348,7 +349,7 @@ namespace HealthCareApp.Controllers
                 }
             }
 
-            var upcomingAppointments = appointmentService.FindAllWithSelect(app => app.AvailableSlot.Availability.DoctorId == doctorId && app.Status == Status.Upcoming
+            var upcomingAppointments = appointmentService.FindAllWithSelect(app => app.AvailableSlot.Availability.DoctorId == doctorId &&( app.Status == Status.Upcoming || app.Status == Status.Rescheduled)
             , app => new UpcomingAppointmentsVM
             {
                 Status = app.Status,

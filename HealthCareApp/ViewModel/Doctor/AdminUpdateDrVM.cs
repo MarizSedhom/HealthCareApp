@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
-
+using HealthCare.DAL.Models;
 namespace HealthCareApp.ViewModel.Doctor
 {
     public class AdminUpdateDrVM
@@ -26,12 +26,16 @@ namespace HealthCareApp.ViewModel.Doctor
             public string Description { get; set; }
 
             [DataType(DataType.Currency, ErrorMessage = "Fees must be Number")]
+            [Range(1, double.MaxValue, ErrorMessage = "Fees should be greater than Zero")]
             public decimal Fees { get; set; }
 
             [DisplayName("Experience Years")]
+            [Range(0, double.MaxValue, ErrorMessage = "Experience Years shouldn't be Negative value")]
             public int ExperienceYears { get; set; }
 
+
             [DisplayName("Waiting Time (min)")]
+            [Range(0, double.MaxValue, ErrorMessage = "Waiting Time shouldn't be Negative value")]
             public int WaitingTimeInMinutes { get; set; }
 
             [DisplayName("Profile Picture")]
@@ -59,11 +63,11 @@ namespace HealthCareApp.ViewModel.Doctor
             {
                 
             }
-            public AdminUpdateDrVM(Models.Doctor doctor)
+            public AdminUpdateDrVM(HealthCare.DAL.Models.Doctor doctor)
             {
                 SetDataFromDoctor(doctor);
             }
-            public void SetDataFromDoctor(Models.Doctor doctor)
+            public void SetDataFromDoctor(HealthCare.DAL.Models.Doctor doctor)
             {
                 doctorId = doctor.Id;
                 FirstName = doctor.FirstName;

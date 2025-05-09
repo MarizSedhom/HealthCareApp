@@ -1,8 +1,9 @@
-﻿namespace HealthCareApp.Custom_Validation
+﻿
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace HealthCareApp.Custom_Validation
 {
-    using HealthCareApp.RepositoryServices;
-    using System;
-    using System.ComponentModel.DataAnnotations;
 
     public class GreaterThanZeroAttribute<T> : ValidationAttribute where T : class
     {
@@ -22,7 +23,7 @@
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var repo = validationContext.GetService<IGenericRepoServices<T>>();
+            var repo = validationContext.GetService<IGenericRepo<T>>();
 
             if (repo == null)
             {

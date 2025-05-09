@@ -1,5 +1,5 @@
-﻿using HealthCareApp.Models;
-using HealthCareApp.RepositoryServices;
+﻿using HealthCare.BLL.Interface.Repository;
+using HealthCare.DAL.Models;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -11,10 +11,10 @@ namespace HealthCareApp.Controllers
 {
     public class NotificationController : Controller
     {
-        private readonly IGenericRepoServices<Notification> notificationRepoServices;
+        private readonly IGenericRepo<Notification> notificationRepoServices;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public NotificationController(IGenericRepoServices<Notification> _notificatonRepoServices, UserManager<ApplicationUser> _userManager)
+        public NotificationController(IGenericRepo<Notification> _notificatonRepoServices, UserManager<ApplicationUser> _userManager)
         {
             notificationRepoServices = _notificatonRepoServices;
             userManager = _userManager;

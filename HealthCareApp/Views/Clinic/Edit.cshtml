@@ -180,6 +180,36 @@
             color: var(--dark-blue);
             border: none;
         }
+
+    .map-container {
+        margin: 1.5rem 0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        border: 2px solid var(--light-blue);
+    }
+
+    #map {
+        height: 400px;
+        width: 100%;
+    }
+
+    .map-instructions {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        color: #555;
+        font-style: italic;
+    }
+
+    .coordinates-display {
+        display: flex;
+        justify-content: space-between;
+        background: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: #666;
+    }
 </style>
 
 <div class="edit-clinic-container">
@@ -195,6 +225,9 @@
         <form asp-action="Edit" asp-route-page="@ViewBag.CurrentPage">
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="doctorId" />
+            <input type="hidden" asp-for="ClinicLocation.KeyId" />
+            <input type="hidden" asp-for="ClinicLocation.X" id="lng" />
+            <input type="hidden" asp-for="ClinicLocation.Y" id="lat" />
 
             <div class="form-group mb-4">
                 <label asp-for="Name" class="form-label">Clinic Name</label>
@@ -229,6 +262,17 @@
                 <input asp-for="ClinicPhoneNumber" class="form-control-custom" placeholder="Enter phone number" />
                 <span asp-validation-for="ClinicPhoneNumber" class="text-danger"></span>
             </div>
+            <div class="form-group mb-4">
+                <label class="form-label">Clinic Location</label>
+                <p class="map-instructions">Click on the map or drag the marker to set your clinic's location</p>
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+                <div class="coordinates-display">
+                    <span>Latitude: <strong id="display-lat">--</strong></span>
+                    <span>Longitude: <strong id="display-lng">--</strong></span>
+                </div>
+            </div>
             <div class="button-group">
                 <button type="submit" class="btn-update-custom@(admin?"-admin":"")">
                     <i class="fas fa-save"></i>
@@ -245,7 +289,6 @@
                 </a>
 
             </div>
-
         </form>
             @if (User.IsInRole("Admin"))
             {
@@ -291,5 +334,68 @@
                 }
             });
         });
+
+         // Google Maps integration
+        function initMap() {
+            var lat = Number($("#lat").val()) || 0;
+            var lng = Number($("#lng").val()) || 0;
+
+            // Default to a central location if no coordinates are set
+            if (lat === 0 || lng === 0) {
+                lat = 30.0444;  // Default latitude (Cairo)
+                lng = 31.2357;  // Default longitude (Cairo)
+            }
+
+            // Update the coordinate display
+            updateCoordinateDisplay(lat, lng);
+
+            var mapOptions = {
+                center: { lat: lat, lng: lng },
+                zoom: 12,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                mapTypeControl: true,
+                fullscreenControl: true,
+                streetViewControl: false
+            };
+
+            var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+            var marker = new google.maps.Marker({
+                position: { lat: lat, lng: lng },
+                map: map,
+                draggable: true,
+                animation: google.maps.Animation.DROP
+            });
+
+            // Click event on map to move marker
+            google.maps.event.addListener(map, "click", function (event) {
+                marker.setPosition(event.latLng);
+                updatePositionData(event.latLng);
+            });
+
+            // Drag event on marker
+            marker.addListener("dragend", function () {
+                updatePositionData(marker.getPosition());
+            });
+
+            // Handle window resize to keep map responsive
+            google.maps.event.addDomListener(window, "resize", function() {
+                google.maps.event.trigger(map, "resize");
+                map.setCenter(marker.getPosition());
+            });
+
+            function updatePositionData(position) {
+                $("#lat").val(position.lat());
+                $("#lng").val(position.lng());
+                updateCoordinateDisplay(position.lat(), position.lng());
+            }
+        }
+
+        function updateCoordinateDisplay(lat, lng) {
+            // Format coordinates to 6 decimal places
+            $("#display-lat").text(lat.toFixed(6));
+            $("#display-lng").text(lng.toFixed(6));
+        }
     </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.ClinicLocation.KeyId&callback=initMap" defer></script>
 }

@@ -1,21 +1,21 @@
-﻿using HealthCareApp.Models;
-using HealthCareApp.RepositoryServices;
+﻿using HealthCare.DAL.Models;
 using HealthCareApp.ViewModel.Patient;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using HealthCare.BLL.Interface.Repository;
 
 namespace HealthCareApp.Controllers
 {
     public class PatientController : Controller
     {
-        private readonly IGenericRepoServices<Patient> PatientRepo;
-        private readonly IGenericRepoServices<MedicalRecord> MedicalRepo;
-        private readonly IGenericRepoServices<Appointment> AppointmentRepo;
+        private readonly IGenericRepo<Patient> PatientRepo;
+        private readonly IGenericRepo<MedicalRecord> MedicalRepo;
+        private readonly IGenericRepo<Appointment> AppointmentRepo;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public PatientController(IGenericRepoServices<Patient> PatientRepo, IGenericRepoServices<MedicalRecord> MedicalRepo, UserManager<ApplicationUser> userManager, IGenericRepoServices<Appointment> AppointmentRepo)
+        public PatientController(IGenericRepo<Patient> PatientRepo, IGenericRepo<MedicalRecord> MedicalRepo, UserManager<ApplicationUser> userManager, IGenericRepo<Appointment> AppointmentRepo)
         {
             this.PatientRepo = PatientRepo;
             this.MedicalRepo = MedicalRepo;
@@ -352,8 +352,9 @@ namespace HealthCareApp.Controllers
                     MedicalHistory = p.Patient.MedicalHistory
                 },
                 p => p.Patient).ToList();
+            patients= patients.DistinctBy(p=>p.PatientId).ToList();
                 
-                foreach(var patient in patients)
+            foreach(var patient in patients)
             {
                 var medicalRecord = MedicalRepo.FindWithSelect(mr => mr.PatientId == patient.PatientId && mr.DoctorId == doctorId, m => m.Id);
 

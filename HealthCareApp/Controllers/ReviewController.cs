@@ -1,5 +1,5 @@
-using HealthCareApp.Models;
-using HealthCareApp.RepositoryServices;
+using HealthCare.BLL.Interface.Repository;
+using HealthCare.DAL.Models;
 using HealthCareApp.ViewModel.Review;
 
 using Microsoft.AspNetCore.Http;
@@ -13,16 +13,16 @@ namespace HealthCareApp.Controllers
 {
     public class ReviewController : Controller
     {
-        IGenericRepoServices<Review> reviewService;
-        IGenericRepoServices<ApplicationUser> userService;
-        IGenericRepoServices<Patient> patientService;
-        IGenericRepoServices<Models.Doctor> doctorService;
+        IGenericRepo<Review> reviewService;
+        IGenericRepo<ApplicationUser> userService;
+        IGenericRepo<Patient> patientService;
+        IGenericRepo<HealthCare.DAL.Models.Doctor> doctorService;
 
-        IGenericRepoServices<Notification> notificationRepoService;
+        IGenericRepo<Notification> notificationRepoService;
         NotificationService notificationService;
 
 
-        public ReviewController(IGenericRepoServices<Review> _reviewService, IGenericRepoServices<ApplicationUser> _userService, IGenericRepoServices<Patient> _patientService, IGenericRepoServices<Models.Doctor> _docttorService, IGenericRepoServices<Notification> _notificationRepoService, NotificationService _notificationService)
+        public ReviewController(IGenericRepo<Review> _reviewService, IGenericRepo<ApplicationUser> _userService, IGenericRepo<Patient> _patientService, IGenericRepo<HealthCare.DAL.Models.Doctor> _docttorService, IGenericRepo<Notification> _notificationRepoService, NotificationService _notificationService)
         {
             reviewService = _reviewService;
             userService = _userService;
@@ -186,7 +186,7 @@ namespace HealthCareApp.Controllers
             Patient patient = patientService.Find(p => p.Id == review.PatientId);
             review.Patient = patient;
 
-            Models.Doctor doctor = doctorService.Find(d => d.Id == review.DoctorId);
+            HealthCare.DAL.Models.Doctor doctor = doctorService.Find(d => d.Id == review.DoctorId);
             review.Doctor = doctor;
 
             //notification for Patient

@@ -1,5 +1,4 @@
-﻿using HealthCareApp.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HealthCareApp.ViewModel.Appointment
 {
@@ -15,7 +14,7 @@ namespace HealthCareApp.ViewModel.Appointment
         public TimeOnly EndTime { get; set; }
         public string DoctorTitle { get; set; }
         public string DoctorName { get; set; }
-        public Models.Type Mode { get; set; }
+        public HealthCare.DAL.Models.Type Mode { get; set; }
         public string Specialization { get; set; }
         public string Clinic { get; set; }
 

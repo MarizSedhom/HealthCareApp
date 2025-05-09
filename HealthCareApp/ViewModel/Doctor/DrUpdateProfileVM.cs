@@ -1,5 +1,4 @@
-﻿using HealthCareApp.Models;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace HealthCareApp.ViewModel.Doctor
@@ -26,13 +25,17 @@ namespace HealthCareApp.ViewModel.Doctor
         public Title? Title { get; set; }
         public string Description { get; set; }
 
-        [DataType(DataType.Currency,ErrorMessage ="Fees must be Number")]  
+        [DataType(DataType.Currency,ErrorMessage ="Fees must be Number")]
+        [Range(1, double.MaxValue, ErrorMessage = "Fees should be greater than Zero")]
+
         public decimal Fees { get; set; }
 
         [DisplayName("Experience Years")]
+        [Range(0, double.MaxValue, ErrorMessage = "Experience Years shouldn't be Negative value")]
         public int ExperienceYears { get; set; }
 
         [DisplayName("Waiting Time (min)")]
+        [Range(0, double.MaxValue, ErrorMessage = "Waiting Time shouldn't be Negative value")]
         public int WaitingTimeInMinutes { get; set; }
 
         [DisplayName("Profile Picture")]

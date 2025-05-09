@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using HealthCareApp.Models;
 namespace HealthCareApp.ViewModel.Patient
 {
     public class PatientVM
@@ -17,7 +16,7 @@ namespace HealthCareApp.ViewModel.Patient
         [Display(Name = "Emergency Contact")]
         [Required]
         [RegularExpression(@"^(+?\d{1,3})?[- ]?\d{10}$", ErrorMessage = "Phone number must be 10 digits, with optional country code.")]
-        [Unique<Models.Patient>("The Emergency Contact number is already in use.", "EmergencyContact")]
+        [Unique<HealthCare.DAL.Models.Patient>("The Emergency Contact number is already in use.", "EmergencyContact")]
         public string EmergencyContact { get; set; }
 
         [Display(Name = "Medical History")]
