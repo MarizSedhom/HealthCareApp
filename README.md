@@ -1,4 +1,5 @@
 # 🩺 MedConnect - Doctor Appointments Reservation System
+📺 **Live Demo:** [http://medconnect.somee.com/](http://medconnect.somee.com/)
 
 **MedConnect** is a full-stack web application built using **ASP.NET MVC** that allows **doctors** and **patients** to manage appointments in a smart, efficient, and reliable way. Inspired by platforms like **Vezeeta**, MedConnect supports **user authentication, role-based access, real-time email notifications**, and **payment integration** for seamless doctor-patient interaction.
 
