@@ -1,9 +1,11 @@
 ﻿using HealthCare.BLL.Interface.Repository;
 using HealthCare.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareApp.Controllers
 {
+    [Authorize]
     public class SpecializationController : Controller
     {
         private readonly IGenericRepo<Specialization> SpecializationRepo;

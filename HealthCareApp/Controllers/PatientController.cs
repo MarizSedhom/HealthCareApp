@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 using HealthCare.BLL.Interface.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HealthCareApp.Controllers
 {
+    [Authorize]
     public class PatientController : Controller
     {
         private readonly IGenericRepo<Patient> PatientRepo;
@@ -142,6 +144,7 @@ namespace HealthCareApp.Controllers
             }
         }
 
+        [Authorize("Admin")]
         public IActionResult GetAllPatients()
         {
             var allPatients = PatientRepo.FindAllWithSelect
@@ -162,6 +165,7 @@ namespace HealthCareApp.Controllers
             return View(allPatients);
         }
 
+        [Authorize("Admin")]
         public IActionResult ManagePatientStat(string patientId)
         {
             var patientStat = PatientRepo.FindWithSelectIgnoreFilter
@@ -181,7 +185,7 @@ namespace HealthCareApp.Controllers
             );
             return View(patientStat);
         }
-
+        [Authorize("Admin,Patient")]
         public IActionResult EditPatientInfo(string patientId)
         {
             var patientInfo = PatientRepo.FindWithSelect(p => p.Id == patientId,
@@ -200,6 +204,7 @@ namespace HealthCareApp.Controllers
             return View(patientInfo);
         }
 
+        [Authorize("Admin,Patient")]
         [HttpPost]
         public IActionResult EditPatientInfo(string patientId, EditPatientInfoVM editPatientVM)
         {
@@ -223,6 +228,7 @@ namespace HealthCareApp.Controllers
                 return View(editPatientVM);
             }
         }
+        [Authorize("Admin")]
 
         public IActionResult DeactivatePatientAccount(string patientId)
         {
@@ -238,7 +244,7 @@ namespace HealthCareApp.Controllers
                 return NotFound();
             }
         }
-
+        [Authorize("Admin")]
         public IActionResult PatientHistory(string patientId)
         {
             return RedirectToAction("AppointmentsHistory", "Appointment", new { patientId });
@@ -246,6 +252,7 @@ namespace HealthCareApp.Controllers
 
 
         //action for profile patient
+        [Authorize("Patient")]
         public async Task<IActionResult> GetPatientProfile()
         {
             var userId = _userManager.GetUserId(User);
@@ -283,6 +290,7 @@ namespace HealthCareApp.Controllers
             return View(viewModel);
         }
 
+        [Authorize("Patient")]
         public IActionResult EditPatientProfile()
         {
             var userId = _userManager.GetUserId(User);
@@ -309,6 +317,7 @@ namespace HealthCareApp.Controllers
             return View(patientInfo);
         }
 
+        [Authorize("Admin,Patient")]
         [HttpPost]
         public IActionResult EditPatientProfile(string patientId, EditPatientInfoVM editPatientVM)
         {
@@ -332,7 +341,7 @@ namespace HealthCareApp.Controllers
                 return View(editPatientVM);
             }
         }
-
+        [Authorize("Doctor")]
         public IActionResult DisplayPatientsForDoctor()
         {
 

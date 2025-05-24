@@ -1,6 +1,6 @@
 ﻿using HealthCare.BLL.Interface.Repository;
 using HealthCare.DAL.Models;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace HealthCareApp.Controllers
 {
+    [Authorize("Doctor,Patient")]
     public class NotificationController : Controller
     {
         private readonly IGenericRepo<Notification> notificationRepoServices;

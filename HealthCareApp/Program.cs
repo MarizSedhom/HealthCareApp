@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using HealthCare.BLL.Interface.Repository;
 using HealthCare.BLL.Interface.Service;
 using HealthCare.BLL.Service;
+using HealthCare.PL.Middleware;
 
 namespace HealthCareApp
 {
@@ -62,7 +63,7 @@ namespace HealthCareApp
             builder.Services.AddRazorPages();
 
             var app = builder.Build();
-
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -98,6 +99,18 @@ namespace HealthCareApp
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            //app.Use(async (context, next) =>
+            //{
+            //    await next();
+
+            //    // Check if the response is 403 Forbidden (Access Denied)
+            //    if (context.Response.StatusCode == 403)
+            //    {
+            //        // Example: Redirect to custom Access Denied page
+            //        context.Response.Redirect("/Home/AccessDenied");
+            //    }
+            //});
 
             app.UseStaticFiles();
             

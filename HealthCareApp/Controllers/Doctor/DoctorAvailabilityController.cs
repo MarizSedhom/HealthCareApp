@@ -1,6 +1,7 @@
 ﻿
 using HealthCareApp.ViewModel.Doctor;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -11,6 +12,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HealthCareApp.Controllers.Doctor
 {
+    [Authorize(Roles = "Doctor,Admin")]
     public class DoctorAvailabilityController : Controller
     {
        public IGenericRepo<Notification> NotificationRepository {  get; }

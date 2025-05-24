@@ -2,12 +2,14 @@
 using HealthCare.DAL.Models;
 using HealthCareApp.ViewModel.Clinic;
 using HealthCareApp.ViewModel.Doctor;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
+    [Authorize(Roles = "Doctor,Admin")]
     public class ClinicController : Controller
     {
         private readonly IGenericRepo<Clinic> ClinicRepo;

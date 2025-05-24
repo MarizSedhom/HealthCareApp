@@ -1,7 +1,10 @@
 ﻿using Stripe;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
+
+[Authorize("Patient")]
 public class PaymentController : Controller
 {
     private readonly string _secretKey = "sk_test_51RDJNXHXAaOwfwNpnax4xnUeUJzWNO7HoVXCR72Mf9yCyYQcUxs2wrsaCXtb122Qe7Z6EOSWSoKI14NlqfUyGh1U002a6lJJlW"; // Replace with your secret key

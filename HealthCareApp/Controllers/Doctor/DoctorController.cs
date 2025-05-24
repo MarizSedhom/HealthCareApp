@@ -15,9 +15,12 @@ using Stripe;
 using System.Linq;
 using System.Security.Claims;
 using HealthCare.BLL.Service;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HealthCareApp.Controllers.Doctor
 {
+
     public class DoctorController : Controller
     {
         private readonly IGenericRepo<Specialization> specializationRepository;
@@ -26,6 +29,7 @@ namespace HealthCareApp.Controllers.Doctor
         private IGenericRepo<HealthCare.DAL.Models.Doctor> DoctorRepository { get; }
         private IGenericRepo<HealthCare.DAL.Models.Review> ReviewRepository { get; }
         private IGenericRepo<Appointment> AppointmentRepository { get; }
+        public UserManager<ApplicationUser> UserManager { get; }
         public IAvailabilityRepository AvailabilityRepository { get; }
         private IGenericRepo<SubSpecialization> SubSpecializationRepository { get; }
         NotificationService notificationService;
@@ -35,7 +39,7 @@ namespace HealthCareApp.Controllers.Doctor
 
         public DoctorController(IGenericRepo<HealthCare.DAL.Models.Doctor> DectorRepository, IGenericRepo<Specialization> SpecializationRepository,
         IGenericRepo<SubSpecialization> SubSpecializationRepository, IFileService fileService, IGenericRepo<HealthCare.DAL.Models.Review> ReviewRepository,
-        IAvailabilityRepository AvailabilityRepository, NotificationService notificationService, IGenericRepo<Appointment> AppointmentRepository)
+        IAvailabilityRepository AvailabilityRepository, NotificationService notificationService, IGenericRepo<Appointment> AppointmentRepository,UserManager<ApplicationUser>userManager)
         {
             this.DoctorRepository = DectorRepository;
             specializationRepository = SpecializationRepository;
@@ -46,8 +50,10 @@ namespace HealthCareApp.Controllers.Doctor
 
             this.notificationService = notificationService;
             this.AppointmentRepository = AppointmentRepository;
+            UserManager = userManager;
         }
-        
+
+        [Authorize(Roles = "Doctor")]
         public IActionResult WelcomeDoctor()
         {
             var doctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -71,6 +77,7 @@ namespace HealthCareApp.Controllers.Doctor
         }
 
         //doctor pending page
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult ViewPendingDoctorForAdmin()
         {
@@ -89,6 +96,7 @@ namespace HealthCareApp.Controllers.Doctor
         }
 
         //doctor pending page
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult ApproveDoctor(string doctorId , VerificationStatus isApproved)
         {
@@ -125,6 +133,7 @@ namespace HealthCareApp.Controllers.Doctor
             return RedirectToAction(nameof(ViewPendingDoctorForAdmin));
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult ViewApprovedDoctorsAdmin()
         {
@@ -141,7 +150,7 @@ namespace HealthCareApp.Controllers.Doctor
             return View(doctorsVm);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult ViewDoctorDetailsForAdmin()
         {
@@ -149,6 +158,7 @@ namespace HealthCareApp.Controllers.Doctor
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult UpdateDoctorAdmin(string doctorId)
         {
@@ -171,6 +181,7 @@ namespace HealthCareApp.Controllers.Doctor
 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> UpdateDoctorAdmin(AdminUpdateDrVM doctorVM)
         {
@@ -229,6 +240,7 @@ namespace HealthCareApp.Controllers.Doctor
             //return View(GetDrUpdateProfileVm(profileVM.DrId));
         }
 
+        [AllowAnonymous]
         [HttpGet]
         // DoctorController.cs
         public IActionResult ViewDoctorDetails(string DoctorId)
@@ -287,7 +299,7 @@ namespace HealthCareApp.Controllers.Doctor
             return View(viewModel);
         }
 
-
+        [Authorize(Roles = "Doctor")]
         [HttpGet]
         public IActionResult GetDoctorDetail(string DoctorId = null)
         {
@@ -301,6 +313,7 @@ namespace HealthCareApp.Controllers.Doctor
         }
 
         //for doctor to change thier profile
+        [Authorize(Roles = "Doctor")]
         [HttpGet]
         public IActionResult UpdateDoctorProfile()
         {
@@ -308,6 +321,7 @@ namespace HealthCareApp.Controllers.Doctor
             DrUpdateProfileVM profileVM = GetDrUpdateProfileVm(DoctorId);
             return View(profileVM);
         }
+        [Authorize(Roles = "Doctor")]
         [HttpPost]
         public async Task< IActionResult> UpdateDoctorProfile(DrUpdateProfileVM profileVM)
         {
@@ -340,8 +354,9 @@ namespace HealthCareApp.Controllers.Doctor
 
             return View(GetDrUpdateProfileVm(profileVM.DrId));
 
-        }      
-        
+        }
+
+        [Authorize(Roles = "Doctor")]
         public IActionResult AfterDrRegisteration(string DoctorId=null)
         {
             if(DoctorId==null)
@@ -372,6 +387,7 @@ namespace HealthCareApp.Controllers.Doctor
             return View(AfterDrRegisteration);
         }
 
+        [Authorize(Roles = "Doctor")]
         [HttpPost]
         public async Task< IActionResult> AfterDrRegisteration( AfterDrRegisterationVM afterRegisteration, string? DoctorId = null)
         {
@@ -429,6 +445,7 @@ namespace HealthCareApp.Controllers.Doctor
             }
         }
 
+        [Authorize(Roles = "Doctor")]
         public IActionResult DisplayPageForPendingDoctors()
         {
             return View();
@@ -462,8 +479,30 @@ namespace HealthCareApp.Controllers.Doctor
             return profileVM;
         }
 
-        public IActionResult GetAllDoctorsInfo(string title, string gender, string availability, string price, string sortOrder, string specialization)
+        [AllowAnonymous]
+        public async Task< IActionResult> GetAllDoctorsInfo(string title, string gender, string availability, string price, string sortOrder, string specialization)
         {
+
+            if (User.IsInRole("Doctor"))
+            {
+                var userIdentifier = User?.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                HealthCare.DAL.Models.Doctor dr = await UserManager.FindByIdAsync(userIdentifier) as HealthCare.DAL.Models.Doctor;
+                if (dr.verificationStatus == VerificationStatus.Pinding || dr.verificationStatus == VerificationStatus.Rejected)
+                {
+                    return RedirectToAction("DisplayPageForPendingDoctors" , "Doctor");
+
+                }
+
+                else if (dr.verificationStatus == VerificationStatus.Accepted)
+                {
+                   
+                   return RedirectToAction("WelcomeDoctor" , "Doctor");
+
+                }
+
+            }
+
             var allDoctors = DoctorRepository.FindAllWithSelect(
                 d =>
                     (string.IsNullOrEmpty(title) || d.Title.ToString() == title) &&

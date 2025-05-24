@@ -1,6 +1,7 @@
 ﻿using HealthCare.BLL.Interface.Repository;
 using HealthCare.DAL.Models;
 using HealthCareApp.ViewModel.Appointment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -25,7 +26,7 @@ namespace HealthCareApp.Controllers
             this.notificationService = notificationService;
         }
 
-
+        [Authorize(Roles = "Patient")]
         public ActionResult PatientUpcomingAppointments()
         {
             var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -67,6 +68,7 @@ namespace HealthCareApp.Controllers
             return View(upcomingAppVM);
         }
 
+        [Authorize("Patient")]
         public ActionResult ReserveAppointment(int slotId) // passed from heba's part
         {
             var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -99,6 +101,7 @@ namespace HealthCareApp.Controllers
             return View(selectedSlot);
         }
 
+        [Authorize("Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Checkout(ReserveAppointmentVM appointmentVM)
@@ -149,7 +152,7 @@ namespace HealthCareApp.Controllers
             return new StatusCodeResult(303);
         }
 
-
+        [Authorize("Patient")]
         public ActionResult SaveAppointmentWithVisa()
         {
             Appointment appointment = null;
@@ -203,6 +206,7 @@ namespace HealthCareApp.Controllers
                 return View(appointment);
         }
 
+        [Authorize("Patient")]
         [HttpPost]
         public ActionResult SaveAppointmentWithCash(ReserveAppointmentVM appointmentVM)
         {
@@ -250,7 +254,7 @@ namespace HealthCareApp.Controllers
                 return RedirectToAction(nameof(ReserveAppointment), appointmentVM.SlotId);
         }
 
-
+        [Authorize("Patient")]
         public ActionResult CancelAppointment(int id)
         {
             var appointToBeCancelled = appointmentService.FindWithSelect
@@ -277,7 +281,7 @@ namespace HealthCareApp.Controllers
             return View(appointToBeCancelled);
         }
 
-
+        [Authorize("Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CancelAppointment(int id, Appointment appointment)
@@ -329,6 +333,9 @@ namespace HealthCareApp.Controllers
         }
 
 
+
+        [Authorize("Doctor")]
+
         // doctor 
         public ActionResult DisplayUpcomingAppoinments(string doctorId)
         {
@@ -370,6 +377,7 @@ namespace HealthCareApp.Controllers
             return View(upcomingAppointments);
         }
 
+        [Authorize("Patient,Admin")]
         public ActionResult AppointmentsHistory(string patientId)
         {
             if (patientId == null)
@@ -407,6 +415,8 @@ namespace HealthCareApp.Controllers
         }
 
         //admin 
+        [Authorize("Admin")]
+
         public ActionResult DisplayAllDoctorsAppoinments()
         {
             IEnumerable<Appointment> doctorsAppointments = appointmentService.FindAll(app => app.Id > 0, app => app.AvailableSlot, app => app.AvailableSlot.Availability, app => app.Patient, app => app.AvailableSlot.Availability.Doctor, app => app.AvailableSlot.Availability.Clinic);
@@ -417,6 +427,7 @@ namespace HealthCareApp.Controllers
         }
 
 
+        [Authorize("Admin")]
         [HttpPost]
         public ActionResult DisplayAllDoctorsAppoinments(string patientName)
         {

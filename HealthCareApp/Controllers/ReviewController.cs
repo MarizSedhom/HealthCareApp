@@ -1,7 +1,7 @@
 using HealthCare.BLL.Interface.Repository;
 using HealthCare.DAL.Models;
 using HealthCareApp.ViewModel.Review;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +11,7 @@ using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
+    [Authorize]
     public class ReviewController : Controller
     {
         IGenericRepo<Review> reviewService;
@@ -32,7 +33,7 @@ namespace HealthCareApp.Controllers
             notificationService = _notificationService;
         }
 
-
+        [Authorize("Doctor,Patient")]
         public ActionResult GetDoctorReviews(string doctorId = null)
         {
             // Doctor view
@@ -78,7 +79,7 @@ namespace HealthCareApp.Controllers
             //}
         }
 
-
+        [Authorize("Patient")]
         public ActionResult AddReview(string doctorId)
         {
          
@@ -89,7 +90,7 @@ namespace HealthCareApp.Controllers
             return View(review);
         }
 
-
+        [Authorize("Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddReview(AddReviewVM reviewVM)
@@ -117,7 +118,7 @@ namespace HealthCareApp.Controllers
             }
         }
 
-
+        [Authorize("Patient")]
         public ActionResult EditReview(int id)
         {
             Review review = reviewService.Find(r => r.Id == id);
@@ -125,7 +126,7 @@ namespace HealthCareApp.Controllers
             return View(review);
         }
 
-
+        [Authorize("Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditReview(int id, Review review)
@@ -142,7 +143,7 @@ namespace HealthCareApp.Controllers
                 return View(review);
             }
         }
-
+        [Authorize("Patient")]
         public ActionResult DeleteReview(int id)
         {
             var review = reviewService.GetById(id);
@@ -156,6 +157,8 @@ namespace HealthCareApp.Controllers
 
 
         // admin : approave, delete
+        [Authorize("Admin")]
+
         public ActionResult DisplayPendingReviews()
         {
             IEnumerable<Review> pendingReviews = reviewService.FindAll(r => !r.IsApproved && !r.IsDeleted, r => r.Doctor, r => r.Patient).ToList();
@@ -176,7 +179,7 @@ namespace HealthCareApp.Controllers
             });
             return View(pendingReviewsVM);
         }
-
+        [Authorize("Admin")]
         public ActionResult ApproveReview(int reviewId)
         {
             Review review = reviewService.GetById(reviewId);
@@ -213,6 +216,7 @@ namespace HealthCareApp.Controllers
             return RedirectToAction(nameof(DisplayPendingReviews));
         }
 
+        [Authorize("Admin")]
         public ActionResult RejectReview(int reviewId)
         {
             Review review = reviewService.GetById(reviewId);

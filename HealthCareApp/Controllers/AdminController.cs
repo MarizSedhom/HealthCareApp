@@ -1,11 +1,14 @@
 ﻿using HealthCare.BLL.Interface.Repository;
 using HealthCare.DAL.Models;
 using HealthCareApp.ViewModel.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareApp.Controllers
 {
+
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private IGenericRepo<Patient> patientRepo;

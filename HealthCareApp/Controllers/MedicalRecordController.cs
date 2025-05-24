@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using HealthCare.BLL.Interface.Repository;
 using HealthCare.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ namespace HealthCareApp.Controllers
 
         }
         // GET: MedicalReportController
+        [Authorize(Roles = "Doctor")]
         public ActionResult Index(string doctorId = null)
         {
 
@@ -34,7 +36,8 @@ namespace HealthCareApp.Controllers
             }
             return View(_medicalRecordService.FindAll(med => med.DoctorId == doctorId, med => med.Patient ,med => med.Doctor));
         }
-
+        
+        [Authorize(Roles = "Patient")]//***
         public ActionResult getAllRecordsForPatient(string patientId = null)
         {
             if(patientId == null)
@@ -46,6 +49,7 @@ namespace HealthCareApp.Controllers
         }
 
         // GET: MedicalReportController/Details/5
+        [Authorize(Roles = "Doctor")]//****
         public ActionResult Details(int id, string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
@@ -57,6 +61,8 @@ namespace HealthCareApp.Controllers
         //    return View(_medicalRecordService.Find(med => med.DoctorId == doctorId && med.PatientId == patientId, med => med.Patient, med => med.Doctor));
         //}
         // GET: MedicalReportController/Create
+
+        [Authorize(Roles = "Doctor")]
         public ActionResult Create(string patientId, string returnUrl, string doctorId = null)
         {
             if (doctorId == null)
@@ -78,6 +84,7 @@ namespace HealthCareApp.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Doctor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(MedicalRecord medicalRecord, string returnUrl, string doctorId = null)
@@ -114,6 +121,8 @@ namespace HealthCareApp.Controllers
 
 
         //GET: MedicalReportController/Edit/5
+        [Authorize(Roles = "Doctor")]
+
         public ActionResult Edit(int id, string returnUrl)
         {
             var medicalRecord = _medicalRecordService.Find(med => med.Id == id, med => med.Patient, med => med.Doctor);
@@ -136,6 +145,7 @@ namespace HealthCareApp.Controllers
         }
 
         //POST: MedicalReportController/Edit/5
+        [Authorize(Roles = "Doctor")]
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -182,6 +192,8 @@ namespace HealthCareApp.Controllers
 
 
         // POST: MedicalReportController/Delete/5
+        [Authorize(Roles = "Doctor")]
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
