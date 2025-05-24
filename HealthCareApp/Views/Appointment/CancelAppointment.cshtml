@@ -1,0 +1,229 @@
+﻿@model HealthCareApp.ViewModel.Appointment.PatientUpcomingAppointmentsVM
+@{
+    ViewData["Title"] = "Cancel Appointment";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="cancel-warning mb-4">
+                <h3 class="text-center text-danger fw-bold">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Are you sure you want to cancel this appointment?
+                </h3>
+            </div>
+
+            <div class="card shadow rounded-4 mb-4 border-0">
+                <div class="card-header py-3">
+					<h5 class="card-title mb-1 mb-4">
+                        <i class="fas fa-calendar-check me-2 "></i>
+                        Appointment with Dr. @Model.DoctorTitle @Model.DoctorName
+                    </h5>
+                    <h6 class="card-subtitle text-muted">
+                        <span class="badge bg-patient-light text-dark me-2">@Model.Specialization</span>
+                        <span class="badge bg-light text-dark border">@Model.Clinic clinic</span>
+                    </h6>
+                </div>
+
+                <div class="card-body p-4">
+                    <ul class="list-group list-group-flush appointment-details">
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-bottom py-3">
+                            <span class="detail-label"><i class="fas fa-tag me-2"></i>Status</span>
+                            <span class="detail-value fw-bold status-badge">@Model.Status</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-bottom py-3">
+                            <span class="detail-label"><i class="fas fa-video me-2"></i>Mode</span>
+                            <span class="detail-value">@Model.Mode</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-bottom py-3">
+                            <span class="detail-label"><i class="fas fa-calendar me-2"></i>Date</span>
+                            <span class="detail-value">@Model.Date <span class="text-muted">(@Model.Day)</span></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-bottom py-3">
+                            <span class="detail-label"><i class="fas fa-clock me-2"></i>Time</span>
+                            <span class="detail-value">@Model.StartTime - @Model.EndTime</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-bottom py-3">
+                            <span class="detail-label"><i class="fas fa-receipt me-2"></i>Payment Status</span>
+                            <span class="detail-value payment-status">@Model.PaymentStatus</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-bottom py-3">
+                            <span class="detail-label"><i class="fas fa-credit-card me-2"></i>Payment Method</span>
+                            <span class="detail-value">@Model.PaymentMethod</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="detail-label"><i class="fas fa-money-bill-wave me-2"></i>Fees</span>
+                            <span class="detail-value fw-bold">@Model.Fees L.E</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-footer p-4">
+                    <form asp-action="CancelAppointment">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex justify-content-center gap-3">
+                            <a asp-action="PatientUpcomingAppointments" class="btn btn-outline-secondary px-4 py-2">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Appointments
+                            </a>
+                            <button type="submit" class="btn btn-danger px-4 py-2">
+                                <i class="fas fa-times-circle me-2"></i>Confirm Cancellation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
+        --primary-blue: #A6AEBF;
+        --dark-blue: #223249;
+        --patient-green: #34a853;
+        --doctor-blue: #C5D3E8;
+        --white: #ffffff;
+        --gray: #f5f5f5;
+        --dark-gray: #757575;
+        --border-color: #ddd;
+        --patient-green-light: rgba(52, 168, 83, 0.15);
+        --danger-color: #dc3545;
+        --secondary-color: #6c757d;
+        --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+        background-color: var(--patient-green-light);
+    }
+
+    .cancel-warning {
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0%
+
+    {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
+    }
+
+    .card {
+        transition: all 0.3s ease;
+        box-shadow: var(--card-shadow);
+    }
+
+    .card-header {
+        background: var(--patient-gradient);
+        border-bottom: 1px solid var(--border-color);
+        color: var(--white);
+        border-radius: calc(0.5rem - 1px) calc(0.5rem - 1px) 0 0;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: var(--dark-blue);
+    }
+
+    .card-footer {
+        background-color: var(--gray);
+        border-top: 1px solid var(--border-color);
+    }
+
+    .list-group-item {
+        background-color: transparent;
+        transition: all 0.2s ease;
+        border-color: var(--border-color);
+    }
+
+        .list-group-item:hover {
+            background-color: rgba(52, 168, 83, 0.05);
+        }
+
+    .detail-label {
+        color: var(--dark-gray);
+        font-weight: 500;
+    }
+
+    .detail-value {
+        font-weight: 500;
+    }
+
+    .status-badge {
+        color: var(--patient-green);
+    }
+
+    .payment-status {
+        color: var(--patient-green);
+    }
+
+    .btn {
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger {
+        background-color: var(--danger-color);
+        border: none;
+        box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);
+    }
+
+        .btn-danger:hover {
+            background-color: #bd2130;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(220, 53, 69, 0.3);
+        }
+
+    .btn-outline-secondary {
+        color: var(--dark-blue);
+        border-color: var(--dark-blue);
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--dark-blue);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.4em 0.7em;
+    }
+
+    .bg-patient-light {
+        background-color: rgba(52, 168, 83, 0.2);
+        color: var(--patient-green) !important;
+    }
+
+    .fa-exclamation-triangle {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    @@keyframes shake {
+        0%, 100%
+
+    {
+        transform: translateX(0);
+    }
+
+    20%, 60% {
+        transform: translateX(-5px);
+    }
+
+    40%, 80% {
+        transform: translateX(5px);
+    }
+
+    }
+</style>

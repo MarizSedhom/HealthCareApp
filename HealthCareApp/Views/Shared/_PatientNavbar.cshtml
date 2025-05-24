@@ -1,0 +1,98 @@
+﻿@{
+    @inject UserManager<ApplicationUser> UserManager
+    var user = await UserManager.GetUserAsync(User);
+    var firstName = user?.FirstName;
+    var lastName = user?.LastName;
+    
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | MedConnect</title>
+    <link rel="stylesheet" href="~/css/PatientNavBar.css" />
+
+</head>
+<style>
+    .logo i {
+        display: inline-block !important;
+    }
+</style>
+<body>
+    <nav class="doctor-navbar">
+        <div class="nav-left">
+            <div class="logo">
+                <i class="fas fa-heartbeat logPulse" style="display: inline-block"></i>
+                <h1>MedConnect</h1>
+            </div>
+            <div class="nav-links">
+                <div class="d-flex gap-3">
+
+                    <a asp-controller="Doctor"
+                       asp-action="GetAllDoctorsInfo"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "GetAllDoctorsInfo" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Home</a>
+
+                    <a asp-controller="Appointment"
+                       asp-action="AppointmentsHistory"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Appointment" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "AppointmentsHistory" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">History</a>
+
+                    <a asp-controller="Appointment"
+                       asp-action="PatientUpcomingAppointments"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Appointment" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "PatientUpcomingAppointments" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Upcoming Appointments</a>
+
+                    <a asp-controller="MedicalRecord"
+                       asp-action="GetAllRecordsForPatient"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "MedicalRecord" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "GetAllRecordsForPatient" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Medical Records</a>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            @await Component.InvokeAsync("Notification")
+
+            <div id="doctorProfile" class="doctor-profile">
+                <span class="profile-name">@firstName @lastName</span>
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+            </div>
+
+            <div class="profile-dropdown" id="profileDropdown">
+                <a asp-controller="Patient" asp-action="GetPatientProfile"><i class="fas fa-user"></i> My Profile</a>
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("GetAllDoctorsInfo", "Doctor", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark"><i class="fas fa-sign-out-alt"></i>Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+
+        // Profile dropdown functionality
+        const doctorProfile = document.getElementById('doctorProfile');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        doctorProfile.addEventListener('click', function (e) {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!doctorProfile.contains(e.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+    </script>
+</body>
+</html> 

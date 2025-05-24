@@ -1,0 +1,123 @@
+﻿@using Microsoft.EntityFrameworkCore
+@{
+    @inject UserManager<ApplicationUser> UserManager
+    var user = await UserManager.GetUserAsync(User);
+    var firstName = user?.FirstName;
+    var lastName = user?.LastName;
+
+
+    var doctor = await UserManager.Users.OfType<Doctor>()
+            .FirstOrDefaultAsync(d => d.Id == user.Id);
+
+    var profilePicture = doctor?.ProfilePicture;
+    var doctorTitle = doctor?.Title;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | MedConnect</title>
+    <link rel="stylesheet" href="~/css/DoctorNavBar.css" />
+
+</head>
+<style>
+    .logo i {
+        display: inline-block !important;
+    }
+</style>
+<body>
+    <nav class="doctor-navbar ">
+        <div class="nav-left">
+            <div class="logo">
+                <i class="fas fa-heartbeat logPulse" style="display: inline-block"></i>
+                <h1>MedConnect</h1>
+            </div>
+        </div>
+        <div class="nav-links">
+            <div class="d-flex gap-3 link-container" style="margin-left: -470px">
+                <a asp-controller="Doctor"
+                   asp-action="DisplayPageForPendingDoctors"
+                   class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "DisplayPageForPendingDoctors" ? "active" : "")"
+                   data-bg="var(--bg-color-2)">Home</a>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <div class="notification">
+                @await Component.InvokeAsync("Notification")
+
+            </div>
+
+            <div id="doctorProfile" class="doctor-profile">
+                <div class="profile-img">
+                    <img src="~/uploads/image/Doctor/@profilePicture" alt="Doctor Profile">
+                </div>
+                <span class="profile-name"> @doctorTitle @firstName </span>
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+            </div>
+
+            <div class="profile-dropdown" id="profileDropdown">
+                <a asp-controller="Doctor" asp-action="GetDoctorDetail"><i class="fas fa-user"></i> My Profile</a>
+
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("GetAllDoctorsInfo", "Doctor", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark"><i class="fas fa-sign-out-alt"></i>Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+
+        // Profile dropdown functionality
+                // Profile dropdown functionality
+        const doctorProfile = document.getElementById('doctorProfile');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        doctorProfile.addEventListener('click', function(e) {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!doctorProfile.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Handle clinic link click
+        document.querySelector('[asp-action="GetDoctorClinics"]').addEventListener('click', function(e) {
+            profileDropdown.classList.remove('show');
+            // Link will follow through to controller action
+        });
+
+        // // Notification functionality
+        // document.querySelector('.notification').addEventListener('click', function () {
+        //     alert('Notification panel would appear here');
+        // });
+
+
+
+        // Navigation functionality
+        // // const navLinks = document.querySelectorAll('.link-container a');
+        // // navLinks.forEach(link => {
+
+        // //     console.log(navLinks)
+
+        // //     link.addEventListener('click', function (e) {
+        // //                     // e.preventDefault();
+        // //         navLinks.forEach(item => item.classList.remove('active'));
+        // //     console.log(navLinks)
+
+        // //         this.classList.add('active');
+
+        // //         // const activeBgColor = this.getAttribute('data-bg');
+        // //         // this.style.backgroundColor = activeBgColor || 'transparent';
+        // //     });
+        // // });
+    </script>
+</body>
+</html> 

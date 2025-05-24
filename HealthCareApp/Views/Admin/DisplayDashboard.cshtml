@@ -1,0 +1,813 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Admin Dashboard</title>
+    <style>
+        :root {
+            /* Admin color palette - combining doctor and patient colors */
+            --admin-gradient: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+            --admin-primary: #4A6596;
+            --admin-secondary: #34a853;
+            --admin-accent: #4A90E2;
+            --admin-light: #E8F0F5;
+            /* Doctor colors */
+            --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+            --doctor-blue: #C5D3E8;
+            --dark-blue: #223249;
+            --highlight-blue: #4A90E2;
+            /* Patient colors */
+            --patient-gradient: linear-gradient(135deg, #D0E8C5, #34a853);
+            --patient-green: #34a853;
+            --patient-light: #D0E8C5;
+            /* Common colors */
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --gray: #6b7280;
+            --dark-gray: #4b5563;
+            --border-color: #e5e7eb;
+            /* Status colors */
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --info: #3b82f6;
+            /* Dashboard section backgrounds */
+            --bg-color-1: #f8f9fa;
+            --bg-color-2: #f0f8ff;
+            --bg-color-3: #f5fff0;
+            --bg-color-4: #fff0f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #374151;
+        }
+
+        .dashboard-container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        /* Admin navbar */
+        .admin-navbar {
+            background: var(--admin-gradient);
+            color: var(--white);
+            padding: 15px 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+            .navbar-brand i {
+                font-size: 26px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                width: 45px;
+                height: 45px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+        .navbar-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .navbar-btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .navbar-btn:hover {
+                background-color: rgba(255, 255, 255, 0.25);
+                transform: translateY(-2px);
+            }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 0 25px;
+        }
+
+        .dashboard-title {
+            font-size: 44px;
+            font-weight: 600;
+            color: var(--dark-blue);
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+            .dashboard-title:after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 80px;
+                height: 3px;
+                background: var(--admin-gradient);
+                border-radius: 10px;
+            }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--admin-gradient);
+            color: white;
+            box-shadow: 0 4px 10px rgba(74, 101, 150, 0.25);
+        }
+
+            .btn-primary:hover {
+                box-shadow: 0 6px 14px rgba(74, 101, 150, 0.35);
+                transform: translateY(-2px);
+            }
+
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 0 25px 25px;
+        }
+
+        .dashboard-section {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            border-top: 5px solid transparent;
+        }
+
+            .dashboard-section:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            }
+
+        /* Section-specific styling */
+        .patients-section {
+            border-top-color: var(--info);
+            background: linear-gradient(to bottom right, var(--white), var(--bg-color-2));
+        }
+
+        .doctors-section {
+            border-top-color: var(--admin-primary);
+            background: linear-gradient(to bottom right, var(--white), var(--bg-color-4));
+        }
+
+        .appointments-section {
+            border-top-color: var(--warning);
+            background: linear-gradient(to bottom right, var(--white), var(--bg-color-1));
+        }
+
+        .reviews-section {
+            border-top-color: var(--success);
+            background: linear-gradient(to bottom right, var(--white), var(--bg-color-3));
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark-blue);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+            .section-title i {
+                font-size: 22px;
+                background: var(--admin-gradient);
+                color: var(--white);
+                width: 38px;
+                height: 38px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+            }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            padding: 18px;
+            border-radius: 12px;
+            background-color: var(--white);
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-left: none;
+            border-bottom: 4px solid transparent;
+            text-align: center;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            }
+
+        .patients-section .stat-card {
+            border-bottom-color: var(--info);
+        }
+
+        .doctors-section .stat-card {
+            border-bottom-color: var(--admin-primary);
+        }
+
+        .appointments-section .stat-card {
+            border-bottom-color: var(--warning);
+        }
+
+        .reviews-section .stat-card {
+            border-bottom-color: var(--success);
+        }
+
+        .stat-title {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-blue);
+        }
+
+        .chart-container {
+            height: 280px;
+            margin-top: 20px;
+            border-radius: 12px;
+            background-color: var(--white);
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Badge styling for status indicators */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge-success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .badge-info {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--info);
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 1200px) {
+            .dashboard-content
+
+        {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .dashboard-content
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .navbar-brand span {
+            display: none;
+        }
+
+        }
+
+        @@media (max-width: 480px) {
+            .stats-grid
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        .navbar-actions {
+            display: none;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+
+        <div class="dashboard-header mt-4">
+            <h1 class="dashboard-title">Analytics Dashboard</h1>
+            <div class="dashboard-actions">
+                @* <button class="btn btn-primary"> *@
+                @*     <i class="fas fa-download"></i> *@
+                @*     Export Report *@
+                @* </button> *@
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- Patients Section -->
+            <div class="dashboard-section patients-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-injured"></i> Patients Overview
+                    <span class="badge badge-info">Active</span>
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Total Patients</div>
+                        <div class="stat-value">@Model.TotalPatients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Planned Patients</div>
+                        <div class="stat-value">@Model.TotalPannedPatients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Male Patients</div>
+                        <div class="stat-value">@Model.TotalMalePatients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Female Patients</div>
+                        <div class="stat-value">@Model.TotalFemalePatients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Avg. Patient Age</div>
+                        <div class="stat-value">@Model.AvgPatientsAge</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Avg. Male Age</div>
+                        <div class="stat-value">@Model.AvgMalePatientsAge</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Avg. Female Age</div>
+                        <div class="stat-value">@Model.AvgFemalePatientsAge</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="patientDemographicsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Doctors Section -->
+            <div class="dashboard-section doctors-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-md"></i> Doctors Overview
+                    <span class="badge badge-success">Verified</span>
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Total Doctors</div>
+                        <div class="stat-value">@Model.TotalDoctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Approved Doctors</div>
+                        <div class="stat-value">@Model.TotalApprovedDoctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Rejected Doctors</div>
+                        <div class="stat-value">@Model.TotalRejectedDoctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Male Doctors</div>
+                        <div class="stat-value">@Model.TotalMaleDoctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Female Doctors</div>
+                        <div class="stat-value">@Model.TotalFemaleDoctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Avg. Doctor Age</div>
+                        <div class="stat-value">@Model.AvgDoctorsAge</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="doctorDemographicsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Doctor Roles Section -->
+            <div class="dashboard-section doctors-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-tag"></i> Doctor Roles
+                    <span class="badge badge-info">Distribution</span>
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Professors</div>
+                        <div class="stat-value">@Model.TotalProfessors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Lecturers</div>
+                        <div class="stat-value">@Model.TotalLecturers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Consultants</div>
+                        <div class="stat-value">@Model.TotalConsultants</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Specialists</div>
+                        <div class="stat-value">@Model.TotalSpecialists</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="doctorRolesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Appointments Section -->
+            <div class="dashboard-section appointments-section">
+                <h2 class="section-title">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                    <span class="badge badge-warning">Upcoming</span>
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Upcoming</div>
+                        <div class="stat-value">@Model.TotalUpcomingAppointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Rescheduled</div>
+                        <div class="stat-value">@Model.TotalRescheduledAppointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Cancelled</div>
+                        <div class="stat-value">@Model.TotalCancelledAppointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Completed</div>
+                        <div class="stat-value">@Model.TotalCompletedAppointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Max This Month</div>
+                        <div class="stat-value">@Model.MaxAppointmentsNumThisMonth</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="appointmentStatusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Reviews & Payments Section -->
+            <div class="dashboard-section reviews-section">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i> Reviews & Payments
+                    <span class="badge badge-success">Active</span>
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Pending Reviews</div>
+                        <div class="stat-value">@Model.TotalPendingReviews</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Approved Reviews</div>
+                        <div class="stat-value">@Model.TotalApprovedReviews</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Rejected Reviews</div>
+                        <div class="stat-value">@Model.TotalRejectedReviews</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Total Payments</div>
+                        <div class="stat-value">@Model.TotalPayments</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="reviewsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include required libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <!-- Initialize Charts -->
+    <script>
+        // Set default font for all charts
+        Chart.defaults.font.family = "'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#6b7280';
+
+        // ===== Patient Demographics Chart =====
+        const patientCtx = document.getElementById('patientDemographicsChart').getContext('2d');
+        const patientChart = new Chart(patientCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [@Model.TotalMalePatients, @Model.TotalFemalePatients],
+                    backgroundColor: ['#4A6596', '#34a853'],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Patient Gender Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Doctor Demographics Chart =====
+        const doctorDemoCtx = document.getElementById('doctorDemographicsChart').getContext('2d');
+        const doctorDemoChart = new Chart(doctorDemoCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [@Model.TotalMaleDoctors, @Model.TotalFemaleDoctors],
+                    backgroundColor: ['#4A6596', '#34a853'],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Doctor Gender Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Doctor Roles Chart =====
+        const doctorRolesCtx = document.getElementById('doctorRolesChart').getContext('2d');
+        const doctorRolesChart = new Chart(doctorRolesCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Professors', 'Lecturers', 'Consultants', 'Specialists'],
+                datasets: [{
+                    data: [
+        @Model.TotalProfessors,
+        @Model.TotalLecturers,
+        @Model.TotalConsultants,
+        @Model.TotalSpecialists
+                    ],
+                    backgroundColor: [
+                        '#10b981', // green
+                        '#4A6596', // admin blue
+                        '#f59e0b', // amber
+                        '#6366f1'  // indigo
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Doctor Roles Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Appointment Status Chart =====
+        const appointmentCtx = document.getElementById('appointmentStatusChart').getContext('2d');
+        const appointmentChart = new Chart(appointmentCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Upcoming', 'Rescheduled', 'Cancelled', 'Completed', 'Max This Month'],
+                datasets: [{
+                    label: 'Appointments',
+                    data: [
+        @Model.TotalUpcomingAppointments,
+        @Model.TotalRescheduledAppointments,
+        @Model.TotalCancelledAppointments,
+        @Model.TotalCompletedAppointments,
+        @Model.MaxAppointmentsNumThisMonth
+                    ],
+                    backgroundColor: [
+                        '#4A6596',  // admin blue
+                        '#f59e0b',  // amber
+                        '#ef4444',  // red
+                        '#10b981',  // green
+                        '#6366f1'   // indigo
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Appointment Status',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        },
+                        grid: {
+                            display: true,
+                            drawBorder: false,
+                            color: 'rgba(107, 114, 128, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== Reviews Chart =====
+        const reviewsCtx = document.getElementById('reviewsChart').getContext('2d');
+        const reviewsChart = new Chart(reviewsCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Pending', 'Approved', 'Rejected'],
+                datasets: [{
+                    data: [
+        @Model.TotalPendingReviews,
+        @Model.TotalApprovedReviews,
+        @Model.TotalRejectedReviews
+                    ],
+                    backgroundColor: [
+                        '#f59e0b',  // amber
+                        '#10b981',  // green
+                        '#ef4444'   // red
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Review Status Distribution',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

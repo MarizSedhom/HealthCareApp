@@ -1,0 +1,57 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | MedConnect</title>
+    <link rel="stylesheet" href="~/css/GuestNavBar.css" />
+</head>
+<style>
+    .logo i {
+        display: inline-block !important;
+    }
+</style>
+<body>
+    <nav class="doctor-navbar">
+        <div class="nav-left">
+            <div class="logo">
+                <i class="fas fa-heartbeat logPulse" style="display: inline-block"></i>
+                <h1 class="text-white">MedConnect</h1>
+            </div>
+            <div class="nav-links">
+                <div class="d-flex gap-3 link-container">
+                    <a asp-controller="Doctor"
+                       asp-action="GetAllDoctorsInfo"
+                       class="nav-link @(ViewContext?.RouteData?.Values["Controller"]?.ToString() == "Doctor" &&
+                                        ViewContext?.RouteData?.Values["Action"]?.ToString() == "GetAllDoctorsInfo" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Home</a>
+                </div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="nav-item">
+                <a class="nav-link text-White" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link text-White" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            </div>
+        </div>
+    </nav>
+    <script>
+        // Only add event listeners if elements exist
+        document.addEventListener('DOMContentLoaded', function() {
+            const clinicLink = document.querySelector('[asp-action="GetDoctorClinics"]');
+            const profileDropdown = document.getElementById('profileDropdown');
+
+            if (clinicLink && profileDropdown) {
+                clinicLink.addEventListener('click', function(e) {
+                    profileDropdown.classList.remove('show');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

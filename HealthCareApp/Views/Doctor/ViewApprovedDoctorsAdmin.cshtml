@@ -1,0 +1,430 @@
+﻿@model IEnumerable<DoctorIdxVM>
+
+<style>
+    :root {
+        --admin-gradient: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+        --admin-dark: #223249;
+        --admin-light: #D0E8C5;
+        --admin-accent: #4A90E2;
+        --accent-blue: #C5D3E8;
+        --success-green: #28a745;
+        --error-red: #dc3545;
+        --warning-yellow: #ffc107;
+        --neutral-gray: #6c757d;
+        --white: #ffffff;
+        --text-primary: #334155;
+        --text-secondary: #64748b;
+        --border-radius: 1rem;
+        --transition: all 0.3s ease;
+    }
+
+    /* Admin container styling */
+    .admin-container {
+        min-height: 100vh;
+        padding: 2rem 0;
+        background-color: #f9fafb;
+    }
+
+    .admin-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    /* Header Section */
+    .header-section {
+        position: relative;
+        margin-bottom: 2.5rem;
+    }
+
+    .gradient-header {
+        background: var(--admin-gradient);
+        padding: 3rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+        .gradient-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>') repeat;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+    .header-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--white);
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .title-accent {
+        color: var(--admin-light);
+    }
+
+    /* Table container styling */
+    .content-card {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--admin-dark);
+        margin: 0;
+    }
+
+    .search-box {
+        position: relative;
+        width: 300px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e2e8f0;
+        font-size: 0.875rem;
+        transition: var(--transition);
+    }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--admin-accent);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+    .search-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    /* Base table styling */
+    .admin-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .admin-table th {
+            background: #f8fafc;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 2px solid var(--admin-light);
+            text-align: left;
+        }
+
+        .admin-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .admin-table tbody tr {
+            transition: var(--transition);
+        }
+
+            .admin-table tbody tr:hover {
+                background-color: #f8fafc;
+                transform: translateX(4px);
+                box-shadow: 2px 0 12px rgba(34, 50, 73, 0.08);
+            }
+
+    /* Action cells styling */
+    .action-cells {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    /* Base action link styling */
+    .action-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+        font-size: 0.9rem;
+    }
+
+        .action-link:before {
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            margin-right: 0.5rem;
+        }
+
+    /* Action link variations */
+    .primary-action {
+        background: rgba(34, 50, 73, 0.1);
+        color: var(--admin-dark);
+        border: 1px solid var(--admin-dark);
+    }
+
+        .primary-action:before {
+            content: "\f4fc"; /* user-check icon */
+        }
+
+    .secondary-action {
+        background: rgba(197, 211, 232, 0.2);
+        color: var(--admin-dark);
+        border: 1px solid var(--accent-blue);
+    }
+
+        .secondary-action:before {
+            content: "\f0f1"; /* hospital icon */
+        }
+
+    .tertiary-action {
+        background: rgba(208, 232, 197, 0.2);
+        color: var(--admin-dark);
+        border: 1px solid var(--admin-light);
+    }
+
+        .tertiary-action:before {
+            content: "\f133"; /* calendar icon */
+        }
+
+    .quaternary-action {
+        background: rgba(255, 193, 7, 0.1);
+        color: var(--admin-dark);
+        border: 1px solid var(--warning-yellow);
+    }
+
+        .quaternary-action:before {
+            content: "\f017"; /* clock icon */
+        }
+
+    /* Action link hover states */
+    .action-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .primary-action:hover {
+        background: var(--admin-dark);
+        color: white;
+        border-color: var(--admin-dark);
+    }
+
+    .secondary-action:hover {
+        background: var(--accent-blue);
+        color: var(--admin-dark);
+        border-color: var(--accent-blue);
+    }
+
+    .tertiary-action:hover {
+        background: var(--admin-light);
+        color: var(--admin-dark);
+        border-color: var(--admin-light);
+    }
+
+    .quaternary-action:hover {
+        background: var(--warning-yellow);
+        color: var(--admin-dark);
+        border-color: var(--warning-yellow);
+    }
+
+    /* Empty state styling */
+    .empty-state {
+        padding: 4rem 2rem;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+
+    .empty-icon {
+        font-size: 3.5rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+    }
+
+    .empty-message {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-description {
+        max-width: 500px;
+        margin: 0 auto;
+        color: #94a3b8;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 992px) {
+        .admin-table
+
+    {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .header-content
+
+    {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .card-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .action-cells {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .action-link {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    }
+</style>
+
+<div class="admin-container">
+    <div class="admin-wrapper">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="gradient-header">
+                <div class="header-content">
+                    <h1 class="page-title">Doctor <span class="">Management</span></h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Card -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2 class="card-title">Registered Doctors</h2>
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="doctorSearch" class="search-input" placeholder="Search doctors...">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="admin-table" id="doctorTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.drName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Specialization)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Title)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.ExperienceYears)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.drName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Specialization)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Title)
+                                </td>
+                                <td>
+                                    <i class="fas fa-briefcase"></i>
+                                    @Html.DisplayFor(modelItem => item.ExperienceYears)
+                                </td>
+                                <td class="action-cells">
+                                    @Html.ActionLink("Update", "UpdateDoctorAdmin", new { doctorId = item.DoctorId }, new { @class = "action-link primary-action" })
+                                    @Html.ActionLink("Clinics", "GetDoctorClinics", "Clinic", new { doctorId = item.DoctorId }, new { @class = "action-link secondary-action" })
+                                    @Html.ActionLink("Availability", "GetAvailabilitiesForDr", "DoctorAvailability", new { doctorId = item.DoctorId }, new { @class = "action-link tertiary-action" })
+                                    @Html.ActionLink("Upcoming Appoinments", "DisplayUpcomingAppoinments", "Appointment", new { doctorId = item.DoctorId }, new { @class = "action-link quaternary-action" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Search functionality
+            $("#doctorSearch").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#doctorTable tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
+    </script>
+}

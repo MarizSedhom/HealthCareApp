@@ -1,0 +1,112 @@
+﻿@model IEnumerable<Appointment>
+
+@{
+    ViewData["Title"] = "DisplayAllDoctorsAppoinments";
+    SelectList patientsList = ViewBag.patientsList;
+}
+
+<h2 class="text-center text-primary mb-3 mt-3">All Doctors Appoinments</h2>
+
+<h4>Filter Appointments</h4>   
+<form asp-action="DisplayAllDoctorsAppoinments">
+    <Label>Patient Name</Label>
+    <select asp-items="patientsList" name="patientName" class="w-25 form-select mb-4">
+        <option value="all">All</option>
+    </select>
+    <input type="submit" value="Filter" class="btn btn-info text-light mb-4" style="width:200px"/>
+</form>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="text-primary">
+                @Html.DisplayNameFor(model => model.Patient.Email)
+            </th>
+            <th class="text-warning">
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th class="text-info">
+                @Html.DisplayNameFor(model => model.PaymentStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSlot.Availability.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSlot.Availability.dayOfWeek)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSlot.StartTime)
+            </th>
+            <th>
+               Doctor
+            </th>
+            <th>
+                 Clinic
+            </th>
+            @* <th> *@
+            @*     @Html.DisplayNameFor(model => model.PatientName) *@
+            @* </th> *@
+            @* <th> *@
+            @*     @Html.DisplayNameFor(model => model.PatientPhone) *@
+            @* </th> *@
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PaymentMethod)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+                <tr>
+                    <td class="text-primary-emphasis">
+                        @Html.DisplayFor(modelItem => item.Patient.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td class="text-primary-emphasis">
+                        @Html.DisplayFor(modelItem => item.PaymentStatus)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot.Availability.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot.Availability.dayOfWeek)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot.StartTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot.Availability.Doctor.Title) @Html.DisplayFor(modelItem => item.AvailableSlot.Availability.Doctor.FirstName) @Html.DisplayFor(modelItem => item.AvailableSlot.Availability.Doctor.LastName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AvailableSlot.Availability.Clinic.Name)
+                    </td>
+                    @* <td> *@
+                    @*     @Html.DisplayFor(modelItem => item.PatientName) *@
+                    @* </td> *@
+                    @* <td> *@
+                    @*     @Html.DisplayFor(modelItem => item.PatientPhone) *@
+                    @* </td> *@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PaymentMethod)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
+                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                     </td>
+                </tr>
+        }
+    </tbody>
+</table>
+        
+<p>
+    <a asp-action="Create" class="btn btn-success">Reserve New Appointment</a>
+</p>

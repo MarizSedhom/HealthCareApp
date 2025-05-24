@@ -1,0 +1,528 @@
+﻿@model HealthCareApp.ViewModel.Clinic.ClinicInfoVM
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Clinic Details";
+
+    string themeClass = "";
+    string accentColor = "";
+    string cardBorder = "";
+    string buttonGradient = "";
+    string mapBorder = "";
+    string locationHeaderBg = "";
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        if (User.IsInRole("Patient"))
+        {
+            themeClass = "patient-theme";
+            accentColor = "var(--patient-green)";
+            cardBorder = "var(--patient-green)";
+            buttonGradient = "linear-gradient(90deg, var(--patient-green) 60%, var(--primary-blue) 100%)";
+            mapBorder = "var(--patient-light-green)";
+            locationHeaderBg = "linear-gradient(135deg, #D0E8C5, var(--patient-green) )";
+        }
+        else if (User.IsInRole("Doctor"))
+        {
+            themeClass = "doctor-theme";
+            accentColor = "var(--dark-blue)";
+            cardBorder = "var(--dark-blue)";
+            buttonGradient = "linear-gradient(90deg, var(--dark-blue) 60%, var(--doctor-blue) 100%)";
+            mapBorder = "var(--doctor-blue)";
+            locationHeaderBg = "linear-gradient(135deg, #C5D3E8, #223249)";
+        }
+        else if (User.IsInRole("Admin"))
+        {
+            themeClass = "admin-theme";
+            accentColor = "var(--primary-blue)";
+            cardBorder = "var(--doctor-blue)";
+            buttonGradient = "linear-gradient(to right, #3a4d6d, var(--dark-blue))";
+            mapBorder = "var(--primary-blue)";
+            locationHeaderBg = "linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%)";
+        }
+    }
+    else
+    {
+        themeClass = "default-theme";
+        accentColor = "var(--dark-blue)";
+        cardBorder = "var(--patient-green)";
+        buttonGradient = "linear - gradient(90deg, var(--patient - green) 60 %, var(--primary - blue) 100 %)";
+        mapBorder = "var(--doctor-blue)";
+        locationHeaderBg = "linear-gradient(110deg, #C5D3E8 0%, #34a853 30%, #223249 100%)";
+    }
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+    /* Theme Variables */
+    .patient-theme {
+        --patient-green: #34a853;
+        --patient-light-green: #ade1bb;
+        --doctor-blue: #C5D3E8;
+        --dark-blue: #223249;
+        --primary-blue: #A6AEBF;
+        --light-bg: #f8f9fa;
+        --text-dark: #223249;
+        --text-light: #757575;
+        --white: #ffffff;
+        --gray: #f5f5f5;
+        --dark-gray: #757575;
+        --border-color: #ddd;
+        --button-gradient: linear-gradient(135deg, var(--patient-light-green), var(--patient-green));
+    }
+
+    .doctor-theme {
+        --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+        --white: #ffffff;
+        --light-gray: #f5f5f5;
+        --dark-blue: #223249;
+        --highlight-blue: #26364d;
+        --bg-color-1: #f8f9fa;
+        --bg-color-2: #f0f8ff;
+        --bg-color-3: #f5fff0;
+        --bg-color-4: #fff0f5;
+        --virtual-blue: #4e7dc5;
+        --doctor-blue: #C5D3E8;
+        --primary-blue: #A6AEBF;
+        --danger-red: #dc3545;
+        --patient-green: #34a853;
+        --patient-light-green: #ade1bb;
+        --gray: #f5f5f5;
+        --dark-gray: #757575;
+        --border-color: #ddd;
+    }
+
+    .admin-theme {
+        --primary-blue: #C5D3E8;
+        --patient-green: #34a853;
+        --patient-light-green: #ade1bb;
+        --doctor-blue: #669bb4;
+        --dark-blue: #223249;
+        --white: #ffffff;
+        --gray: #f5f5f5;
+        --dark-gray: #757575;
+        --border-color: #ddd;
+        --text-dark: #223249;
+        --text-light: #757575;
+    }
+
+    /* Layout & Components */
+    .content-wrapper {
+        padding: 40px 20px;
+        min-height: 85vh;
+    }
+
+    .clinic-card {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin: 0 auto 2rem auto;
+        max-width: 650px;
+        border-left: 5px solid @cardBorder;
+        position: relative;
+        animation: fade-in 0.5s ease forwards;
+        opacity: 0;
+    }
+
+    .clinic-header {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--text-dark, #333);
+        text-align: center;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+        .clinic-header:before {
+            content: '';
+            display: inline-block;
+            background: url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/icons/building.svg') center/contain no-repeat;
+            width: 28px;
+            height: 28px;
+            filter: invert(27%) sepia(9%) saturate(2607%) hue-rotate(176deg) brightness(91%) contrast(90%);
+        }
+
+    .clinic-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .clinic-row {
+        display: flex;
+        align-items: flex-start;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color, #eee);
+    }
+
+        .clinic-row:last-child {
+            border-bottom: none;
+        }
+
+    .clinic-label {
+        flex: 0 0 200px;
+        color: var(--text-dark, #444);
+        font-size: 1rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .clinic-label:before {
+            font-family: "bootstrap-icons";
+            display: inline-block;
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+    .clinic-row:nth-child(1) .clinic-label:before {
+        content: "\f1ad";
+        color: var(--text-dark) !important;
+    }
+
+    .clinic-row:nth-child(2) .clinic-label:before {
+        content: "\f3e2";
+        color: @accentColor !important;
+    }
+
+    .clinic-row:nth-child(3) .clinic-label:before {
+        content: "\f341";
+        color: var(--primary-blue) !important;
+    }
+
+    .clinic-row:nth-child(4) .clinic-label:before {
+        content: "\f3e2";
+        color: var(--doctor-blue) !important;
+    }
+
+    .clinic-row:nth-child(5) .clinic-label:before {
+        content: "\f4de";
+        color: @accentColor !important;
+    }
+
+    .clinic-value {
+        font-weight: 500;
+        color: var(--text-dark, #333);
+        flex: 1 1 auto;
+    }
+
+    .location-header {
+        font-weight: 600;
+        color: var(--text-dark, #444);
+        margin: 2rem 0 1rem 0;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        background: @locationHeaderBg;
+    }
+
+        .location-header:before {
+            content: '\f3e2';
+            font-family: "bootstrap-icons";
+            font-size: 1.1rem;
+            color: @accentColor;
+            background: var(--gray, #f5f5f5);
+            border-radius: 50%;
+            margin-right: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+        }
+
+    .map-container {
+        margin-bottom: 2rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        border: 2px solid @mapBorder;
+        background: var(--white);
+    }
+
+    #map {
+        background: #f5f5f5;
+    }
+
+    .actions-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2rem;
+        gap: 0.75rem;
+    }
+
+    .action-button, .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1rem;
+        text-decoration: none;
+        border: none;
+        outline: none;
+        border-radius: 6px;
+        padding: 8px 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .action-button {
+        color: var(--white);
+        background: @buttonGradient;
+        min-width: 120px;
+        justify-content: center;
+        transition: all 0.3s, background 0.3s !important;
+    }
+
+        .action-button:hover {
+            background: @buttonGradient;
+            background-position: 100% 0;
+            background-size: 200% 100%;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+    .back-link {
+        color: var(--text-dark, #333);
+        background: var(--gray, #f5f5f5);
+        min-width: 120px;
+        justify-content: center;
+    }
+
+        .back-link:hover {
+            background-color: var(--border-color, #ddd);
+            transform: translateX(-5px);
+            text-decoration: none;
+        }
+
+    .patient-theme .back-link:hover {
+        background-color: var(--patient-light-green);
+        color: var(--white);
+    }
+
+    .doctor-theme .back-link:hover {
+        background-color: var(--doctor-blue);
+        color: var(--white);
+    }
+
+    .admin-theme .back-link:hover {
+        background-color: var(--primary-blue);
+        color: var(--white);
+    }
+
+    @@media (max-width: 700px) {
+        .clinic-card {
+            padding: 1.5rem 1rem;
+            margin: 0 0.5rem 1.5rem 0.5rem;
+        }
+
+        .clinic-row {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .clinic-label {
+            flex: 0 0 auto;
+        }
+
+        .map-container {
+            margin: 0 0.5rem 1.5rem 0.5rem;
+        }
+    }
+
+    /* Stylish Green Location Header */
+    .location-header {
+        color: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        margin: 2rem auto 1rem auto;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        max-width: 700px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+
+
+    .clinic-row .clinic-label:before {
+        color: #34a853 !important;
+    }
+    /* Make the header responsive */
+    @@media (max-width: 700px) {
+        .location-header
+
+    {
+        margin: 1.5rem 0.5rem 1rem 0.5rem;
+        padding: 10px 15px;
+    }
+
+    }
+
+    @@keyframes fade-in {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="@themeClass content-wrapper">
+    <div class="clinic-card">
+        <h3 class="clinic-header">Clinic Information</h3>
+        <div class="clinic-content">
+            <div class="clinic-row">
+                <div class="clinic-label">@Html.DisplayNameFor(model => model.Name)</div>
+                <div class="clinic-value">@Html.DisplayFor(model => model.Name)</div>
+            </div>
+            <div class="clinic-row">
+                <div class="clinic-label">@Html.DisplayNameFor(model => model.ClinicAddress)</div>
+                <div class="clinic-value">@Html.DisplayFor(model => model.ClinicAddress)</div>
+            </div>
+            <div class="clinic-row">
+                <div class="clinic-label">@Html.DisplayNameFor(model => model.ClinicCity)</div>
+                <div class="clinic-value">@Html.DisplayFor(model => model.ClinicCity)</div>
+            </div>
+            <div class="clinic-row">
+                <div class="clinic-label">@Html.DisplayNameFor(model => model.ClinicRegion)</div>
+                <div class="clinic-value">@Html.DisplayFor(model => model.ClinicRegion)</div>
+            </div>
+            <div class="clinic-row">
+                <div class="clinic-label">@Html.DisplayNameFor(model => model.ClinicPhoneNumber)</div>
+                <div class="clinic-value">@Html.DisplayFor(model => model.ClinicPhoneNumber)</div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="location-header">Clinic Location</h4>
+    <div class="map-container">
+        <div id="map" style="height: 350px; width: 100%;"></div>
+    </div>
+
+    <div class="actions-container">
+        @if (!User.IsInRole("Patient"))
+        {
+            <a class="action-button" asp-action="Edit" asp-route-id="@Model?.Id" asp-route-page="@ViewBag.CurrentPage">
+                <i class="bi bi-pencil-square"></i> Edit
+            </a>
+        }
+        <a class="back-link" href="@ViewBag.ReturnUrl">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function initMap() {
+            var lat = @Model.ClinicLocation.Y;
+            var lng = @Model.ClinicLocation.X;
+            var clinicLocation = new google.maps.LatLng(lat, lng);
+
+            // Map styling based on theme
+            var mapStyle = [];
+
+        @if (User.IsInRole("Patient"))
+        {
+            <text>
+                    mapStyle = [
+                        { elementType: "geometry", stylers: [{ color: "#f8f9fa" }] },
+                        { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#d8eadb" }] },
+                        { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+                        { featureType: "water", elementType: "geometry", stylers: [{ color: "#e1f3ff" }] },
+                    ];
+            </text>
+        }
+        else if (User.IsInRole("Doctor"))
+        {
+            <text>
+                    mapStyle = [
+                        { elementType: "geometry", stylers: [{ color: "#f8f9fa" }] },
+                        { featureType: "water", elementType: "geometry", stylers: [{ color: "#e1f3ff" }] },
+                        { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+                    ];
+            </text>
+        }
+        else if (User.IsInRole("Admin"))
+        {
+            <text>
+                    mapStyle = [
+                        { elementType: "geometry", stylers: [{ color: "#f8f9fa" }] },
+                        { featureType: "water", elementType: "geometry", stylers: [{ color: "#e1f3ff" }] },
+                        { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#d8eadb" }] },
+                    ];
+            </text>
+        }
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: clinicLocation,
+                zoom: 14,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                styles: mapStyle
+            });
+
+            // Custom marker based on theme
+            var markerIcon = {
+                path: google.maps.SymbolPath.CIRCLE,
+                fillColor: "@(User.IsInRole("Patient") ? "#34a853" : (User.IsInRole("Doctor") ? "#223249" : "#C5D3E8"))",
+                fillOpacity: 0.9,
+                strokeWeight: 2,
+                strokeColor: "#ffffff",
+                scale: 10
+            };
+
+            const marker = new google.maps.Marker({
+                position: clinicLocation,
+                map: map,
+                title: 'Clinic Location',
+                animation: google.maps.Animation.DROP,
+                icon: markerIcon
+            });
+
+            const infowindowContent = `
+                <div style="padding: 10px; max-width: 200px;">
+                    <h5 style="margin-top: 0; color: @(User.IsInRole("Patient") ? "#34a853" : (User.IsInRole("Doctor") ? "#223249" : "#669bb4"));">@Model.Name</h5>
+                    <p style="margin-bottom: 5px;"><strong>Address:</strong> @Model.ClinicAddress</p>
+                    <p style="margin-bottom: 5px;"><strong>City:</strong> @Model.ClinicCity</p>
+                    <p style="margin-bottom: 0;"><strong>Region:</strong> @Model.ClinicRegion</p>
+                </div>
+            `;
+
+            const infowindow = new google.maps.InfoWindow({
+                content: infowindowContent
+            });
+
+            marker.addListener("click", () => {
+                infowindow.open(map, marker);
+            });
+
+            // Open info window by default
+            infowindow.open(map, marker);
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.ClinicLocation.KeyId&callback=initMap" async defer></script>
+}

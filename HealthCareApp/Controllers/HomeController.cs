@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using HealthCareApp.Models;
+using HealthCare.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareApp.Controllers
@@ -19,6 +19,10 @@ namespace HealthCareApp.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+        public IActionResult AccessDenied()
         {
             return View();
         }

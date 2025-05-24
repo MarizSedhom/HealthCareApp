@@ -1,0 +1,215 @@
+﻿@model HealthCareApp.ViewModel.Patient.PatientStatVM
+@{
+    ViewData["Title"] = "Patient Statistics Dashboard";
+}
+
+<div class="stats-dashboard">
+    <div class="dashboard-container">
+		<div class="header-card blue-gradient">
+            <h1 class="dashboard-title">
+                <i class="fas fa-chart-line icon-primary"></i>
+                Patient Statistics Overview
+            </h1>
+        </div>
+
+        <div class="stats-grid">
+            <!-- Appointments Card -->
+            <div class="stat-card">
+				<div class="card-header gradient-header">
+                    <h2 class="stat-title">Appointments Summary</h2>
+                </div>
+                <div class="card-body">
+                    <div class="stat-item">
+                        <span class="stat-label">Completed Appointments</span>
+                        <span class="stat-value completed">@Model.CompletedAppointments</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Canceled Appointments</span>
+                        <span class="stat-value canceled">@Model.CanceledAppointments</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Upcoming Appointments</span>
+                        <span class="stat-value upcoming">@Model.UpcomingAppointments</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Rescheduled Appointments</span>
+                        <span class="stat-value rescheduled">@Model.RescheduledAppointments</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Card -->
+            <div class="stat-card">
+                <div class="card-header gradient-header">
+                    <h2 class="stat-title">Reviews Summary</h2>
+                </div>
+                <div class="card-body">
+                    <div class="stat-item">
+                        <span class="stat-label">Approved Reviews</span>
+                        <span class="stat-value approved">@Model.ApprovedReviews</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Rejected Reviews</span>
+                        <span class="stat-value canceled">@Model.RejectedReviews</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Pending Reviews</span>
+                        <span class="stat-value pending">@Model.PendingReviews</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-container">
+            <a asp-controller="Patient" asp-action="GetAllPatients" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Patient List
+            </a>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="~/css/patient-stats.css" />
+
+<style>
+    .stats-dashboard {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .header-card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 3rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-title {
+        font-size: 2.25rem;
+        font-weight: 600;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .icon-primary {
+        color: #223249;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .stat-card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .gradient-header {
+        background: linear-gradient(to right, #D0E8C5, #C5D3E8);
+        padding: 16px;
+        color: #333;
+    }
+
+    .blue-gradient{
+       background: linear-gradient(110deg, #C5D3E8 0%, #D0E8C5 30%, #223249 80%);
+       padding:3rem;
+    }
+
+    .stat-title {
+        color: white;
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .card-body {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .stat-label {
+        font-weight: 500;
+        color: #555;
+    }
+
+    .stat-value {
+        font-weight: 600;
+    }
+
+        .stat-value.completed, .stat-value.approved {
+            color: #28a745;
+        }
+
+        .stat-value.canceled, .stat-value.rejected {
+            color: #dc3545;
+        }
+
+        .stat-value.upcoming, .stat-value.pending {
+            color: #ffc107;
+        }
+
+        .stat-value.rescheduled {
+            color: #6c757d;
+        }
+
+    .action-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        color: var(--patient-green);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 2px #223249 solid;
+    }
+
+        .back-link:hover {
+            background-color: #D0E8C5;
+            transform: translateX(-5px);
+            text-decoration: none;
+            color: var(--dark-blue);
+            border:none;
+        }
+
+    @@media (max-width: 768px) {
+        .stats-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    }
+</style>

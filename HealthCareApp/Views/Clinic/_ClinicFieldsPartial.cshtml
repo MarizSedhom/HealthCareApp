@@ -1,0 +1,37 @@
+﻿@using HealthCareApp.ViewModel.Clinic
+@model ClinicCreateVM
+
+<div class="form-group">
+    <label asp-for="Name" class="control-label"></label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="ClinicAddress" class="control-label"></label>
+    <input asp-for="ClinicAddress" class="form-control" />
+    <span asp-validation-for="ClinicAddress" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="SelectedCityId" class="control-label"></label>
+    <select asp-for="SelectedCityId" class="form-control" asp-items="@(new SelectList(Model.cities,"patientId","Name"))">
+        <option value="">select Clinic</option>
+    </select>
+    <span asp-validation-for="SelectedCityId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="SelectedRegionId" class="control-label"></label>
+    <select asp-for="SelectedRegionId" class="form-control" asp-items="@(new SelectList(Model.regions,"patientId","Name"))">
+    </select>
+    <span asp-validation-for="SelectedRegionId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="ClinicPhoneNumber" class="control-label"></label>
+    <input asp-for="ClinicPhoneNumber" class="form-control" />
+    <span asp-validation-for="ClinicPhoneNumber" class="text-danger"></span>
+</div>
+
+
+
+
+
+

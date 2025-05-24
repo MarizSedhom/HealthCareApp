@@ -1,0 +1,333 @@
+﻿
+@model IEnumerable<HealthCareApp.ViewModel.Clinic.ClinicInfoVM>
+
+@{
+    ViewData["Title"] = "ManageClinics";
+    ViewData["Title"] = "Create";
+    var ReturnUrl = ViewBag.clinics;
+    var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+}
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --doctor-gradient: linear-gradient(135deg, #C5D3E8, #223249);
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --dark-blue: #223249;
+            --highlight-blue: #26364d;
+            --danger-red: #dc3545;
+            --bg-color-2: #f0f8ff;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .min-h-screen {
+            min-height: 100vh;
+        }
+
+        .bg-gradient-to-b {
+            background: linear-gradient(to bottom, #f5f5f5, #e8eff8);
+        }
+
+        .container-card {
+            max-width: 95%;
+            margin: 20px auto;
+            border: 1px solid rgba(197, 211, 232, 0.3);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-radius: 0.375rem;
+            background: var(--white);
+        }
+
+        .header-gradient {
+            background: var(--doctor-gradient);
+            height: 0.5rem;
+            border-radius: 0.375rem 0.375rem 0 0;
+        }
+
+        .availability-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: auto;
+        }
+
+            .availability-table thead th {
+                color: white;
+                padding: 0.75rem 0.5rem;
+                text-align: center;
+                font-weight: 500;
+                position: sticky;
+                top: 0;
+            }
+
+            .availability-table thead {
+                background: var(--doctor-gradient);
+            }
+
+            .availability-table tbody tr {
+                transition: all 0.2s ease;
+            }
+
+                .availability-table tbody tr:nth-child(odd) {
+                    background-color: white;
+                }
+
+                .availability-table tbody tr:hover {
+                    background-color: rgba(232, 239, 248, 0.5);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }
+
+            .availability-table td {
+                padding: 0.75rem 0.5rem;
+                text-align: center;
+                vertical-align: middle;
+            }
+
+        .btn-primary {
+            background: linear-gradient(to right, #223249, #3a4d6d);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(to right, #3a4d6d, #223249);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
+
+        .btn-danger {
+            background: linear-gradient(to right, #dc3545, #c82333);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+            .btn-danger:hover {
+                background: linear-gradient(to right, #c82333, #dc3545);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
+
+        .btn-outline {
+            background: #e8eff8;
+            color: #223249;
+            border: 1px solid #C5D3E8;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+            .btn-outline:hover {
+                background: #C5D3E8;
+                color: #223249;
+            }
+
+        .action-buttons {
+            min-width: 200px;
+        }
+
+        @@media (max-width: 768px) {
+            .container-card {
+                max-width: 100%;
+                margin: 0 0.5rem;
+            }
+
+            .availability-table td,
+            .availability-table th {
+                padding: 0.5rem;
+                font-size: 0.875rem;
+            }
+
+            .btn-primary, .btn-danger, .btn-outline {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .justify-content-end {
+            justify-content: flex-end;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .pb-3 {
+            padding-bottom: 1rem;
+        }
+
+        .cancel-button {
+            width: auto;
+            height: 30px;
+            /* border-radius: 40%; */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-red);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            text-decoration: none;
+        }
+
+            .cancel-button:hover {
+                background: var(--danger-red);
+                color: var(--white);
+            }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid var(--bg-color-2);
+            background: var(--white);
+            color: white;
+            background-color: var(--dark-blue);
+            height: 30px;
+            text-decoration: none;
+        }
+
+            .action-button:hover {
+                color: var(--dark-blue);
+                background-color: #C5D3E8;
+            }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: var(--dark-blue);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--dark-blue)
+        }
+
+            .back-link:hover {
+                background-color: rgba(197, 211, 232, 0.3);
+                transform: translateX(-5px);
+                text-decoration: none;
+            }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen bg-gradient-to-b py-4 px-2">
+        <div class="container-card">
+            <div class="header-gradient"></div>
+
+            <div class="text-center" style="padding: 2rem 0 1rem 0;">
+                <h1 style="font-size: 2rem; color: var(--dark-blue); font-weight: 700;">
+                    Clinic Management
+                </h1>
+                <p style="color: #4a5568; margin-top: 0.5rem;">
+                    Manage your associated medical facilities
+                </p>
+            </div>
+
+            <div style="padding: 0 1.5rem;">
+                <div style="display: flex; justify-content: flex-start; padding-bottom: 1rem;">
+                    <a asp-action="Create" class="btn-primary">
+                        <i class="fas fa-plus-circle mr-4 p-2"></i>
+                        Create New Clinic
+                    </a>
+                </div>
+
+                <div style="overflow-x: auto; border-radius: 0.375rem; border: 1px solid rgba(197, 211, 232, 0.3);">
+                    <table class="availability-table">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                                <th>@Html.DisplayNameFor(model => model.ClinicAddress)</th>
+                                <th>@Html.DisplayNameFor(model => model.ClinicCity)</th>
+                                <th>@Html.DisplayNameFor(model => model.ClinicRegion)</th>
+                                <th>@Html.DisplayNameFor(model => model.ClinicPhoneNumber)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ClinicAddress)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ClinicCity)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ClinicRegion)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ClinicPhoneNumber)</td>
+                                    <td style="text-align: end;">
+                                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn action-button">
+                                                <i class="fas fa-edit mr-1"></i>
+                                                Edit
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class=" btn cancel-button">
+                                                <i class="fas fa-trash-alt mr-1"></i>
+                                                Delete
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="d-flex justify-content-center">
+
+					<a asp-controller="Doctor" asp-action="UpdateDoctorProfile" class="back-link mb-3">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back To Your Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Add any necessary JavaScript here
+    </script>
+</body>
+</html>
+

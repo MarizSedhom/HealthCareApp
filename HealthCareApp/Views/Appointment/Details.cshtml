@@ -1,4 +1,4 @@
-﻿@model HealthCareApp.Models.Appointment
+﻿@model Appointment
 
 @{
     ViewData["Title"] = "Details";
@@ -10,13 +10,13 @@
     <div class="card p-4 shadow">
         <dl class="row">
             <dt class="col-sm-3 text-warning">Status</dt>
-            <dd class="col-sm-9">@Model.status</dd>
+            <dd class="col-sm-9">@Model.Status</dd>
 
-            <dt class="col-sm-3">Patient Name</dt>
-            <dd class="col-sm-9">@Model.PatientName</dd>
+            @* <dt class="col-sm-3">Patient Name</dt> *@
+            @* <dd class="col-sm-9">@Model.PatientName</dd> *@
 
-            <dt class="col-sm-3">Patient Phone</dt>
-            <dd class="col-sm-9">@Model.PatientPhone</dd>
+            @* <dt class="col-sm-3">Patient Phone</dt> *@
+            @* <dd class="col-sm-9">@Model.PatientPhone</dd> *@
 
             <dt class="col-sm-3">@Html.DisplayNameFor(model => model.AvailableSlot.Availability.Date)</dt>
             <dd class="col-sm-9">@Model.AvailableSlot?.Availability?.Date</dd>
@@ -35,11 +35,11 @@
             <dt class="col-sm-3">@Html.DisplayNameFor(model => model.AvailableSlot.Availability.Doctor.Fees)</dt>
             <dd class="col-sm-9">@Model.AvailableSlot?.Availability?.Doctor?.Fees</dd>
 
-            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.paymentMethod)</dt>
-            <dd class="col-sm-9">@Model.paymentMethod</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.PaymentMethod)</dt>
+            <dd class="col-sm-9">@Model.PaymentMethod</dd>
 
-            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.paymentStatus)</dt>
-            <dd class="col-sm-9">@Model.paymentStatus.ToString()</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.PaymentStatus)</dt>
+            <dd class="col-sm-9">@Model.PaymentStatus.ToString()</dd>
         </dl>
 </div>
 <div class="mt-4">

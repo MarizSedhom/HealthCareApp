@@ -1,0 +1,114 @@
+﻿@using Microsoft.EntityFrameworkCore
+@{
+    @inject UserManager<ApplicationUser> UserManager
+    var user = await UserManager.GetUserAsync(User);
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | MedConnect</title>
+    <link rel="stylesheet" href="~/css/AdminNavBar.css" />
+
+</head>
+<style>
+    .logo i {
+        display: inline-block !important;
+    }
+</style>
+<body>
+    <nav class="doctor-navbar ">
+        <div class="nav-left">
+            <div class="logo">
+                <i class="fas fa-heartbeat logPulse" style="display: inline-block"></i>
+                <h1 class="text-white">MedConnect</h1>
+            </div>
+            <div class="nav-links">
+                <div class="d-flex gap-3 link-container">
+                    <a asp-controller="Admin"
+                       asp-action="DisplayDashboard"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" &&
+                        ViewContext.RouteData.Values["Action"].ToString() == "DisplayDashboard" ? "active" : "")"
+                       data-bg="var(--bg-color-4)">Dashboard</a>
+
+                     <a asp-controller="Patient" 
+                        asp-action="GetAllPatients" 
+                        class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Patient" && 
+                         ViewContext.RouteData.Values["Action"].ToString() == "GetAllPatients" ? "active" : "")"
+                       data-bg="var(--bg-color-4)">Patients</a> 
+
+
+                     <a asp-controller="Doctor"
+                       asp-action="ViewPendingDoctorForAdmin"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" && 
+                         ViewContext.RouteData.Values["Action"].ToString() == "ViewPendingDoctorForAdmin" ? "active" : "")"
+                       data-bg="var(--bg-color-4)">Pending Doctor</a> 
+
+
+                     <a asp-controller="Doctor"
+                       asp-action="ViewApprovedDoctorsAdmin"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Doctor" && 
+                         ViewContext.RouteData.Values["Action"].ToString() == "ViewApprovedDoctorsAdmin" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Doctors</a>
+
+                    <a asp-controller="Review"
+                       asp-action="DisplayPendingReviews"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Review" &&
+                         ViewContext.RouteData.Values["Action"].ToString() == "DisplayPendingReviews" ? "active" : "")"
+                       data-bg="var(--bg-color-2)">Pending Reviews</a>
+
+                    @* <a asp-controller="Review" *@
+                    @*    asp-action="GetDoctorReviews" *@
+                    @*    class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Review" && *@
+                    @*     ViewContext.RouteData.Values["Action"].ToString() == "GetDoctorReviews" ? "active" : "")" *@
+                    @*    data-bg="var(--bg-color-2)">My Reviews</a> *@
+
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <div class="notification text-white">
+                @await Component.InvokeAsync("Notification")
+            </div>
+
+            <div id="doctorProfile" class="doctor-profile ">
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("GetAllDoctorsInfo", "Doctor", new { area = "" })">
+					<button type="submit" class="nav-link btn btn-link text-white"><i class="fas fa-sign-out-alt"></i>Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+
+        // Profile dropdown functionality
+                // Profile dropdown functionality
+        const doctorProfile = document.getElementById('doctorProfile');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        doctorProfile.addEventListener('click', function(e) {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!doctorProfile.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Handle clinic link click
+        document.querySelector('[asp-action="GetDoctorClinics"]').addEventListener('click', function(e) {
+            profileDropdown.classList.remove('show');
+            // Link will follow through to controller action
+        });
+
+      
+    </script>
+</body>
+</html> 
