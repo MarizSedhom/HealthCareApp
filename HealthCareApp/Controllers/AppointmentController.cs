@@ -18,12 +18,14 @@ namespace HealthCareApp.Controllers
         IGenericRepo<AvailabilitySlots> slotService;
         IGenericRepo<Patient> patientService;
         NotificationService notificationService;
-        public AppointmentController(IGenericRepo<Appointment> _appointmentService, IGenericRepo<AvailabilitySlots> _slotService, IGenericRepo<Patient> _patientService, NotificationService notificationService)
+        IConfiguration configuration;
+        public AppointmentController(IGenericRepo<Appointment> _appointmentService, IGenericRepo<AvailabilitySlots> _slotService, IGenericRepo<Patient> _patientService, NotificationService notificationService, IConfiguration _configuration)
         {
             appointmentService = _appointmentService;
             slotService = _slotService;
             patientService = _patientService;
             this.notificationService = notificationService;
+            configuration = _configuration;
         }
 
         [Authorize(Roles = "Patient")]
@@ -68,7 +70,7 @@ namespace HealthCareApp.Controllers
             return View(upcomingAppVM);
         }
 
-        [Authorize("Patient")]
+        [Authorize(Roles = "Patient")]
         public ActionResult ReserveAppointment(int slotId) // passed from heba's part
         {
             var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -101,7 +103,7 @@ namespace HealthCareApp.Controllers
             return View(selectedSlot);
         }
 
-        [Authorize("Patient")]
+        [Authorize(Roles = "Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Checkout(ReserveAppointmentVM appointmentVM)
@@ -117,8 +119,8 @@ namespace HealthCareApp.Controllers
             };
 
             TempData["Appointment"] = JsonConvert.SerializeObject(appointment);
-
-            var domain = "https://localhost:44333/"; /////According to domain of each one
+           
+            var domain = configuration["Stripe:Domain"]; /////According to domain of each one
             var options = new SessionCreateOptions
             {
                 SuccessUrl = domain + "Appointment/SaveAppointmentWithVisa",
@@ -152,7 +154,7 @@ namespace HealthCareApp.Controllers
             return new StatusCodeResult(303);
         }
 
-        [Authorize("Patient")]
+        [Authorize(Roles = "Patient")]
         public ActionResult SaveAppointmentWithVisa()
         {
             Appointment appointment = null;
@@ -206,7 +208,7 @@ namespace HealthCareApp.Controllers
                 return View(appointment);
         }
 
-        [Authorize("Patient")]
+        [Authorize(Roles = "Patient")]
         [HttpPost]
         public ActionResult SaveAppointmentWithCash(ReserveAppointmentVM appointmentVM)
         {
@@ -254,7 +256,7 @@ namespace HealthCareApp.Controllers
                 return RedirectToAction(nameof(ReserveAppointment), appointmentVM.SlotId);
         }
 
-        [Authorize("Patient")]
+        [Authorize(Roles = "Patient")]
         public ActionResult CancelAppointment(int id)
         {
             var appointToBeCancelled = appointmentService.FindWithSelect
@@ -281,7 +283,7 @@ namespace HealthCareApp.Controllers
             return View(appointToBeCancelled);
         }
 
-        [Authorize("Patient")]
+        [Authorize(Roles = "Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CancelAppointment(int id, Appointment appointment)
@@ -334,7 +336,7 @@ namespace HealthCareApp.Controllers
 
 
 
-        [Authorize("Doctor")]
+        [Authorize(Roles = "Doctor")]
 
         // doctor 
         public ActionResult DisplayUpcomingAppoinments(string doctorId)
@@ -377,7 +379,7 @@ namespace HealthCareApp.Controllers
             return View(upcomingAppointments);
         }
 
-        [Authorize("Patient,Admin")]
+        [Authorize(Roles = "Patient,Admin")]
         public ActionResult AppointmentsHistory(string patientId)
         {
             if (patientId == null)
@@ -427,7 +429,7 @@ namespace HealthCareApp.Controllers
         }
 
 
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult DisplayAllDoctorsAppoinments(string patientName)
         {

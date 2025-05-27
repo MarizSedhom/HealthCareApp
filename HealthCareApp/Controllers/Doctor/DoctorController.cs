@@ -504,7 +504,7 @@ namespace HealthCareApp.Controllers.Doctor
             }
 
             var allDoctors = DoctorRepository.FindAllWithSelect(
-                d =>
+                d => 
                     (string.IsNullOrEmpty(title) || d.Title.ToString() == title) &&
                     (string.IsNullOrEmpty(gender) || d.gender.ToString() == gender) &&
                     (string.IsNullOrEmpty(specialization) || d.Specialization.Name == specialization) &&
@@ -517,7 +517,7 @@ namespace HealthCareApp.Controllers.Doctor
                     (string.IsNullOrEmpty(availability) ||
                         (availability == "today" && d.availabilities.Any(a => a.Date == DateOnly.FromDateTime(DateTime.Today))) ||
                         (availability == "tomorrow" && d.availabilities.Any(a => a.Date == DateOnly.FromDateTime(DateTime.Today).AddDays(1)))
-                    ),
+                    ) && (d.verificationStatus == VerificationStatus.Accepted),
                         d => new DoctorInfoVM
                         {
                             DoctorId = d.Id,

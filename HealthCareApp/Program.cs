@@ -61,6 +61,15 @@ namespace HealthCareApp
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddRazorPages();
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy =>
+                    policy.RequireRole("Admin"));
+                options.AddPolicy("Patient", policy =>
+                    policy.RequireRole("Patient"));
+                options.AddPolicy("Doctor", policy =>
+                   policy.RequireRole("Doctor"));
+            });
 
             var app = builder.Build();
             app.UseMiddleware<ExceptionHandlingMiddleware>();

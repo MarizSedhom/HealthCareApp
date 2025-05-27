@@ -9,7 +9,6 @@ using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
-    [Authorize(Roles = "Doctor,Admin")]
     public class ClinicController : Controller
     {
         private readonly IGenericRepo<Clinic> ClinicRepo;
@@ -23,6 +22,7 @@ namespace HealthCareApp.Controllers
             Configuration = configuration;
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult GetDoctorClinics( string? doctorId=null)
         {
@@ -44,6 +44,7 @@ namespace HealthCareApp.Controllers
             return View(result);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet]
         public IActionResult ManageClinics(string doctorId = null)
         {
@@ -63,7 +64,6 @@ namespace HealthCareApp.Controllers
             return View(result);
 
         }
-
 
         public IActionResult DetailsByID(int id, string returnUrl)
         {
@@ -120,6 +120,7 @@ namespace HealthCareApp.Controllers
             return Json(regions);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet]
         public IActionResult Create(int page , string?doctorId=null)
         {
@@ -146,6 +147,7 @@ namespace HealthCareApp.Controllers
             return View(clinic);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPost]
         public IActionResult Create(ClinicCreateVM clinicVM,  int page)
         {
@@ -184,6 +186,7 @@ namespace HealthCareApp.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet]
         public IActionResult Edit(int id, int page, string doctorId=null,string returnUrl = null)
         {
@@ -213,6 +216,7 @@ namespace HealthCareApp.Controllers
             return View(clinic);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPost]
         public IActionResult Edit(ClinicCreateVM clinicVM, int page , string returnUrl = null)
         {
@@ -247,6 +251,7 @@ namespace HealthCareApp.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet]
         public IActionResult Delete(int id, int page)
         {
@@ -265,7 +270,7 @@ namespace HealthCareApp.Controllers
             return View(clinic);
         }
 
-      
+        [Authorize(Roles = "Admin,Doctor")]
         public IActionResult DeleteConfirmed(int id, int? page=null)
         {
             var deletedClin = ClinicRepo.GetById(id);

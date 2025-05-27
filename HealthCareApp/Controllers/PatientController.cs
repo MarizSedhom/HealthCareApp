@@ -185,7 +185,7 @@ namespace HealthCareApp.Controllers
             );
             return View(patientStat);
         }
-        [Authorize("Admin,Patient")]
+        [Authorize(Roles = "Admin,Patient")]
         public IActionResult EditPatientInfo(string patientId)
         {
             var patientInfo = PatientRepo.FindWithSelect(p => p.Id == patientId,
@@ -204,7 +204,7 @@ namespace HealthCareApp.Controllers
             return View(patientInfo);
         }
 
-        [Authorize("Admin,Patient")]
+        [Authorize(Roles = "Admin,Patient")]
         [HttpPost]
         public IActionResult EditPatientInfo(string patientId, EditPatientInfoVM editPatientVM)
         {
@@ -317,7 +317,7 @@ namespace HealthCareApp.Controllers
             return View(patientInfo);
         }
 
-        [Authorize("Admin,Patient")]
+        [Authorize(Roles = "Admin,Patient")]
         [HttpPost]
         public IActionResult EditPatientProfile(string patientId, EditPatientInfoVM editPatientVM)
         {
@@ -341,7 +341,7 @@ namespace HealthCareApp.Controllers
                 return View(editPatientVM);
             }
         }
-        [Authorize("Doctor")]
+        [Authorize(Roles = "Doctor")]
         public IActionResult DisplayPatientsForDoctor()
         {
 

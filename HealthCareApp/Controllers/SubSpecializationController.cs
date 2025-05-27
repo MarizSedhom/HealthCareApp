@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace HealthCareApp.Controllers
 {
-    [Authorize]
     public class SubSpecializationController : Controller
     {
         private readonly IGenericRepo<Specialization> SpecializationRepo;

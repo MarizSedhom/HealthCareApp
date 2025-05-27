@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HealthCareApp.Controllers
 {
-    [Authorize("Doctor,Patient")]
+    [Authorize]
     public class NotificationController : Controller
     {
         private readonly IGenericRepo<Notification> notificationRepoServices;

@@ -33,7 +33,7 @@ namespace HealthCareApp.Controllers
             notificationService = _notificationService;
         }
 
-        [Authorize("Doctor,Patient")]
+        [Authorize(Roles = "Doctor,Patient")]
         public ActionResult GetDoctorReviews(string doctorId = null)
         {
             // Doctor view
@@ -79,7 +79,7 @@ namespace HealthCareApp.Controllers
             //}
         }
 
-        [Authorize("Patient")]
+        [Authorize(Roles ="Patient")]
         public ActionResult AddReview(string doctorId)
         {
          
@@ -90,7 +90,7 @@ namespace HealthCareApp.Controllers
             return View(review);
         }
 
-        [Authorize("Patient")]
+        [Authorize(Roles = "Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddReview(AddReviewVM reviewVM)
@@ -118,7 +118,7 @@ namespace HealthCareApp.Controllers
             }
         }
 
-        [Authorize("Patient")]
+        [Authorize(Roles = "Patient")]
         public ActionResult EditReview(int id)
         {
             Review review = reviewService.Find(r => r.Id == id);
@@ -126,7 +126,7 @@ namespace HealthCareApp.Controllers
             return View(review);
         }
 
-        [Authorize("Patient")]
+        [Authorize(Roles = "Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditReview(int id, Review review)
@@ -143,7 +143,7 @@ namespace HealthCareApp.Controllers
                 return View(review);
             }
         }
-        [Authorize("Patient")]
+        [Authorize(Roles = "Patient")]
         public ActionResult DeleteReview(int id)
         {
             var review = reviewService.GetById(id);
@@ -157,7 +157,7 @@ namespace HealthCareApp.Controllers
 
 
         // admin : approave, delete
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
 
         public ActionResult DisplayPendingReviews()
         {
@@ -179,7 +179,7 @@ namespace HealthCareApp.Controllers
             });
             return View(pendingReviewsVM);
         }
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         public ActionResult ApproveReview(int reviewId)
         {
             Review review = reviewService.GetById(reviewId);
@@ -216,7 +216,7 @@ namespace HealthCareApp.Controllers
             return RedirectToAction(nameof(DisplayPendingReviews));
         }
 
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         public ActionResult RejectReview(int reviewId)
         {
             Review review = reviewService.GetById(reviewId);
